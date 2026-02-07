@@ -1,0 +1,179 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: scraperx-postgres
+    environment:
+      POSTGRES_USER: scraperx
+      POSTGRES_PASSWORD: scraperx_secret
+      POSTGRES_DB: scraperx
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/db/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scraperx -d scraperx"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Redis for Queue and Caching
+  redis:
+    image: redis:7-alpine
+    container_name: scraperx-redis
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # MinIO for Object Storage (screenshots, PDFs, etc.)
+  minio:
+    image: minio/minio:latest
+    container_name: scraperx-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: scraperx
+      MINIO_ROOT_PASSWORD: scraperx_secret
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    restart: unless-stopped
+
+  # MinIO Client - Create default bucket on startup
+  minio-init:
+    image: minio/mc:latest
+    container_name: scraperx-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set scraperx http://minio:9000 scraperx scraperx_secret;
+      mc mb scraperx/scraperx-results --ignore-existing;
+      mc mb scraperx/scraperx-screenshots --ignore-existing;
+      mc anonymous set download scraperx/scraperx-screenshots;
+      exit 0;
+      "
+
+  # Camoufox Stealth Browser Service
+  camoufox:
+    build:
+      context: ./docker/camoufox
+      dockerfile: Dockerfile
+    container_name: scraperx-camoufox
+    ports:
+      - "8765:8765"
+    environment:
+      - CAMOUFOX_HOST=0.0.0.0
+      - CAMOUFOX_PORT=8765
+      - MAX_CONCURRENT_BROWSERS=5
+      - BROWSER_TIMEOUT=60000
+    volumes:
+      - camoufox_cache:/root/.cache
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8765/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 1G
+
+  # ScraperX API Server
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: scraperx-api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgresql://scraperx:scraperx_secret@postgres:5432/scraperx
+      - REDIS_URL=redis://redis:6379
+      - CAMOUFOX_URL=http://camoufox:8765
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+      - MINIO_ACCESS_KEY=scraperx
+      - MINIO_SECRET_KEY=scraperx_secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      camoufox:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # ScraperX Worker
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: scraperx-worker
+    command: ["node", "dist/workers/index.js"]
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://scraperx:scraperx_secret@postgres:5432/scraperx
+      - REDIS_URL=redis://redis:6379
+      - CAMOUFOX_URL=http://camoufox:8765
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+      - MINIO_ACCESS_KEY=scraperx
+      - MINIO_SECRET_KEY=scraperx_secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      camoufox:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 1G
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  camoufox_cache:
+
+networks:
+  default:
+    name: scraperx-network
