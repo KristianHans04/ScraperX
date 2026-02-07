@@ -1,0 +1,153 @@
+import { Job, Worker } from 'bullmq';
+import { QUEUE_NAMES, createWorker } from '../queue/queues.js';
+import { scrapeJobRepository, jobResultRepository, organizationRepository } from '../db/index.js';
+import { getHttpEngine } from '../engines/http/index.js';
+import { hashContent } from '../utils/crypto.js';
+import { logger } from '../utils/logger.js';
+import { config } from '../config/index.js';
+import type { QueueJobData, JobStatus } from '../types/index.js';
+
+/**
+ * HTTP Worker - processes HTTP scraping jobs
+ */
+export class HttpWorker {
+  private worker: Worker<QueueJobData> | null = null;
+  private workerId: string;
+  private engine = getHttpEngine();
+
+  constructor() {
+    this.workerId = `http-worker-${process.pid}-${Date.now()}`;
+  }
+
+  /**
+   * Start the HTTP worker
+   */
+  start(): void {
+    this.worker = createWorker<QueueJobData>(
+      QUEUE_NAMES.HTTP,
+      this.processJob.bind(this),
+      {
+        concurrency: config.queue.concurrency,
+      }
+    );
+
+    logger.info({ workerId: this.workerId }, 'HTTP worker started');
+  }
+
+  /**
+   * Process a scrape job
+   */
+  private async processJob(job: Job<QueueJobData>): Promise<void> {
+    const { jobId, organizationId, url, method, headers, body, options, attempt, maxAttempts } = job.data;
+
+    logger.info({ jobId, url, attempt }, 'Processing HTTP job');
+
+    try {
+      // Update job status to running
+      await scrapeJobRepository.updateStatus(jobId, 'running', {
+        startedAt: new Date(),
+        workerId: this.workerId,
+        attempts: attempt,
+      });
+
+      // Execute the HTTP request
+      const result = await this.engine.execute({
+        url,
+        method,
+        headers,
+        body,
+        options,
+      });
+
+      if (result.success) {
+        // Store result
+        const jobResult = await jobResultRepository.create({
+          jobId,
+          organizationId,
+          statusCode: result.statusCode,
+          headers: result.headers,
+          cookies: result.cookies,
+          contentType: result.headers?.['content-type'],
+          contentLength: result.content?.length,
+          finalUrl: result.finalUrl,
+          redirectCount: result.redirectCount ?? 0,
+          contentStorageType: 'inline',
+          contentInline: result.content,
+          contentHash: result.content ? hashContent(result.content) : undefined,
+          extractedData: result.extracted,
+          totalTimeMs: result.timing?.totalMs,
+        });
+
+        // Get credit breakdown from job
+        const jobData = await scrapeJobRepository.findById(jobId);
+        const creditsToCharge = jobData?.creditsEstimated ?? 1;
+
+        // Deduct credits
+        await organizationRepository.deductCredits(organizationId, creditsToCharge);
+
+        // Update job status to completed
+        await scrapeJobRepository.updateStatus(jobId, 'completed', {
+          completedAt: new Date(),
+          resultId: jobResult.id,
+          creditsCharged: creditsToCharge,
+        });
+
+        logger.info({ jobId, statusCode: result.statusCode, totalTimeMs: result.timing?.totalMs }, 'HTTP job completed');
+
+      } else {
+        // Handle failure
+        await this.handleJobFailure(job, result.error?.code ?? 'UNKNOWN_ERROR', result.error?.message ?? 'Unknown error');
+      }
+
+    } catch (error) {
+      logger.error({ error, jobId }, 'HTTP job processing error');
+      await this.handleJobFailure(
+        job,
+        'PROCESSING_ERROR',
+        error instanceof Error ? error.message : 'Unknown processing error'
+      );
+      throw error; // Re-throw to trigger BullMQ retry
+    }
+  }
+
+  /**
+   * Handle job failure
+   */
+  private async handleJobFailure(
+    job: Job<QueueJobData>,
+    errorCode: string,
+    errorMessage: string
+  ): Promise<void> {
+    const { jobId, attempt, maxAttempts } = job.data;
+
+    const status: JobStatus = attempt >= maxAttempts ? 'failed' : 'pending';
+
+    await scrapeJobRepository.updateStatus(jobId, status, {
+      errorCode,
+      errorMessage,
+      attempts: attempt,
+    });
+
+    if (status === 'failed') {
+      logger.warn({ jobId, errorCode, errorMessage, attempts: attempt }, 'HTTP job failed permanently');
+    } else {
+      logger.debug({ jobId, errorCode, attempt, maxAttempts }, 'HTTP job will be retried');
+    }
+  }
+
+  /**
+   * Stop the worker
+   */
+  async stop(): Promise<void> {
+    if (this.worker) {
+      await this.worker.close();
+      this.worker = null;
+      logger.info({ workerId: this.workerId }, 'HTTP worker stopped');
+    }
+  }
+}
+
+// Factory function
+export function createHttpWorker(): HttpWorker {
+  return new HttpWorker();
+}
