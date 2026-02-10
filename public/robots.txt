@@ -1,0 +1,9 @@
+# ScraperX Robots.txt
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /settings/
+Disallow: /admin/
+
+Sitemap: https://scraperx.com/sitemap.xml

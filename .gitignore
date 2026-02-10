@@ -47,3 +47,4 @@ temp/
 playwright-report/
 test-results/
 playwright/.cache/
+temp_docs/

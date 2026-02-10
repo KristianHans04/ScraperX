@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
 import path from 'path';
 
 export default defineConfig({
@@ -10,7 +10,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       include: ['src/**/*.ts'],
-      exclude: ['src/types/**', 'src/index.ts'],
+      exclude: ['src/types/**', 'src/index.ts', 'src/frontend/**'],
     },
     testTimeout: 30000,
     hookTimeout: 30000,
