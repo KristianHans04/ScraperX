@@ -1,6 +1,6 @@
-# ScraperX Platform Plan — Master Index
+# Scrapifie Platform Plan — Master Index
 
-> This is the single entry point for the entire ScraperX platform plan. Every document below is deeply detailed and cross-linked. Before any code is written for any phase, the relevant documents here should be read in full. If you are in Phase 8 building the billing page, you should still read the security document, the audit log document, and the user journeys document to understand how your work connects to the rest of the system.
+> This is the single entry point for the entire Scrapifie platform plan. Every document below is deeply detailed and cross-linked. Before any code is written for any phase, the relevant documents here should be read in full. If you are in Phase 8 building the billing page, you should still read the security document, the audit log document, and the user journeys document to understand how your work connects to the rest of the system.
 
 ---
 
@@ -23,7 +23,7 @@ Each document covers one focused area of the platform. Documents are organized i
 
 | Document | What It Covers |
 |----------|---------------|
-| [Platform Overview](./01-platform-overview.md) | What ScraperX is, the three application zones, URL structure, tech stack decisions, and the high-level sitemap of every page in the system |
+| [Platform Overview](./01-platform-overview.md) | What Scrapifie is, the three application zones, URL structure, tech stack decisions, and the high-level sitemap of every page in the system |
 
 ### Public Website
 
