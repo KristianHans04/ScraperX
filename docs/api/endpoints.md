@@ -1,6 +1,6 @@
 # API Endpoints
 
-Complete reference for all ScraperX API endpoints.
+Complete reference for all Scrapifie API endpoints.
 
 ## Base URL
 

@@ -1,6 +1,6 @@
 # Authentication
 
-ScraperX uses API keys for authentication. This document explains how authentication works and how to manage API keys.
+Scrapifie uses API keys for authentication. This document explains how authentication works and how to manage API keys.
 
 ## Overview
 
@@ -14,7 +14,7 @@ API keys follow this format:
 sx_live_abc123...
 ```
 
-- `sx_` - Prefix identifying ScraperX keys
+- `sx_` - Prefix identifying Scrapifie keys
 - `live_` or `test_` - Environment indicator
 - Remaining characters - Unique identifier
 
@@ -25,7 +25,7 @@ sx_live_abc123...
 Include the API key in the `X-API-Key` header:
 
 ```bash
-curl https://api.scraperx.com/api/v1/scrape \
+curl https://api.scrapifie.com/api/v1/scrape \
   -H "X-API-Key: sx_live_your_key_here" \
   -H "Content-Type: application/json" \
   -d '{"url": "https://example.com"}'
@@ -36,7 +36,7 @@ curl https://api.scraperx.com/api/v1/scrape \
 Alternatively, use the Authorization header:
 
 ```bash
-curl https://api.scraperx.com/api/v1/scrape \
+curl https://api.scrapifie.com/api/v1/scrape \
   -H "Authorization: Bearer sx_live_your_key_here" \
   -H "Content-Type: application/json" \
   -d '{"url": "https://example.com"}'
@@ -156,11 +156,11 @@ Store your API key in environment variables:
 
 ```bash
 # .env file (never commit this!)
-SCRAPERX_API_KEY=sx_live_your_key_here
+SCRAPIFIE_API_KEY=sx_live_your_key_here
 ```
 
 Usage in code:
 
 ```javascript
-const apiKey = process.env.SCRAPERX_API_KEY;
+const apiKey = process.env.SCRAPIFIE_API_KEY;
 ```

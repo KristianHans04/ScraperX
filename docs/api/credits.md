@@ -1,6 +1,6 @@
 # Credit System
 
-ScraperX uses a credit-based system to manage usage. This document explains how credits work.
+Scrapifie uses a credit-based system to manage usage. This document explains how credits work.
 
 ## Overview
 
@@ -90,7 +90,7 @@ HTTP/1.1 402 Payment Required
 
 ### Pre-flight Check
 
-ScraperX checks credits before queuing a job:
+Scrapifie checks credits before queuing a job:
 
 1. Estimate credit cost based on options
 2. Verify sufficient balance

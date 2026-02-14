@@ -1,6 +1,6 @@
 # Rate Limiting
 
-ScraperX implements rate limiting to ensure fair usage and system stability. This document explains how rate limiting works.
+Scrapifie implements rate limiting to ensure fair usage and system stability. This document explains how rate limiting works.
 
 ## Overview
 
@@ -35,7 +35,7 @@ Limits on simultaneous active jobs.
 
 ### Per-Domain Limits
 
-To be a good web citizen, ScraperX limits requests to individual domains:
+To be a good web citizen, Scrapifie limits requests to individual domains:
 
 - Default: 10 requests per minute per domain
 - Configurable per organization
@@ -45,7 +45,7 @@ To be a good web citizen, ScraperX limits requests to individual domains:
 
 ### Token Bucket Algorithm
 
-ScraperX uses a token bucket algorithm:
+Scrapifie uses a token bucket algorithm:
 
 1. Each organization has a bucket of tokens
 2. Bucket refills at a steady rate
@@ -215,4 +215,4 @@ A: Yes, rate limits apply per organization, not per key.
 A: Use the `/account` endpoint to check your current status.
 
 **Q: Do webhook callbacks count against limits?**
-A: No, outgoing webhooks from ScraperX don't affect your limits.
+A: No, outgoing webhooks from Scrapifie don't affect your limits.
