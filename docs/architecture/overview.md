@@ -1,6 +1,6 @@
 # System Overview
 
-ScraperX is designed as a distributed, scalable web scraping platform. This document explains how the major components work together.
+Scrapifie is designed as a distributed, scalable web scraping platform. This document explains how the major components work together.
 
 ## High-Level Architecture
 
@@ -118,7 +118,7 @@ Redis serves multiple purposes:
 
 ## Multi-Tenancy
 
-ScraperX supports multiple organizations:
+Scrapifie supports multiple organizations:
 
 - Each organization has isolated API keys
 - Credit balances are per-organization

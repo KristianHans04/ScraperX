@@ -1,6 +1,6 @@
 # Scraping Engines
 
-ScraperX uses three different engines to handle various scraping scenarios. Each engine is optimized for specific use cases and has different resource requirements.
+Scrapifie uses three different engines to handle various scraping scenarios. Each engine is optimized for specific use cases and has different resource requirements.
 
 ## Engine Overview
 
@@ -70,7 +70,7 @@ The Browser engine uses Playwright to control real browsers (Chromium by default
 
 ### Browser Pool
 
-ScraperX maintains a pool of browser instances to balance performance and resource usage:
+Scrapifie maintains a pool of browser instances to balance performance and resource usage:
 
 - Browsers are reused across requests
 - Pool automatically scales based on demand
@@ -98,11 +98,11 @@ The Stealth engine uses Camoufox, a Firefox-based stealth browser designed to ev
 
 ### How It Works
 
-1. ScraperX sends request to Camoufox service
+1. Scrapifie sends request to Camoufox service
 2. Camoufox generates realistic browser fingerprint
 3. Fingerprint is injected into browser context
 4. Request is executed with human-like patterns
-5. Result is returned to ScraperX
+5. Result is returned to Scrapifie
 
 ### When to Use
 
@@ -120,7 +120,7 @@ The Stealth engine uses Camoufox, a Firefox-based stealth browser designed to ev
 
 ## Auto Engine Selection
 
-When `engine: "auto"` is specified, ScraperX automatically selects the best engine:
+When `engine: "auto"` is specified, Scrapifie automatically selects the best engine:
 
 ### Selection Logic
 

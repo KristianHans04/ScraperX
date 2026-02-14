@@ -1,6 +1,6 @@
 # Database Schema
 
-ScraperX uses PostgreSQL for persistent storage. This document describes the data models and their relationships.
+Scrapifie uses PostgreSQL for persistent storage. This document describes the data models and their relationships.
 
 ## Entity Relationship Diagram
 

@@ -1,6 +1,6 @@
 # Queue System
 
-ScraperX uses BullMQ for reliable, distributed job processing. This document explains how the queue system works.
+Scrapifie uses BullMQ for reliable, distributed job processing. This document explains how the queue system works.
 
 ## Overview
 
@@ -135,7 +135,7 @@ Some errors skip retries:
 
 ### Token Bucket Algorithm
 
-ScraperX uses a Redis-based token bucket for rate limiting:
+Scrapifie uses a Redis-based token bucket for rate limiting:
 
 - Each organization has a bucket
 - Bucket refills at configured rate
