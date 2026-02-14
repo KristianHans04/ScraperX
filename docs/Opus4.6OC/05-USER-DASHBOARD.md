@@ -1,4 +1,4 @@
-# ScraperX User Dashboard
+# Scrapifie User Dashboard
 
 ## Document Information
 
@@ -29,7 +29,7 @@
 
 ## 1. Dashboard Overview
 
-The user dashboard is the authenticated area where users manage every aspect of their ScraperX usage. It is accessible at `/dashboard` and all sub-routes under `/dashboard/*`.
+The user dashboard is the authenticated area where users manage every aspect of their Scrapifie usage. It is accessible at `/dashboard` and all sub-routes under `/dashboard/*`.
 
 ### Pages Within the Dashboard
 
@@ -53,7 +53,7 @@ This document covers the overall layout, navigation, and the overview page. Each
 
 ```
 +----------------------------------------------------------------------+
-| [Logo]  ScraperX          [Search: Cmd+K]    [Theme]  [User Menu v]  |
+| [Logo]  Scrapifie          [Search: Cmd+K]    [Theme]  [User Menu v]  |
 +----------------------------------------------------------------------+
 |          |                                                            |
 | Sidebar  |  Main Content Area                                        |
@@ -82,7 +82,7 @@ This document covers the overall layout, navigation, and the overview page. Each
 
 | Element | Position | Detail |
 |---------|----------|--------|
-| Logo | Left | ScraperX logo (monochrome SVG, CSS-colored). Links to /dashboard. |
+| Logo | Left | Scrapifie logo (monochrome SVG, CSS-colored). Links to /dashboard. |
 | Search | Center | Command palette trigger. Displays "Search... Cmd+K" (or "Ctrl+K" on non-Mac). Click or keyboard shortcut opens the command palette. |
 | Theme toggle | Right | Sun/Moon icon (Lucide). Toggles between light and dark mode. Stores preference in localStorage and syncs to user profile. |
 | User menu | Right | Displays user's name or email initial. Dropdown with: Profile, Settings, Documentation (external link to /docs), Sign Out. |
@@ -215,7 +215,7 @@ This is the first page users see after logging in. It provides a quick summary o
 |                                                                       |
 |  Quick Start                                                          |
 |  +----------------------------------------------------------------+  |
-|  | Get started with ScraperX in 3 steps:                           |  |
+|  | Get started with Scrapifie in 3 steps:                           |  |
 |  | 1. Create an API key (if you haven't already)                   |  |
 |  | 2. Make your first API call                                     |  |
 |  | 3. Check the documentation for advanced features                |  |
@@ -302,7 +302,7 @@ This section is visible to new users who have not yet created an API key or made
 | Element | Detail |
 |---------|--------|
 | Text | "Welcome back, {first_name}" (first word of the user's full name) |
-| First visit | "Welcome to ScraperX, {first_name}" on the first dashboard visit |
+| First visit | "Welcome to Scrapifie, {first_name}" on the first dashboard visit |
 | Quick action button | "New API Key" button (outline style) on the right side of the welcome row |
 
 ---
@@ -313,7 +313,7 @@ Every dashboard section has a thoughtful empty state for users who have not yet 
 
 | Page | Empty State Message | CTA |
 |------|-------------------|-----|
-| Overview (no data at all) | "Welcome to ScraperX. Create your first API key to get started." | "Create API Key" button |
+| Overview (no data at all) | "Welcome to Scrapifie. Create your first API key to get started." | "Create API Key" button |
 | API Keys (no keys) | "You have not created any API keys yet. Create one to start using the API." | "Create API Key" button |
 | Jobs (no jobs) | "No scraping jobs yet. Once you make API requests, your job history will appear here." | "View Documentation" link |
 | Usage (no usage) | "No usage data yet. Start making API requests to see your usage analytics." | "View Documentation" link |

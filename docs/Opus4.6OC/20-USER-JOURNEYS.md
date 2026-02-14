@@ -1,4 +1,4 @@
-# ScraperX User Journeys
+# Scrapifie User Journeys
 
 ## Document Information
 
@@ -17,7 +17,7 @@
 1. [User Journeys Overview](#1-user-journeys-overview)
 2. [Journey 1: New Developer Discovery to First API Call](#2-journey-1-new-developer-discovery-to-first-api-call)
 3. [Journey 2: Free User Upgrades to Pro](#3-journey-2-free-user-upgrades-to-pro)
-4. [Journey 3: Developer Integrates ScraperX into Production](#4-journey-3-developer-integrates-scraperx-into-production)
+4. [Journey 3: Developer Integrates Scrapifie into Production](#4-journey-3-developer-integrates-scrapifie-into-production)
 5. [Journey 4: User Troubleshoots a Failed Job](#5-journey-4-user-troubleshoots-a-failed-job)
 6. [Journey 5: User Runs Out of Credits](#6-journey-5-user-runs-out-of-credits)
 7. [Journey 6: User Manages Account Security](#7-journey-6-user-manages-account-security)
@@ -34,7 +34,7 @@
 
 ## 1. User Journeys Overview
 
-This document maps the complete end-to-end experiences of users and admins as they interact with the ScraperX platform. Each journey follows a persona through a realistic scenario, documenting every page visited, decision made, and system interaction encountered.
+This document maps the complete end-to-end experiences of users and admins as they interact with the Scrapifie platform. Each journey follows a persona through a realistic scenario, documenting every page visited, decision made, and system interaction encountered.
 
 ### Purpose
 
@@ -48,26 +48,26 @@ User journeys serve multiple purposes:
 
 | Persona | Description | Plan |
 |---------|-------------|------|
-| Alex | Solo developer building a price comparison tool. Technical, comfortable with APIs. First time using ScraperX | Free (initially) |
-| Sam | Backend engineer at a small startup. Integrating ScraperX into a data pipeline. Budget-conscious | Pro |
+| Alex | Solo developer building a price comparison tool. Technical, comfortable with APIs. First time using Scrapifie | Free (initially) |
+| Sam | Backend engineer at a small startup. Integrating Scrapifie into a data pipeline. Budget-conscious | Pro |
 | Jordan | Non-technical founder who needs scraping for market research. Relies on documentation and support | Free (initially) |
-| Taylor | ScraperX platform admin. Handles support, monitors abuse, manages the platform | Admin |
+| Taylor | Scrapifie platform admin. Handles support, monitors abuse, manages the platform | Admin |
 
 ---
 
 ## 2. Journey 1: New Developer Discovery to First API Call
 
 **Persona:** Alex (solo developer)
-**Goal:** Discover ScraperX, sign up, and make a first successful API request
+**Goal:** Discover Scrapifie, sign up, and make a first successful API request
 **Time:** ~15 minutes
 
 ### Step-by-Step Flow
 
 | Step | Action | Page/System | What Happens | Document Reference |
 |------|--------|-------------|--------------|-------------------|
-| 1 | Alex searches "web scraping API" on a search engine | External | ScraperX landing page appears in results (SEO optimized) | 01-PUBLIC-WEBSITE.md |
+| 1 | Alex searches "web scraping API" on a search engine | External | Scrapifie landing page appears in results (SEO optimized) | 01-PUBLIC-WEBSITE.md |
 | 2 | Clicks the search result | Landing page (/) | Sees the hero section with value proposition, feature overview, code example, and pricing summary | 01-PUBLIC-WEBSITE.md, Section: Landing Page |
-| 3 | Scrolls through features | Landing page | Reads about three engines, anti-detection, proxy rotation. Understands what makes ScraperX different | 01-PUBLIC-WEBSITE.md |
+| 3 | Scrolls through features | Landing page | Reads about three engines, anti-detection, proxy rotation. Understands what makes Scrapifie different | 01-PUBLIC-WEBSITE.md |
 | 4 | Clicks "Get Started Free" CTA | Landing page -> Registration | Navigates to the registration page | 01-PUBLIC-WEBSITE.md, 03-AUTHENTICATION.md |
 | 5 | Fills in registration form | /auth/register | Enters name, email, password. Sees password strength indicator. Accepts Terms of Service | 03-AUTHENTICATION.md, Section: Registration |
 | 6 | Submits registration | /auth/register | Account created. Redirected to dashboard with a banner: "Please verify your email" | 03-AUTHENTICATION.md |
@@ -135,10 +135,10 @@ Alex has upgraded from Free to Pro. He has a payment method on file, 50,000 cred
 
 ---
 
-## 4. Journey 3: Developer Integrates ScraperX into Production
+## 4. Journey 3: Developer Integrates Scrapifie into Production
 
 **Persona:** Sam (backend engineer, Pro plan)
-**Goal:** Integrate ScraperX into a production data pipeline with proper error handling
+**Goal:** Integrate Scrapifie into a production data pipeline with proper error handling
 **Time:** ~2 hours
 
 ### Step-by-Step Flow
@@ -215,7 +215,7 @@ Sam identified the root cause (target site DOM change), validated the fix via da
 | Step | Action | Page/System | What Happens | Document Reference |
 |------|--------|-------------|--------------|-------------------|
 | 1 | API request returns 402 Payment Required | External (terminal/code) | Response body: "Insufficient credits. Your credit balance is 0. Purchase a credit pack or wait for your billing cycle to reset" | APPENDICES/C-ERROR-CODES.md |
-| 2 | Alex receives an email | Email | "Your ScraperX credits have been exhausted. Your current billing cycle resets on [date]. Purchase a credit pack to continue immediately." | APPENDICES/B-EMAIL-TEMPLATES.md |
+| 2 | Alex receives an email | Email | "Your Scrapifie credits have been exhausted. Your current billing cycle resets on [date]. Purchase a credit pack to continue immediately." | APPENDICES/B-EMAIL-TEMPLATES.md |
 | 3 | Logs into dashboard | /dashboard | Red banner at top: "Your credits are exhausted. API requests will fail until credits are available." Credit card shows 0/50,000 | 05-USER-DASHBOARD.md |
 | 4 | Navigates to Billing | /dashboard/billing | Credit balance section shows 0 credits with a "Buy Credits" button | 09-BILLING-AND-CREDITS.md |
 | 5 | Clicks "Buy Credits" | /dashboard/billing (credit packs section) | Three credit pack options appear: Small (10K/$15), Medium (25K/$30), Large (50K/$50) | 09-BILLING-AND-CREDITS.md, Section: Credit Packs |
@@ -240,7 +240,7 @@ Alex purchased a credit pack to immediately restore service. He identified the c
 
 | Step | Action | Page/System | What Happens | Document Reference |
 |------|--------|-------------|--------------|-------------------|
-| 1 | Alex receives an email | Email | "New login to your ScraperX account from Chrome on Windows, IP: [address], Location: [city]. If this was not you, secure your account immediately." | APPENDICES/B-EMAIL-TEMPLATES.md |
+| 1 | Alex receives an email | Email | "New login to your Scrapifie account from Chrome on Windows, IP: [address], Location: [city]. If this was not you, secure your account immediately." | APPENDICES/B-EMAIL-TEMPLATES.md |
 | 2 | Recognizes the login (it was from his work laptop) | -- | Not a security threat, but decides to improve security anyway | -- |
 | 3 | Logs into dashboard | /dashboard | Navigates to Settings | 11-SETTINGS-AND-SUPPORT.md |
 | 4 | Opens Security tab | /dashboard/settings/security | Sees: Password section, MFA section (disabled), Active Sessions section | 11-SETTINGS-AND-SUPPORT.md |
@@ -307,7 +307,7 @@ Jordan got help through the support system. The knowledge base suggestion partia
 | 4 | Selects cancellation reason from dropdown | Modal | Options: Too expensive, Not using enough, Switching to competitor, Missing features, Other. Selects "Not using enough" | 09-BILLING-AND-CREDITS.md |
 | 5 | Confirms cancellation | Modal | Subscription status changes to "Cancelling at period end". A banner appears: "Your Pro plan is active until March 15. You can reactivate anytime before then." | 09-BILLING-AND-CREDITS.md |
 | 6 | Sees the reactivation option | /dashboard/billing | A "Reactivate Subscription" button appears prominently. The cancellation is reversible until the period end | 09-BILLING-AND-CREDITS.md |
-| 7 | Receives confirmation email | Email | "Your ScraperX Pro subscription has been cancelled and will end on March 15. You can reactivate anytime before then from your billing page." | APPENDICES/B-EMAIL-TEMPLATES.md |
+| 7 | Receives confirmation email | Email | "Your Scrapifie Pro subscription has been cancelled and will end on March 15. You can reactivate anytime before then from your billing page." | APPENDICES/B-EMAIL-TEMPLATES.md |
 | 8 | (March 15 arrives) | System | Subscription transitions to "cancelled". Account plan changes to Free. Credits reset to 1,000. Excess API keys are deactivated (4 of 5 revoked, keeping the oldest active key). Rate limits reduced | 09-BILLING-AND-CREDITS.md |
 | 9 | Alex logs in after March 15 | /dashboard | Dashboard reflects Free plan. Credit balance: 1,000. Banner: "You are on the Free plan. Upgrade anytime to restore Pro features." | 05-USER-DASHBOARD.md |
 

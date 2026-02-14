@@ -1,4 +1,4 @@
-# ScraperX Legal Framework
+# Scrapifie Legal Framework
 
 ## Document Information
 
@@ -29,16 +29,16 @@
 
 ## 1. Legal Positioning Strategy
 
-ScraperX is positioned as a neutral tool provider. The platform provides web scraping infrastructure — it does not direct what users scrape, how they use the data, or which websites they target. This is the same legal positioning used by major competitors including Bright Data, Apify, and ScrapingBee.
+Scrapifie is positioned as a neutral tool provider. The platform provides web scraping infrastructure — it does not direct what users scrape, how they use the data, or which websites they target. This is the same legal positioning used by major competitors including Bright Data, Apify, and ScrapingBee.
 
 ### Core Legal Principles
 
 | Principle | Detail |
 |-----------|--------|
-| Neutral tool provider | ScraperX provides technology. Users decide how to use it. The platform is not responsible for how users apply the tool. |
+| Neutral tool provider | Scrapifie provides technology. Users decide how to use it. The platform is not responsible for how users apply the tool. |
 | User responsibility | Users are solely responsible for ensuring their scraping activities comply with applicable laws, regulations, and target website terms of service. |
-| One-way indemnification | Users indemnify ScraperX against claims arising from their use of the platform. ScraperX does not indemnify users. |
-| No data ownership | ScraperX does not claim ownership of data scraped by users. Scraped data belongs to the user (subject to applicable laws). |
+| One-way indemnification | Users indemnify Scrapifie against claims arising from their use of the platform. Scrapifie does not indemnify users. |
+| No data ownership | Scrapifie does not claim ownership of data scraped by users. Scraped data belongs to the user (subject to applicable laws). |
 | No data retention beyond stated periods | Scraped data is stored temporarily per the plan's data retention period and then permanently deleted. |
 | Jurisdiction-neutral | All legal documents use placeholder jurisdiction references. The actual governing law and jurisdiction are determined at deployment time based on where the business is incorporated. |
 
@@ -58,8 +58,8 @@ The following disclaimers must appear in relevant locations:
 
 | Location | Disclaimer Text |
 |----------|----------------|
-| Signup form | "By creating an account, you agree to our Terms of Service and Acceptable Use Policy. You are responsible for ensuring your use of ScraperX complies with applicable laws." |
-| API documentation | "ScraperX is a neutral tool. Compliance with applicable laws and target website terms of service is your responsibility." |
+| Signup form | "By creating an account, you agree to our Terms of Service and Acceptable Use Policy. You are responsible for ensuring your use of Scrapifie complies with applicable laws." |
+| API documentation | "Scrapifie is a neutral tool. Compliance with applicable laws and target website terms of service is your responsibility." |
 | Dashboard footer (subtle) | "Use of this service is subject to our Terms of Service and Acceptable Use Policy." |
 
 ---
@@ -70,7 +70,7 @@ The following disclaimers must appear in relevant locations:
 
 ### Document Structure
 
-The Terms of Service is the primary legal agreement between ScraperX and its users. It covers account creation, acceptable use, billing, intellectual property, liability, and termination.
+The Terms of Service is the primary legal agreement between Scrapifie and its users. It covers account creation, acceptable use, billing, intellectual property, liability, and termination.
 
 ### Sections and Their Content
 
@@ -80,19 +80,19 @@ The Terms of Service is the primary legal agreement between ScraperX and its use
 |---------|---------|
 | Effective date | Displayed at the top. Updated when terms change. Format: "Effective Date: {DATE}" |
 | Last updated | "Last Updated: {DATE}" |
-| Acceptance mechanism | "By creating an account, accessing, or using ScraperX, you agree to be bound by these Terms of Service. If you do not agree, do not use the service." |
-| Capacity to agree | "You must be at least 18 years old (or the age of majority in your jurisdiction) to use ScraperX. By using the service, you represent that you have the legal capacity to enter into a binding agreement." |
-| Entity usage | "If you are using ScraperX on behalf of an organization, you represent that you have the authority to bind that organization to these terms." |
+| Acceptance mechanism | "By creating an account, accessing, or using Scrapifie, you agree to be bound by these Terms of Service. If you do not agree, do not use the service." |
+| Capacity to agree | "You must be at least 18 years old (or the age of majority in your jurisdiction) to use Scrapifie. By using the service, you represent that you have the legal capacity to enter into a binding agreement." |
+| Entity usage | "If you are using Scrapifie on behalf of an organization, you represent that you have the authority to bind that organization to these terms." |
 
 #### Section 2: Definitions
 
 | Term | Definition |
 |------|------------|
-| Service | The ScraperX platform, including the API, dashboard, and documentation |
+| Service | The Scrapifie platform, including the API, dashboard, and documentation |
 | User / You | Any individual or entity that creates an account or uses the Service |
 | Account | The user's registered account on the platform |
 | Content | Any data, text, or materials submitted to or retrieved through the Service |
-| API Key | A credential used to authenticate requests to the ScraperX API |
+| API Key | A credential used to authenticate requests to the Scrapifie API |
 | Credits | Units of consumption that represent API usage |
 | Plan | A subscription tier (Free, Pro, or Enterprise) that determines credit allocation and feature access |
 
@@ -101,17 +101,17 @@ The Terms of Service is the primary legal agreement between ScraperX and its use
 | Clause | Detail |
 |--------|--------|
 | Accurate information | Users must provide accurate and complete registration information and keep it up to date |
-| Account security | Users are responsible for maintaining the confidentiality of their credentials and API keys. ScraperX is not liable for unauthorized access resulting from the user's failure to secure their account. |
-| One account per person | Users may not create multiple free accounts to circumvent plan limitations. ScraperX reserves the right to merge or terminate duplicate accounts. |
+| Account security | Users are responsible for maintaining the confidentiality of their credentials and API keys. Scrapifie is not liable for unauthorized access resulting from the user's failure to secure their account. |
+| One account per person | Users may not create multiple free accounts to circumvent plan limitations. Scrapifie reserves the right to merge or terminate duplicate accounts. |
 | Account sharing | Account credentials may not be shared with individuals outside the user's organization. API keys may be used in applications owned or operated by the user. |
 
 #### Section 4: Use of the Service
 
 | Clause | Detail |
 |--------|--------|
-| License grant | ScraperX grants users a limited, non-exclusive, non-transferable, revocable license to use the Service in accordance with these Terms and the selected Plan. |
+| License grant | Scrapifie grants users a limited, non-exclusive, non-transferable, revocable license to use the Service in accordance with these Terms and the selected Plan. |
 | User responsibility | Users are solely responsible for their use of the Service, including ensuring compliance with applicable laws, regulations, and the terms of service of any third-party websites they access through the Service. |
-| Neutral tool | ScraperX is a neutral technology provider. The Service provides web scraping infrastructure. ScraperX does not direct, control, or monitor the specific websites users choose to scrape or the data they collect. |
+| Neutral tool | Scrapifie is a neutral technology provider. The Service provides web scraping infrastructure. Scrapifie does not direct, control, or monitor the specific websites users choose to scrape or the data they collect. |
 | Acceptable use | Use of the Service is subject to the Acceptable Use Policy (see Section 4 of this document and /legal/acceptable-use). |
 
 #### Section 5: Plans, Billing, and Credits
@@ -122,18 +122,18 @@ The Terms of Service is the primary legal agreement between ScraperX and its use
 | Billing cycle | Subscriptions are billed monthly or annually, depending on the billing period selected. |
 | Credit allocation | Credits are allocated at the start of each billing cycle. Unused credits do not roll over to the next cycle. |
 | Credit packs | Additional credit packs may be purchased. Credit packs do not roll over. |
-| Price changes | ScraperX may change prices with 30 days written notice. Existing subscribers are grandfathered at their current price until the end of their current billing period. |
-| Failed payments | If payment fails, ScraperX will attempt to collect payment according to the escalation process described in 09-BILLING-AND-CREDITS.md. Continued failure may result in account restriction or suspension. |
-| Refunds | Refunds may be issued at ScraperX's discretion. For new subscriptions, a refund may be issued within 14 days if fewer than 10% of the plan's credits have been consumed. |
+| Price changes | Scrapifie may change prices with 30 days written notice. Existing subscribers are grandfathered at their current price until the end of their current billing period. |
+| Failed payments | If payment fails, Scrapifie will attempt to collect payment according to the escalation process described in 09-BILLING-AND-CREDITS.md. Continued failure may result in account restriction or suspension. |
+| Refunds | Refunds may be issued at Scrapifie's discretion. For new subscriptions, a refund may be issued within 14 days if fewer than 10% of the plan's credits have been consumed. |
 | Taxes | Prices are exclusive of applicable taxes. Users are responsible for any taxes, duties, or levies imposed by their jurisdiction. |
 
 #### Section 6: Intellectual Property
 
 | Clause | Detail |
 |--------|--------|
-| ScraperX IP | The Service, including its code, design, documentation, and branding, is the intellectual property of ScraperX. Users may not copy, modify, reverse-engineer, or create derivative works of the Service. |
-| User data | ScraperX does not claim ownership of data scraped by users. Users retain all rights to data they collect through the Service, subject to applicable laws. |
-| Feedback | If users provide feedback, suggestions, or ideas, ScraperX may use them without obligation or compensation. |
+| Scrapifie IP | The Service, including its code, design, documentation, and branding, is the intellectual property of Scrapifie. Users may not copy, modify, reverse-engineer, or create derivative works of the Service. |
+| User data | Scrapifie does not claim ownership of data scraped by users. Users retain all rights to data they collect through the Service, subject to applicable laws. |
+| Feedback | If users provide feedback, suggestions, or ideas, Scrapifie may use them without obligation or compensation. |
 
 #### Section 7: Data and Privacy
 
@@ -141,7 +141,7 @@ The Terms of Service is the primary legal agreement between ScraperX and its use
 |--------|--------|
 | Privacy Policy | The collection and use of personal information is governed by the Privacy Policy (/legal/privacy). |
 | Data retention | Scraped data is retained for the period specified by the user's plan (Free: 3 days, Pro: 14 days, Enterprise: custom). After this period, data is permanently deleted. |
-| No data selling | ScraperX does not sell, rent, or share users' scraped data with third parties. |
+| No data selling | Scrapifie does not sell, rent, or share users' scraped data with third parties. |
 | Data processing | For users who process personal data through the Service, the Data Processing Agreement (/legal/dpa) applies. |
 
 #### Section 8: Disclaimers and Limitation of Liability
@@ -149,25 +149,25 @@ The Terms of Service is the primary legal agreement between ScraperX and its use
 | Clause | Detail |
 |--------|--------|
 | As-is provision | The Service is provided "as is" and "as available" without warranties of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, and non-infringement. |
-| No guarantee of results | ScraperX does not guarantee that any particular website can be scraped, that requests will succeed, or that data returned will be accurate or complete. |
-| Liability cap | ScraperX's total aggregate liability for any claims arising from or related to the Service is limited to the amount the user paid to ScraperX in the 12 months preceding the claim. |
-| Exclusion of damages | ScraperX is not liable for indirect, incidental, special, consequential, or punitive damages, including loss of profits, data, or business opportunities. |
-| Force majeure | ScraperX is not liable for failures or delays caused by circumstances beyond its reasonable control, including natural disasters, government actions, internet disruptions, or third-party service failures. |
+| No guarantee of results | Scrapifie does not guarantee that any particular website can be scraped, that requests will succeed, or that data returned will be accurate or complete. |
+| Liability cap | Scrapifie's total aggregate liability for any claims arising from or related to the Service is limited to the amount the user paid to Scrapifie in the 12 months preceding the claim. |
+| Exclusion of damages | Scrapifie is not liable for indirect, incidental, special, consequential, or punitive damages, including loss of profits, data, or business opportunities. |
+| Force majeure | Scrapifie is not liable for failures or delays caused by circumstances beyond its reasonable control, including natural disasters, government actions, internet disruptions, or third-party service failures. |
 
 #### Section 9: Indemnification
 
 | Clause | Detail |
 |--------|--------|
-| User indemnification | Users agree to indemnify, defend, and hold harmless ScraperX, its officers, directors, employees, and agents from any claims, damages, losses, liabilities, and expenses (including legal fees) arising from: (a) the user's use of the Service, (b) the user's violation of these Terms, (c) the user's violation of any law or regulation, (d) the user's violation of any third party's rights, or (e) data collected by the user through the Service. |
-| One-way | This indemnification is one-way. ScraperX does not indemnify users against third-party claims related to their scraping activities. |
+| User indemnification | Users agree to indemnify, defend, and hold harmless Scrapifie, its officers, directors, employees, and agents from any claims, damages, losses, liabilities, and expenses (including legal fees) arising from: (a) the user's use of the Service, (b) the user's violation of these Terms, (c) the user's violation of any law or regulation, (d) the user's violation of any third party's rights, or (e) data collected by the user through the Service. |
+| One-way | This indemnification is one-way. Scrapifie does not indemnify users against third-party claims related to their scraping activities. |
 
 #### Section 10: Termination
 
 | Clause | Detail |
 |--------|--------|
 | User termination | Users may terminate their account at any time through the dashboard settings. Upon termination, access to the Service ceases immediately. |
-| ScraperX termination | ScraperX may suspend or terminate a user's account for: violation of these Terms or the Acceptable Use Policy, non-payment, fraudulent activity, or any reason with 30 days written notice. |
-| Immediate termination | ScraperX may immediately suspend or terminate accounts that pose a security risk, are involved in illegal activity, or cause harm to the Service or other users. |
+| Scrapifie termination | Scrapifie may suspend or terminate a user's account for: violation of these Terms or the Acceptable Use Policy, non-payment, fraudulent activity, or any reason with 30 days written notice. |
+| Immediate termination | Scrapifie may immediately suspend or terminate accounts that pose a security risk, are involved in illegal activity, or cause harm to the Service or other users. |
 | Effect of termination | Upon termination: (a) the user's license to use the Service ends, (b) remaining credits are forfeited, (c) data is retained for 30 days and then permanently deleted, (d) any outstanding balance remains payable. |
 | Survival | Sections on intellectual property, disclaimers, limitation of liability, indemnification, and dispute resolution survive termination. |
 
@@ -175,7 +175,7 @@ The Terms of Service is the primary legal agreement between ScraperX and its use
 
 | Clause | Detail |
 |--------|--------|
-| Right to modify | ScraperX may modify these Terms at any time. |
+| Right to modify | Scrapifie may modify these Terms at any time. |
 | Notice | Material changes will be communicated via email to the address on the account and via a notice on the dashboard at least 30 days before taking effect. |
 | Continued use | Continued use of the Service after the effective date of modified Terms constitutes acceptance. Users who do not agree may terminate their account. |
 
@@ -187,11 +187,11 @@ See Section 10 of this document (Dispute Resolution).
 
 | Clause | Detail |
 |--------|--------|
-| Entire agreement | These Terms, together with the Privacy Policy, Acceptable Use Policy, and DPA, constitute the entire agreement between the user and ScraperX. |
+| Entire agreement | These Terms, together with the Privacy Policy, Acceptable Use Policy, and DPA, constitute the entire agreement between the user and Scrapifie. |
 | Severability | If any provision is found unenforceable, the remaining provisions remain in effect. |
 | Waiver | Failure to enforce any provision does not constitute a waiver. |
-| Assignment | Users may not assign their rights or obligations. ScraperX may assign in connection with a merger, acquisition, or sale of assets. |
-| Notices | Notices to users are sent to the email address on the account. Notices to ScraperX should be sent to the contact email specified on the contact page. |
+| Assignment | Users may not assign their rights or obligations. Scrapifie may assign in connection with a merger, acquisition, or sale of assets. |
+| Notices | Notices to users are sent to the email address on the account. Notices to Scrapifie should be sent to the contact email specified on the contact page. |
 
 ---
 
@@ -201,7 +201,7 @@ See Section 10 of this document (Dispute Resolution).
 
 ### Document Structure
 
-The Privacy Policy explains what personal data ScraperX collects, why, how it is used, and users' rights.
+The Privacy Policy explains what personal data Scrapifie collects, why, how it is used, and users' rights.
 
 ### Sections and Their Content
 
@@ -209,9 +209,9 @@ The Privacy Policy explains what personal data ScraperX collects, why, how it is
 
 | Element | Content |
 |---------|---------|
-| Scope | This policy applies to all users of the ScraperX platform, website, and API. |
-| Data controller | ScraperX (with placeholder for registered entity name and address, configured via environment variable) |
-| Contact | Users can contact ScraperX about privacy matters at the configured privacy email address |
+| Scope | This policy applies to all users of the Scrapifie platform, website, and API. |
+| Data controller | Scrapifie (with placeholder for registered entity name and address, configured via environment variable) |
+| Contact | Users can contact Scrapifie about privacy matters at the configured privacy email address |
 
 #### Section 2: Data We Collect
 
@@ -220,7 +220,7 @@ The Privacy Policy explains what personal data ScraperX collects, why, how it is
 | Data Type | Examples | Purpose | Legal Basis |
 |-----------|----------|---------|-------------|
 | Account information | Name, email address, password (hashed) | Account creation and authentication | Contract performance |
-| Billing information | Payment method details (processed by payment provider, not stored by ScraperX), billing address, invoice history | Payment processing and billing | Contract performance |
+| Billing information | Payment method details (processed by payment provider, not stored by Scrapifie), billing address, invoice history | Payment processing and billing | Contract performance |
 | Support data | Support ticket content, attachments | Providing support | Contract performance |
 | Contact form data | Name, email, message | Responding to inquiries | Legitimate interest |
 
@@ -236,8 +236,8 @@ The Privacy Policy explains what personal data ScraperX collects, why, how it is
 
 | Statement | Detail |
 |-----------|--------|
-| Scraped data | ScraperX processes scraped data on behalf of the user but does not analyze, mine, or use it for any purpose other than delivering it to the user. Scraped data is stored temporarily per the plan's retention period and then permanently deleted. |
-| Data selling | ScraperX does not sell, rent, or share personal data with third parties for their marketing purposes. |
+| Scraped data | Scrapifie processes scraped data on behalf of the user but does not analyze, mine, or use it for any purpose other than delivering it to the user. Scraped data is stored temporarily per the plan's retention period and then permanently deleted. |
+| Data selling | Scrapifie does not sell, rent, or share personal data with third parties for their marketing purposes. |
 
 #### Section 3: How We Use Data
 
@@ -259,7 +259,7 @@ The Privacy Policy explains what personal data ScraperX collects, why, how it is
 | Infrastructure providers | Hosting, CDN | All data (encrypted at rest and in transit) | Data processing agreements, encrypted storage |
 | Law enforcement | Legal compliance | As required by law | Only in response to valid legal process |
 
-ScraperX does NOT share data with:
+Scrapifie does NOT share data with:
 - Advertising networks
 - Data brokers
 - Analytics companies that profile users
@@ -286,7 +286,7 @@ ScraperX does NOT share data with:
 | Password storage | Passwords are hashed using bcrypt with a cost factor of at least 12. Plaintext passwords are never stored or logged. |
 | API key storage | API keys are hashed using SHA-256. The original key is shown once at creation and never stored in recoverable form. |
 | Access control | Internal access to user data is restricted to authorized personnel on a need-to-know basis. All access is logged. |
-| Incident response | ScraperX maintains a security incident response process. Users will be notified of breaches affecting their data within 72 hours. |
+| Incident response | Scrapifie maintains a security incident response process. Users will be notified of breaches affecting their data within 72 hours. |
 
 Full security details are in 19-SECURITY-FRAMEWORK.md.
 
@@ -304,20 +304,20 @@ Users have the following rights regarding their personal data. The mechanism for
 | Objection | Object to processing based on legitimate interest | Email to privacy contact |
 | Withdraw consent | Withdraw consent for optional processing (e.g., marketing emails) | Dashboard notification settings or unsubscribe link |
 
-| Response timeline | ScraperX will respond to data subject requests within 30 days. Complex requests may take up to 60 days with notification. |
+| Response timeline | Scrapifie will respond to data subject requests within 30 days. Complex requests may take up to 60 days with notification. |
 
 #### Section 8: International Data Transfers
 
 | Statement | Detail |
 |-----------|--------|
-| Transfer basis | If personal data is transferred outside the user's jurisdiction, ScraperX ensures appropriate safeguards are in place, such as standard contractual clauses or equivalent mechanisms. |
-| Infrastructure location | ScraperX infrastructure is hosted in locations disclosed on the status page. The primary hosting provider and region are configurable. |
+| Transfer basis | If personal data is transferred outside the user's jurisdiction, Scrapifie ensures appropriate safeguards are in place, such as standard contractual clauses or equivalent mechanisms. |
+| Infrastructure location | Scrapifie infrastructure is hosted in locations disclosed on the status page. The primary hosting provider and region are configurable. |
 
 #### Section 9: Children's Privacy
 
 | Statement | Detail |
 |-----------|--------|
-| Age restriction | ScraperX is not directed to individuals under 18 (or the age of majority in their jurisdiction). We do not knowingly collect data from minors. If we become aware that a minor has provided personal data, we will delete it promptly. |
+| Age restriction | Scrapifie is not directed to individuals under 18 (or the age of majority in their jurisdiction). We do not knowingly collect data from minors. If we become aware that a minor has provided personal data, we will delete it promptly. |
 
 #### Section 10: Changes to This Policy
 
@@ -334,7 +334,7 @@ Users have the following rights regarding their personal data. The mechanism for
 
 ### Purpose
 
-The Acceptable Use Policy (AUP) defines what users are and are not allowed to do with ScraperX. It is the primary tool for moderating abuse and protecting the platform.
+The Acceptable Use Policy (AUP) defines what users are and are not allowed to do with Scrapifie. It is the primary tool for moderating abuse and protecting the platform.
 
 ### Permitted Uses
 
@@ -359,15 +359,15 @@ The Acceptable Use Policy (AUP) defines what users are and are not allowed to do
 | Malware distribution | Using the Service to distribute malware, viruses, or other harmful software |
 | Fraud | Using the Service for phishing, identity theft, financial fraud, or other deceptive practices |
 | Illegal content | Using the Service to collect, store, or distribute child sexual abuse material, terrorist content, or other illegal content |
-| Reselling access | Reselling access to the ScraperX API without authorization |
-| System abuse | Attempting to exploit vulnerabilities in the ScraperX platform, circumventing rate limits, or using the Service in ways that degrade performance for other users |
+| Reselling access | Reselling access to the Scrapifie API without authorization |
+| System abuse | Attempting to exploit vulnerabilities in the Scrapifie platform, circumventing rate limits, or using the Service in ways that degrade performance for other users |
 | Multiple free accounts | Creating multiple accounts to circumvent plan limitations, free credit restrictions, or account suspensions |
 
 ### Rate and Volume Guidelines
 
 | Guideline | Detail |
 |-----------|--------|
-| Respect robots.txt | While ScraperX does not enforce robots.txt compliance on behalf of users, users are encouraged to respect robots.txt directives as a best practice. |
+| Respect robots.txt | While Scrapifie does not enforce robots.txt compliance on behalf of users, users are encouraged to respect robots.txt directives as a best practice. |
 | Reasonable request rates | Users should not send requests at rates that would constitute a denial-of-service attack on the target website. The platform's built-in rate limits provide a reasonable upper bound. |
 | Crawl delays | For sustained scraping of a single domain, users are encouraged to implement reasonable crawl delays. |
 
@@ -379,14 +379,14 @@ The Acceptable Use Policy (AUP) defines what users are and are not allowed to do
 | Rate limiting | Excessive request rates against a single target | Automatic throttling by the platform |
 | Temporary suspension | Repeated violations after warning, or moderate severity violation | Account suspended for 24-72 hours. User notified with explanation. |
 | Permanent suspension | Severe violations (illegal activity, malware, CSAM) or repeated violations after temporary suspension | Account permanently suspended. No refund. User notified. |
-| Legal action | Criminal activity or significant harm to ScraperX or third parties | Referral to law enforcement and/or civil action |
+| Legal action | Criminal activity or significant harm to Scrapifie or third parties | Referral to law enforcement and/or civil action |
 
 ### Reporting Violations
 
 | Element | Detail |
 |---------|--------|
 | Report method | Users can report suspected AUP violations by emailing the configured abuse email address or using the contact form with subject "Bug Report" (which will be expanded to include "Report Abuse" in a future update). |
-| Investigation | ScraperX will investigate reports and take action as appropriate. Reporters will be informed of the outcome where possible. |
+| Investigation | Scrapifie will investigate reports and take action as appropriate. Reporters will be informed of the outcome where possible. |
 | Whistleblower protection | Users who report violations in good faith will not face retaliation. |
 
 See 14-ADMIN-MODERATION.md for the admin-side enforcement workflow.
@@ -399,7 +399,7 @@ See 14-ADMIN-MODERATION.md for the admin-side enforcement workflow.
 
 ### Purpose
 
-The Data Processing Agreement (DPA) governs the processing of personal data by ScraperX on behalf of users. It applies when users use ScraperX to scrape websites that contain personal data of third parties.
+The Data Processing Agreement (DPA) governs the processing of personal data by Scrapifie on behalf of users. It applies when users use Scrapifie to scrape websites that contain personal data of third parties.
 
 ### DPA Structure
 
@@ -408,8 +408,8 @@ The Data Processing Agreement (DPA) governs the processing of personal data by S
 | Element | Detail |
 |---------|--------|
 | Data Controller | The user (who determines what data to scrape and for what purpose) |
-| Data Processor | ScraperX (which processes the data on the user's instructions via API requests) |
-| Sub-processors | ScraperX's infrastructure providers (listed in the sub-processor list, available on request and updated with 30 days notice) |
+| Data Processor | Scrapifie (which processes the data on the user's instructions via API requests) |
+| Sub-processors | Scrapifie's infrastructure providers (listed in the sub-processor list, available on request and updated with 30 days notice) |
 | Data subjects | Third parties whose personal data may be contained in scraped web pages |
 
 #### Processing Details
@@ -419,19 +419,19 @@ The Data Processing Agreement (DPA) governs the processing of personal data by S
 | Nature of processing | Automated collection, temporary storage, and delivery of web page data |
 | Purpose | Execution of the user's API requests as specified by the API parameters |
 | Duration | Data is processed for the duration of the API request and stored for the plan's retention period |
-| Types of personal data | As determined by the user's scraping targets. ScraperX does not control what data is scraped. May include names, email addresses, or other publicly visible information. |
+| Types of personal data | As determined by the user's scraping targets. Scrapifie does not control what data is scraped. May include names, email addresses, or other publicly visible information. |
 
-#### Obligations of ScraperX (as Processor)
+#### Obligations of Scrapifie (as Processor)
 
 | Obligation | Detail |
 |------------|--------|
-| Process only on instructions | ScraperX will process personal data only as instructed by the user through API requests. No independent use of the data. |
-| Security measures | ScraperX implements appropriate technical and organizational security measures (see Section 6 of the Privacy Policy and 19-SECURITY-FRAMEWORK.md). |
-| Sub-processor management | ScraperX maintains a list of sub-processors. Users will be notified of new sub-processors 30 days in advance. Users may object; if the objection cannot be resolved, the user may terminate. |
-| Confidentiality | ScraperX personnel with access to personal data are bound by confidentiality obligations. |
-| Assistance | ScraperX will assist users in responding to data subject requests (access, deletion, portability) to the extent technically feasible. |
+| Process only on instructions | Scrapifie will process personal data only as instructed by the user through API requests. No independent use of the data. |
+| Security measures | Scrapifie implements appropriate technical and organizational security measures (see Section 6 of the Privacy Policy and 19-SECURITY-FRAMEWORK.md). |
+| Sub-processor management | Scrapifie maintains a list of sub-processors. Users will be notified of new sub-processors 30 days in advance. Users may object; if the objection cannot be resolved, the user may terminate. |
+| Confidentiality | Scrapifie personnel with access to personal data are bound by confidentiality obligations. |
+| Assistance | Scrapifie will assist users in responding to data subject requests (access, deletion, portability) to the extent technically feasible. |
 | Data return and deletion | Upon termination, scraped data is deleted according to the retention schedule. Users can export their data before termination. |
-| Audit rights | Users may request information about ScraperX's data processing practices. On-site audits are available for Enterprise plan customers by appointment. |
+| Audit rights | Users may request information about Scrapifie's data processing practices. On-site audits are available for Enterprise plan customers by appointment. |
 
 #### Obligations of the User (as Controller)
 
@@ -439,8 +439,8 @@ The Data Processing Agreement (DPA) governs the processing of personal data by S
 |------------|--------|
 | Lawful basis | Users must ensure they have a lawful basis for collecting and processing the personal data they scrape. |
 | Data subject rights | Users are responsible for responding to data subject requests from individuals whose data they have collected. |
-| Instructions | Users are responsible for ensuring their API requests do not instruct ScraperX to process data in violation of applicable data protection laws. |
-| Notification | Users must notify ScraperX if they become aware of a data breach involving data processed through the Service. |
+| Instructions | Users are responsible for ensuring their API requests do not instruct Scrapifie to process data in violation of applicable data protection laws. |
+| Notification | Users must notify Scrapifie if they become aware of a data breach involving data processed through the Service. |
 
 #### Cross-Border Transfers
 
@@ -462,7 +462,7 @@ The Data Processing Agreement (DPA) governs the processing of personal data by S
 | Strictly necessary | No | Essential for the website to function. Includes session cookies, CSRF tokens, and authentication cookies. |
 | Functional | Yes | Remember user preferences such as theme (light/dark) and language. |
 | Analytics | Yes | Understand how visitors use the website. Aggregated, anonymized data. No third-party analytics tools that track individuals. |
-| Marketing | Not used | ScraperX does not use marketing cookies, advertising trackers, or third-party pixels. |
+| Marketing | Not used | Scrapifie does not use marketing cookies, advertising trackers, or third-party pixels. |
 
 ### Cookie Details
 
@@ -487,7 +487,7 @@ The Data Processing Agreement (DPA) governs the processing of personal data by S
 |-------------|---------|----------|-----------|--------|----------|
 | analytics_session | Groups page views into a session for aggregate analytics | 30 minutes | No | Yes | Lax |
 
-Note: ScraperX uses self-hosted analytics (no Google Analytics, no third-party trackers). If a third-party analytics tool is ever adopted, this table must be updated.
+Note: Scrapifie uses self-hosted analytics (no Google Analytics, no third-party trackers). If a third-party analytics tool is ever adopted, this table must be updated.
 
 ### Cookie Consent Banner
 
@@ -666,13 +666,13 @@ Each legal document includes a version history table at the bottom.
 
 ### Approach
 
-ScraperX uses a jurisdiction-neutral dispute resolution framework. The specific governing law and venue are determined at deployment time based on where the business is incorporated. The legal documents use placeholders for these values.
+Scrapifie uses a jurisdiction-neutral dispute resolution framework. The specific governing law and venue are determined at deployment time based on where the business is incorporated. The legal documents use placeholders for these values.
 
 ### Dispute Resolution Process
 
 | Step | Detail |
 |------|--------|
-| Step 1: Contact us | Users should first contact ScraperX through the contact form or support email to attempt informal resolution. |
+| Step 1: Contact us | Users should first contact Scrapifie through the contact form or support email to attempt informal resolution. |
 | Step 2: Negotiation | If informal resolution fails, the parties will attempt to resolve the dispute through good-faith negotiation for 30 days. |
 | Step 3: Mediation (optional) | If negotiation fails, either party may propose mediation through a mutually agreed mediator. |
 | Step 4: Arbitration or litigation | If mediation fails or is declined, the dispute is resolved through binding arbitration or litigation in the courts of the governing jurisdiction, as specified in the Terms of Service. |
@@ -683,10 +683,10 @@ ScraperX uses a jurisdiction-neutral dispute resolution framework. The specific 
 |-------------|---------------|------------|
 | GOVERNING_LAW_JURISDICTION | "the laws of [Country/State]" | Terms of Service, Section 12 |
 | DISPUTE_VENUE | "the courts of [City, Country]" | Terms of Service, Section 12 |
-| REGISTERED_ENTITY_NAME | "ScraperX [Legal Entity Type]" | Privacy Policy, DPA |
+| REGISTERED_ENTITY_NAME | "Scrapifie [Legal Entity Type]" | Privacy Policy, DPA |
 | REGISTERED_ADDRESS | "[Street, City, Country]" | Privacy Policy, DPA |
-| PRIVACY_CONTACT_EMAIL | "privacy@scraperx.io" | Privacy Policy |
-| ABUSE_CONTACT_EMAIL | "abuse@scraperx.io" | Acceptable Use Policy |
+| PRIVACY_CONTACT_EMAIL | "privacy@scrapifie.io" | Privacy Policy |
+| ABUSE_CONTACT_EMAIL | "abuse@scrapifie.io" | Acceptable Use Policy |
 
 All of these are configured via environment variables (see APPENDICES/D-ENVIRONMENT-VARIABLES.md).
 

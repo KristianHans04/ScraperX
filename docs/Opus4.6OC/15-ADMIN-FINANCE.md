@@ -1,4 +1,4 @@
-# ScraperX Admin Finance
+# Scrapifie Admin Finance
 
 ## Document Information
 
@@ -604,7 +604,7 @@ Alerts appear in the admin notification panel (bell icon in admin top bar, see 1
 | Scenario | Handling |
 |----------|----------|
 | Admin refunds an invoice that was already partially refunded | System shows remaining refundable amount. Admin can only refund up to the unrefunded portion |
-| Refund fails at the payment provider | Status set to "Failed". Admin is notified. Manual intervention required -- admin may need to process refund directly via payment provider dashboard and mark as "Processed Externally" in ScraperX |
+| Refund fails at the payment provider | Status set to "Failed". Admin is notified. Manual intervention required -- admin may need to process refund directly via payment provider dashboard and mark as "Processed Externally" in Scrapifie |
 | User updates payment method while admin is reviewing their failed payment | Payment detail panel refreshes to show updated method. Admin can proceed with retry using the new method |
 | Two admins attempt to process the same refund simultaneously | Optimistic concurrency control. The second admin receives an error: "This refund has already been processed by [admin name]" |
 | Credit adjustment would make a user's balance exceed plan maximum (if such a limit existed) | No plan-based credit ceiling exists. Credits from admin adjustments are added without limit. The plan's included credits are the monthly reset amount, not a cap |

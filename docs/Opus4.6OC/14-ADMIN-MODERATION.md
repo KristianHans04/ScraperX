@@ -1,4 +1,4 @@
-# ScraperX Admin Moderation
+# Scrapifie Admin Moderation
 
 ## Document Information
 
@@ -433,7 +433,7 @@ The enforcement ladder from 02-LEGAL-FRAMEWORK.md (Acceptable Use Policy) define
 2. Modal:
    - Title: "Send Warning to User"
    - Warning template (editable):
-     - Subject: "ScraperX Usage Warning"
+     - Subject: "Scrapifie Usage Warning"
      - Body template: "We have detected activity on your account that may violate our Acceptable Use Policy. Specifically: {description}. Please review our AUP at {link} and adjust your usage accordingly. Continued violations may result in account restrictions."
    - Admin can edit the description and add specific details
    - Buttons: "Send Warning" (primary), "Cancel"

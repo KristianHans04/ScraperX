@@ -1,4 +1,4 @@
-# ScraperX API Key Management
+# Scrapifie API Key Management
 
 ## Document Information
 
@@ -31,7 +31,7 @@
 
 ## 1. API Key Architecture
 
-API keys are the primary authentication mechanism for the ScraperX API. They are distinct from web session authentication (which uses cookies). Every API request must include a valid API key.
+API keys are the primary authentication mechanism for the Scrapifie API. They are distinct from web session authentication (which uses cookies). Every API request must include a valid API key.
 
 ### Key Format
 

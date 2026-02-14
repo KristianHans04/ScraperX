@@ -1,4 +1,4 @@
-# ScraperX Data Models
+# Scrapifie Data Models
 
 ## Document Information
 
@@ -54,7 +54,7 @@
 
 ## 1. Data Model Overview
 
-This document defines every data entity in the ScraperX platform. Each entity is described with its fields, relationships, constraints, and behavioral notes. The entities described here correspond to database tables in PostgreSQL.
+This document defines every data entity in the Scrapifie platform. Each entity is described with its fields, relationships, constraints, and behavioral notes. The entities described here correspond to database tables in PostgreSQL.
 
 **Important:** This document describes the data model for the FULL platform (existing backend + new frontend features). Some entities already exist in the current database schema (jobs, API keys, etc.) and will be extended. Others are entirely new (subscriptions, invoices, support tickets, etc.).
 
@@ -236,7 +236,7 @@ Stores OAuth provider connections for a user. A user can have multiple OAuth con
 - Belongs to one User
 
 **Behavioral Notes:**
-- The composite unique index on (provider, provider_user_id) prevents the same OAuth identity from being linked to multiple ScraperX accounts
+- The composite unique index on (provider, provider_user_id) prevents the same OAuth identity from being linked to multiple Scrapifie accounts
 - OAuth tokens are encrypted at rest using application-level encryption (see 19-SECURITY-FRAMEWORK.md)
 - If a user has only an OAuth connection (no password), they cannot disconnect it without first setting a password
 
@@ -318,7 +318,7 @@ Stores TOTP-based multi-factor authentication configuration for a user.
 
 ## 10. API Key
 
-Represents an API key that authenticates requests to the ScraperX API.
+Represents an API key that authenticates requests to the Scrapifie API.
 
 | Field | Type | Nullable | Default | Description |
 |-------|------|----------|---------|-------------|

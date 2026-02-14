@@ -1,4 +1,4 @@
-# ScraperX Admin Dashboard
+# Scrapifie Admin Dashboard
 
 ## Document Information
 
@@ -94,7 +94,7 @@ The admin panel is divided across multiple documents for manageability:
 
 ```
 +------------------------------------------------------------------+
-| [Admin] ScraperX Admin Panel          [Search] [User: Admin Name] |
+| [Admin] Scrapifie Admin Panel          [Search] [User: Admin Name] |
 +----------+-------------------------------------------------------+
 | Admin    |                                                        |
 | Sidebar  |  Main Content Area                                     |
@@ -127,7 +127,7 @@ The admin panel is divided across multiple documents for manageability:
 | Element | Description |
 |---------|-------------|
 | Admin badge | "Admin" label or icon distinguishing the admin panel from the user dashboard |
-| Logo | ScraperX logo, links to `/admin` (admin overview) |
+| Logo | Scrapifie logo, links to `/admin` (admin overview) |
 | Search | Global admin search (see Section 8) |
 | User menu | Admin user's name and avatar. Dropdown: "Your Settings", "Switch to User Dashboard", "Logout" |
 

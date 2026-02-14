@@ -1,4 +1,4 @@
-# ScraperX Billing and Credits
+# Scrapifie Billing and Credits
 
 ## Document Information
 
@@ -37,7 +37,7 @@
 
 ## 1. Billing and Credits Overview
 
-ScraperX uses a credit-based billing model. Users subscribe to a plan that grants a monthly credit allocation. Each API request consumes credits based on the engine type used. When credits run out, jobs fail until credits are replenished via a credit pack purchase or the next billing cycle reset.
+Scrapifie uses a credit-based billing model. Users subscribe to a plan that grants a monthly credit allocation. Each API request consumes credits based on the engine type used. When credits run out, jobs fail until credits are replenished via a credit pack purchase or the next billing cycle reset.
 
 ### Core Billing Principles
 
@@ -383,7 +383,7 @@ The payment method section on the billing page displays the user's saved payment
 
 ### Add/Update Payment Method Flow
 
-Payment method collection is handled via the payment provider's hosted/embedded form. This ensures PCI compliance without ScraperX handling raw card data.
+Payment method collection is handled via the payment provider's hosted/embedded form. This ensures PCI compliance without Scrapifie handling raw card data.
 
 1. User clicks "Add Payment Method" or "Update"
 2. A modal appears containing the payment provider's embedded payment form
@@ -395,7 +395,7 @@ Payment method collection is handled via the payment provider's hosted/embedded 
    - Billing address (street, city, state/province, postal code, country)
 4. User submits the form
 5. Payment provider validates and tokenizes the card
-6. ScraperX stores only:
+6. Scrapifie stores only:
    - Payment provider's token/reference ID
    - Card type (Visa, Mastercard, etc.)
    - Last 4 digits
@@ -408,8 +408,8 @@ Payment method collection is handled via the payment provider's hosted/embedded 
 
 | Rule | Detail |
 |------|--------|
-| PCI compliance | ScraperX never receives, transmits, or stores raw card numbers. All card data passes through the payment provider's hosted form |
-| Token storage | Only the payment provider's token is stored in the ScraperX database |
+| PCI compliance | Scrapifie never receives, transmits, or stores raw card numbers. All card data passes through the payment provider's hosted form |
+| Token storage | Only the payment provider's token is stored in the Scrapifie database |
 | Card display | Only the last 4 digits and card type are stored for display purposes |
 | Update process | Updating a payment method creates a new token. The old token is deactivated |
 | Multiple methods | MVP supports one payment method per account. Future: multiple methods with a default |
@@ -419,7 +419,7 @@ Payment method collection is handled via the payment provider's hosted/embedded 
 - Only available when the user is on the Free plan (no active paid subscription)
 - If the user is on a paid plan, the "Remove" button is hidden. A tooltip or note explains: "You cannot remove your payment method while on a paid plan. Downgrade to Free first."
 - Confirmation modal: "Remove your payment method? You will need to add one again to upgrade or purchase credit packs."
-- On confirmation: payment provider token is deleted, card information cleared from ScraperX
+- On confirmation: payment provider token is deleted, card information cleared from Scrapifie
 
 ---
 
@@ -467,7 +467,7 @@ Each downloadable invoice PDF contains:
 
 | Section | Content |
 |---------|---------|
-| Header | ScraperX company information (name, address placeholder, contact email) |
+| Header | Scrapifie company information (name, address placeholder, contact email) |
 | Invoice number | Unique invoice ID (format: INV-YYYYMMDD-XXXXX) |
 | Bill to | User's name, email, and billing address if available |
 | Date | Invoice date and payment date |
@@ -625,7 +625,7 @@ When the billing cycle ends after cancellation:
 | Credit pack purchase | No | Credit packs are non-refundable once purchased (stated in Terms of Service) |
 | Upgrade proration | No | Prorated upgrade charges are non-refundable |
 | System downtime | Credit restoration | If the platform experienced significant downtime (defined by SLA terms), affected credits may be restored to the user's balance rather than monetary refund |
-| Billing error | Full refund | If ScraperX charges the wrong amount due to a system error, a full refund of the overcharge is issued automatically |
+| Billing error | Full refund | If Scrapifie charges the wrong amount due to a system error, a full refund of the overcharge is issued automatically |
 | Double charge | Full refund of duplicate | If a duplicate charge occurs, the duplicate is refunded automatically |
 
 ### Refund Request Process
@@ -655,13 +655,13 @@ When the billing cycle ends after cancellation:
 
 ## 14. Provider-Agnostic Payment Integration
 
-All payment processing in ScraperX is abstracted behind a payment provider interface. This section defines the contract that any payment provider integration must fulfill, without specifying a particular provider.
+All payment processing in Scrapifie is abstracted behind a payment provider interface. This section defines the contract that any payment provider integration must fulfill, without specifying a particular provider.
 
 ### Required Payment Provider Capabilities
 
 | Capability | Description | Required |
 |------------|-------------|----------|
-| Card tokenization | Accept and tokenize card details without raw card data touching ScraperX servers | Yes |
+| Card tokenization | Accept and tokenize card details without raw card data touching Scrapifie servers | Yes |
 | Recurring billing | Create, update, and cancel subscription schedules | Yes |
 | One-time charges | Process single charges for credit packs | Yes |
 | Webhooks | Send event notifications for payment success, failure, refund, dispute | Yes |
@@ -734,19 +734,19 @@ The platform must handle the following webhook events from the payment provider:
 
 | Event | Email Subject | Email Content Summary |
 |-------|--------------|----------------------|
-| Payment successful (subscription) | "Payment Received - ScraperX" | Amount charged, plan name, next billing date, link to invoice |
-| Payment successful (credit pack) | "Credit Pack Purchased - ScraperX" | Pack name, credits added, new balance, link to invoice |
+| Payment successful (subscription) | "Payment Received - Scrapifie" | Amount charged, plan name, next billing date, link to invoice |
+| Payment successful (credit pack) | "Credit Pack Purchased - Scrapifie" | Pack name, credits added, new balance, link to invoice |
 | Payment failed | "Payment Failed - Action Required" | Amount, reason if available, link to update payment method, escalation timeline |
-| Payment retry scheduled | "Payment Retry Scheduled - ScraperX" | Retry date, link to update payment method |
+| Payment retry scheduled | "Payment Retry Scheduled - Scrapifie" | Retry date, link to update payment method |
 | Account restricted | "Account Restricted - Update Payment" | What restricted means, how to resolve, deadline before suspension |
 | Account suspended | "Account Suspended - Immediate Action Required" | What suspended means, how to resolve, deadline before cancellation |
-| Subscription cancelled (non-payment) | "Subscription Cancelled - ScraperX" | Reason, what happens to account, how to re-subscribe |
+| Subscription cancelled (non-payment) | "Subscription Cancelled - Scrapifie" | Reason, what happens to account, how to re-subscribe |
 | Subscription cancelled (user request) | "Subscription Cancellation Confirmed" | End date, what changes, how to reactivate |
-| Subscription reactivated | "Subscription Reactivated - ScraperX" | Confirmation, next billing date |
+| Subscription reactivated | "Subscription Reactivated - Scrapifie" | Confirmation, next billing date |
 | Plan upgraded | "Plan Upgraded - Welcome to {Plan}" | New plan details, credit allocation, prorated charge |
 | Plan downgrade scheduled | "Plan Downgrade Scheduled" | Effective date, what changes |
-| Refund processed | "Refund Processed - ScraperX" | Amount refunded, original charge reference, timeline for funds |
-| Card expiring soon | "Your Card is Expiring - ScraperX" | Sent 30 days before card expiry. Link to update payment method |
+| Refund processed | "Refund Processed - Scrapifie" | Amount refunded, original charge reference, timeline for funds |
+| Card expiring soon | "Your Card is Expiring - Scrapifie" | Sent 30 days before card expiry. Link to update payment method |
 
 ### In-App Notifications
 
@@ -795,8 +795,8 @@ The platform must handle the following webhook events from the payment provider:
 | Payment method expires before next billing cycle | "Card expiring soon" email sent 30 days before expiry. If card is expired when charge is attempted, payment fails and escalation ladder begins |
 | User has pending payment when trying to change plan | Plan change is blocked until the pending payment resolves. Message: "A payment is currently being processed. Please wait for it to complete before changing your plan." |
 | Billing cycle date falls on February 29 (leap year) | Billing date anchors to the last day of the month. Feb 29 subscribers are billed on Feb 28 in non-leap years |
-| Currency conversion | All charges are in USD. Users paying with non-USD cards are subject to their bank's conversion rates. ScraperX does not handle currency conversion |
-| Dispute/chargeback filed | Account is immediately flagged for admin review. Admin may suspend the account pending investigation. If the dispute is resolved in ScraperX's favor, account is restored. If resolved in the user's favor, the disputed amount is treated as a refund |
+| Currency conversion | All charges are in USD. Users paying with non-USD cards are subject to their bank's conversion rates. Scrapifie does not handle currency conversion |
+| Dispute/chargeback filed | Account is immediately flagged for admin review. Admin may suspend the account pending investigation. If the dispute is resolved in Scrapifie's favor, account is restored. If resolved in the user's favor, the disputed amount is treated as a refund |
 | Free plan user receives a failed payment email | This should not happen. Free plan users have no subscription. If triggered by a bug, the email should not be sent (server-side validation before sending) |
 | Concurrent credit pack purchases | Each purchase request is processed sequentially (database-level locking on the credit balance). The 5-pack-per-cycle limit is enforced atomically |
 | User deletes account with active subscription | Subscription is cancelled immediately (not at cycle end). No refund for remaining cycle. Account is soft-deleted. See 11-SETTINGS-AND-SUPPORT.md |

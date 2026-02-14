@@ -1,4 +1,4 @@
-# ScraperX Public Website
+# Scrapifie Public Website
 
 ## Document Information
 
@@ -31,7 +31,7 @@
 
 ## 1. Purpose and Goals
 
-The public website is the front door to ScraperX. Every visitor who reaches the site should understand what ScraperX does, how much it costs, and how to get started within seconds.
+The public website is the front door to Scrapifie. Every visitor who reaches the site should understand what Scrapifie does, how much it costs, and how to get started within seconds.
 
 ### Primary Goals
 
@@ -61,7 +61,7 @@ The header is persistent across all public pages. It is fixed to the top of the 
 
 ```
 +----------------------------------------------------------------------+
-|  [Logo: ScraperX]     Product   Pricing   Docs   Blog    [Login] [Get Started] |
+|  [Logo: Scrapifie]     Product   Pricing   Docs   Blog    [Login] [Get Started] |
 +----------------------------------------------------------------------+
 ```
 
@@ -81,7 +81,7 @@ On viewports below 768px, the navigation items collapse into a hamburger menu ic
 
 ```
 +----------------------------------------------+
-|  [Logo: ScraperX]              [Hamburger]    |
+|  [Logo: Scrapifie]              [Hamburger]    |
 +----------------------------------------------+
 
 Expanded mobile menu:
@@ -111,7 +111,7 @@ The footer appears on every public page. It is divided into columns.
 
 ```
 +----------------------------------------------------------------------+
-|  ScraperX                                                             |
+|  Scrapifie                                                             |
 |  Reliable web scraping at scale.                                      |
 |                                                                       |
 |  Product          Resources         Legal              Company        |
@@ -123,7 +123,7 @@ The footer appears on every public page. It is divided into columns.
 |                                     DPA                               |
 |                                                                       |
 |  -------------------------------------------------------------------  |
-|  (c) 2026 ScraperX. All rights reserved.        [Twitter] [GitHub]   |
+|  (c) 2026 Scrapifie. All rights reserved.        [Twitter] [GitHub]   |
 +----------------------------------------------------------------------+
 ```
 
@@ -136,8 +136,8 @@ The footer appears on every public page. It is divided into columns.
 
 | Element | Detail |
 |---------|--------|
-| Copyright notice | "(c) {CURRENT_YEAR} ScraperX. All rights reserved." Year is dynamically rendered. |
-| Social icons | Monochrome SVG icons for Twitter/X and GitHub. CSS-colored. Link to the ScraperX social accounts (URLs from environment variables). |
+| Copyright notice | "(c) {CURRENT_YEAR} Scrapifie. All rights reserved." Year is dynamically rendered. |
+| Social icons | Monochrome SVG icons for Twitter/X and GitHub. CSS-colored. Link to the Scrapifie social accounts (URLs from environment variables). |
 
 #### Mobile Footer
 
@@ -210,7 +210,7 @@ Three to five feature cards arranged in a grid. NOT four cards in a row (per sta
 ```
 +----------------------------------------------------------------------+
 |                                                                       |
-|   Why ScraperX?                                                       |
+|   Why Scrapifie?                                                       |
 |                                                                       |
 |   +------------------+  +------------------+  +------------------+   |
 |   | [Icon]           |  | [Icon]           |  | [Icon]           |   |
@@ -245,7 +245,7 @@ Each feature card:
 
 ### Section 4: How It Works
 
-A three-step process breakdown showing how simple it is to use ScraperX.
+A three-step process breakdown showing how simple it is to use Scrapifie.
 
 ```
 +----------------------------------------------------------------------+
@@ -541,7 +541,7 @@ An accordion component where each question expands to reveal the answer. Only on
 
 | Question | Answer Summary |
 |----------|---------------|
-| Can I try ScraperX for free? | Yes, the Free plan gives you 1,000 credits per month with no credit card required. |
+| Can I try Scrapifie for free? | Yes, the Free plan gives you 1,000 credits per month with no credit card required. |
 | Do unused credits roll over? | No, credits reset at the start of each billing cycle. Credit packs also do not roll over. |
 | What happens when I run out of credits? | Your API requests will return a 429 error with a message indicating credits are exhausted. You can upgrade your plan or purchase a credit pack. |
 | Can I upgrade or downgrade my plan? | Yes, you can change plans at any time. Upgrades take effect immediately with prorated billing. Downgrades take effect at the next billing cycle. |
@@ -549,7 +549,7 @@ An accordion component where each question expands to reveal the answer. Only on
 | Is there an annual discount? | Yes, annual billing saves 20% compared to monthly billing. |
 | Do you offer refunds? | We offer refunds within 14 days of a new subscription if fewer than 10% of credits have been used. See our Terms of Service for details. |
 | What counts as a failed request? | A request that returns an error (network failure, timeout, blocked) is not charged. Only successful responses consume credits. |
-| Can I use ScraperX for any website? | ScraperX is a neutral tool. Users are responsible for ensuring their scraping activities comply with applicable laws and website terms of service. See our Acceptable Use Policy. |
+| Can I use Scrapifie for any website? | Scrapifie is a neutral tool. Users are responsible for ensuring their scraping activities comply with applicable laws and website terms of service. See our Acceptable Use Policy. |
 
 ---
 
@@ -564,7 +564,7 @@ An accordion component where each question expands to reveal the answer. Only on
 |  [Navbar]                                                             |
 +----------------------------------------------------------------------+
 |                                                                       |
-|   About ScraperX                                                      |
+|   About Scrapifie                                                      |
 |                                                                       |
 |   [Mission Statement Section]                                         |
 |                                                                       |
@@ -583,7 +583,7 @@ An accordion component where each question expands to reveal the answer. Only on
 | Element | Detail |
 |---------|--------|
 | Heading | "Our Mission" |
-| Content | Two to three paragraphs explaining why ScraperX exists. Focus on making web data accessible to everyone — individuals, developers, and businesses of all sizes. Emphasize reliability, simplicity, and transparency. |
+| Content | Two to three paragraphs explaining why Scrapifie exists. Focus on making web data accessible to everyone — individuals, developers, and businesses of all sizes. Emphasize reliability, simplicity, and transparency. |
 | Tone | Professional, direct. No marketing superlatives. No emojis. |
 
 ### What We Do
@@ -632,7 +632,7 @@ Three to five value cards (NOT four) arranged in a row on desktop.
 |   | Contact Form              |  | Contact Information           |   |
 |   |                           |  |                               |   |
 |   | Name: [_____________]     |  | Email                         |   |
-|   | Email: [_____________]    |  | support@scraperx.io           |   |
+|   | Email: [_____________]    |  | support@scrapifie.io           |   |
 |   | Subject: [v Dropdown  ]   |  |                               |   |
 |   | Message:                  |  | Response Time                 |   |
 |   | [____________________]    |  | We typically respond within   |   |
@@ -828,7 +828,7 @@ Blog posts are managed by admins through the admin panel (see 12-ADMIN-DASHBOARD
 
 **Route:** `/status`
 
-The status page shows the current operational status of all ScraperX services.
+The status page shows the current operational status of all Scrapifie services.
 
 ### Page Layout
 
@@ -925,13 +925,13 @@ Every public page must have unique meta tags. These are injected into the HTML h
 
 | Page | Title | Description |
 |------|-------|-------------|
-| Landing | "ScraperX - Web Scraping API That Just Works" | "Extract data from any website with a single API call. Proxy rotation, browser rendering, and anti-detection included. Start free." |
-| Pricing | "Pricing - ScraperX" | "Simple, transparent pricing for web scraping. Start free with 1,000 credits. Pro plans from $49/month." |
-| About | "About - ScraperX" | "Learn about ScraperX, our mission to make web data accessible, and the technology behind our scraping platform." |
-| Contact | "Contact Us - ScraperX" | "Get in touch with the ScraperX team for sales inquiries, support, or partnerships." |
-| Blog Listing | "Blog - ScraperX" | "Guides, tutorials, and updates from the ScraperX team on web scraping, data extraction, and API development." |
-| Blog Post | "{Post Title} - ScraperX Blog" | "{Post excerpt or first 155 characters}" |
-| Status | "System Status - ScraperX" | "Current operational status of all ScraperX services including API, scraping engines, and dashboard." |
+| Landing | "Scrapifie - Web Scraping API That Just Works" | "Extract data from any website with a single API call. Proxy rotation, browser rendering, and anti-detection included. Start free." |
+| Pricing | "Pricing - Scrapifie" | "Simple, transparent pricing for web scraping. Start free with 1,000 credits. Pro plans from $49/month." |
+| About | "About - Scrapifie" | "Learn about Scrapifie, our mission to make web data accessible, and the technology behind our scraping platform." |
+| Contact | "Contact Us - Scrapifie" | "Get in touch with the Scrapifie team for sales inquiries, support, or partnerships." |
+| Blog Listing | "Blog - Scrapifie" | "Guides, tutorials, and updates from the Scrapifie team on web scraping, data extraction, and API development." |
+| Blog Post | "{Post Title} - Scrapifie Blog" | "{Post excerpt or first 155 characters}" |
+| Status | "System Status - Scrapifie" | "Current operational status of all Scrapifie services including API, scraping engines, and dashboard." |
 
 ### Open Graph and Twitter Cards
 
@@ -945,7 +945,7 @@ Every page includes Open Graph (og:) and Twitter Card meta tags.
 | og:image | Default social share image (configured via environment variable). Blog posts use featured image if available. |
 | og:url | Canonical URL of the page |
 | twitter:card | "summary_large_image" |
-| twitter:site | "@scraperx" (from environment variable) |
+| twitter:site | "@scrapifie" (from environment variable) |
 
 ### Structured Data (Schema.org)
 
@@ -971,7 +971,7 @@ Every page includes Open Graph (og:) and Twitter Card meta tags.
 
 ### SPA SEO Considerations
 
-Since ScraperX uses React + Vite (SPA), the public website pages need special attention for SEO:
+Since Scrapifie uses React + Vite (SPA), the public website pages need special attention for SEO:
 
 | Approach | Detail |
 |----------|--------|

@@ -1,4 +1,4 @@
-# ScraperX Admin Organizations (Future Phase)
+# Scrapifie Admin Organizations (Future Phase)
 
 ## Document Information
 

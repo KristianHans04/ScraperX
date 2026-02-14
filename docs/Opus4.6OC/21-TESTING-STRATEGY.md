@@ -1,4 +1,4 @@
-# ScraperX Testing Strategy
+# Scrapifie Testing Strategy
 
 ## Document Information
 
@@ -43,7 +43,7 @@
 
 ### Core Principles
 
-ScraperX testing follows five principles that guide every test written across the platform:
+Scrapifie testing follows five principles that guide every test written across the platform:
 
 1. **Test behavior, not implementation** -- Tests verify what the system does, not how it does it internally. If a function is refactored but produces the same result, no tests should break.
 
@@ -75,7 +75,7 @@ Coverage is measured per pull request and across the entire codebase. A pull req
 
 ## 2. Testing Pyramid
 
-ScraperX follows the standard testing pyramid with explicit ratios:
+Scrapifie follows the standard testing pyramid with explicit ratios:
 
 ```
          /\
@@ -862,7 +862,7 @@ The CI environment is fully disposable and created fresh for each pipeline run:
 | Variable | Test Value | Purpose |
 |----------|-----------|---------|
 | NODE_ENV | test | Identifies test environment |
-| DATABASE_URL | postgresql://test:test@localhost:5433/scraperx_test | Test database connection |
+| DATABASE_URL | postgresql://test:test@localhost:5433/scrapifie_test | Test database connection |
 | REDIS_URL | redis://localhost:6380 | Test Redis connection (different port than dev) |
 | JWT_SECRET | test-secret-not-for-production | Deterministic secret for test tokens |
 | SESSION_SECRET | test-session-secret | Deterministic secret for test sessions |

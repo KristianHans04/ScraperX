@@ -1,4 +1,4 @@
-# ScraperX Authentication
+# Scrapifie Authentication
 
 ## Document Information
 
@@ -33,7 +33,7 @@
 
 ### Authentication Methods
 
-ScraperX supports three authentication methods for the web application, plus API key authentication for the API.
+Scrapifie supports three authentication methods for the web application, plus API key authentication for the API.
 
 | Method | Description | MVP Status |
 |--------|-------------|------------|
@@ -585,12 +585,12 @@ Display backup codes page:
 
 The QR code encodes a URI in the standard otpauth format:
 
-`otpauth://totp/ScraperX:{user_email}?secret={BASE32_SECRET}&issuer=ScraperX&algorithm=SHA1&digits=6&period=30`
+`otpauth://totp/Scrapifie:{user_email}?secret={BASE32_SECRET}&issuer=Scrapifie&algorithm=SHA1&digits=6&period=30`
 
 | Parameter | Value |
 |-----------|-------|
 | Type | totp |
-| Issuer | ScraperX |
+| Issuer | Scrapifie |
 | Account | User's email address |
 | Algorithm | SHA1 (standard for TOTP compatibility) |
 | Digits | 6 |
@@ -864,7 +864,7 @@ Show success page:
 |-----------|--------|
 | Storage | Redis (fast read/write, automatic expiry) |
 | Identifier | Cryptographically random session ID, 256-bit (32 bytes), hex-encoded |
-| Cookie name | Configurable via environment variable. Default: "scraperx_session" |
+| Cookie name | Configurable via environment variable. Default: "scrapifie_session" |
 | Cookie attributes | HttpOnly=true, Secure=true, SameSite=Strict, Path=/ |
 
 ### Session Data Stored in Redis
@@ -922,7 +922,7 @@ Users can view and manage their active sessions from the security settings page 
 | Pattern | Synchronizer token pattern. A CSRF token is generated per session and included in a cookie (readable by JavaScript) and must be submitted as a header (X-CSRF-Token) on all state-changing requests (POST, PUT, PATCH, DELETE). |
 | Token generation | Cryptographically random, 256-bit, regenerated per session |
 | Validation | Server compares token from header with token stored in session. Mismatch returns 403 Forbidden. |
-| Cookie name | Configurable. Default: "scraperx_csrf" |
+| Cookie name | Configurable. Default: "scrapifie_csrf" |
 | Cookie attributes | Secure=true, SameSite=Strict, Path=/, HttpOnly=false (must be readable by JavaScript) |
 | Exemptions | OAuth callback routes (state parameter serves same purpose), webhook receiver endpoints |
 
@@ -1037,7 +1037,7 @@ All authentication-related emails are described here in terms of content and tri
 | Email | Trigger | Subject | Content Summary |
 |-------|---------|---------|----------------|
 | Email verification | User registers with email/password | "Verify your email address" | Greeting, verification link, 24-hour expiry notice, "If you didn't create an account, ignore this email" |
-| Welcome | Email verified (first time) | "Welcome to ScraperX" | Welcome message, link to dashboard, link to quickstart docs, link to support |
+| Welcome | Email verified (first time) | "Welcome to Scrapifie" | Welcome message, link to dashboard, link to quickstart docs, link to support |
 | Password reset request | User requests password reset | "Reset your password" | Reset link, 1-hour expiry notice, "If you didn't request this, ignore this email and your password will remain unchanged" |
 | Password changed | User successfully changes or resets password | "Your password has been changed" | Confirmation that password was changed, timestamp, "If you didn't do this, contact support immediately" |
 | Login from new device | Login from an unrecognized IP/device combination | "New login to your account" | Device info (browser, OS), approximate location, timestamp, "If this wasn't you, change your password immediately" |
@@ -1054,8 +1054,8 @@ All authentication-related emails are described here in terms of content and tri
 | No emojis | No emoji characters anywhere in the email |
 | No images required | Emails are readable without images loaded |
 | Responsive | Email renders correctly on mobile email clients |
-| Sender | Configurable via environment variable. Default: "ScraperX <noreply@scraperx.io>" |
-| Reply-to | Configurable. Default: "support@scraperx.io" |
+| Sender | Configurable via environment variable. Default: "Scrapifie <noreply@scrapifie.io>" |
+| Reply-to | Configurable. Default: "support@scrapifie.io" |
 | Unsubscribe | Transactional emails do not have an unsubscribe link (they are not marketing). Marketing emails (future) include unsubscribe. |
 
 ---

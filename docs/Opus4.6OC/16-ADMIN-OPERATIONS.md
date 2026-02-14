@@ -1,4 +1,4 @@
-# ScraperX Admin Operations
+# Scrapifie Admin Operations
 
 ## Document Information
 
@@ -32,7 +32,7 @@
 
 ## 1. Admin Operations Overview
 
-The Admin Operations section provides tools for monitoring and managing the technical infrastructure of the ScraperX platform. While Admin Finance (15-ADMIN-FINANCE.md) covers revenue and billing, and Admin Moderation (14-ADMIN-MODERATION.md) covers user-facing support and content, Admin Operations covers the machinery: job queues, engines, proxies, system health, and platform configuration.
+The Admin Operations section provides tools for monitoring and managing the technical infrastructure of the Scrapifie platform. While Admin Finance (15-ADMIN-FINANCE.md) covers revenue and billing, and Admin Moderation (14-ADMIN-MODERATION.md) covers user-facing support and content, Admin Operations covers the machinery: job queues, engines, proxies, system health, and platform configuration.
 
 ### Operations Navigation
 

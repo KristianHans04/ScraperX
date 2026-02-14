@@ -1,4 +1,4 @@
-# ScraperX Roles and Permissions
+# Scrapifie Roles and Permissions
 
 ## Document Information
 
@@ -28,7 +28,7 @@
 
 ## 1. Role Architecture Overview
 
-ScraperX uses a straightforward role-based access control (RBAC) system. At MVP, there are exactly two roles: User and Admin. The system is designed so that future team-based roles (Owner, OrgAdmin, Member, Viewer, Billing) can be added without restructuring the database or permission logic.
+Scrapifie uses a straightforward role-based access control (RBAC) system. At MVP, there are exactly two roles: User and Admin. The system is designed so that future team-based roles (Owner, OrgAdmin, Member, Viewer, Billing) can be added without restructuring the database or permission logic.
 
 ### Design Principles
 
@@ -51,7 +51,7 @@ ScraperX uses a straightforward role-based access control (RBAC) system. At MVP,
 | Role identifier | "user" |
 | Assignment | Automatically assigned to every new account upon registration |
 | Access zones | Zone 2 (User Dashboard) only |
-| Description | A registered individual or developer who uses ScraperX to perform web scraping via the API. Manages their own account, API keys, jobs, billing, and settings. |
+| Description | A registered individual or developer who uses Scrapifie to perform web scraping via the API. Manages their own account, API keys, jobs, billing, and settings. |
 
 ### Admin Role
 

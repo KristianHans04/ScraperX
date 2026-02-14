@@ -1,4 +1,4 @@
-# ScraperX Full-Stack Platform Overview
+# Scrapifie Full-Stack Platform Overview
 
 ## Document Information
 
@@ -14,7 +14,7 @@
 
 ## Table of Contents
 
-1. [What ScraperX Is](#1-what-scraperx-is)
+1. [What Scrapifie Is](#1-what-scrapifie-is)
 2. [Platform Zones](#2-platform-zones)
 3. [Technology Stack](#3-technology-stack)
 4. [URL Structure and Routing](#4-url-structure-and-routing)
@@ -27,9 +27,9 @@
 
 ---
 
-## 1. What ScraperX Is
+## 1. What Scrapifie Is
 
-ScraperX is a web scraping platform that provides developers, businesses, and individuals with reliable, scalable data extraction through a simple API. Users sign up, pick a plan, get an API key, and start scraping. The platform handles proxy rotation, browser rendering, anti-detection, CAPTCHA solving, and result delivery so customers do not have to.
+Scrapifie is a web scraping platform that provides developers, businesses, and individuals with reliable, scalable data extraction through a simple API. Users sign up, pick a plan, get an API key, and start scraping. The platform handles proxy rotation, browser rendering, anti-detection, CAPTCHA solving, and result delivery so customers do not have to.
 
 The scraping engine (backend) is already built. This document set covers everything needed to build the full-stack platform around it: the public website, the user dashboard, the admin panel, the documentation portal, authentication, billing, moderation, and all supporting systems.
 
@@ -93,7 +93,7 @@ The public-facing marketing site. Accessible to everyone, no authentication requ
 | Purpose | Attract visitors, explain the product, convert signups |
 | Access | Unauthenticated |
 | Layout | Marketing layout with top navbar, hero sections, footer |
-| Domain | scraperx.io (primary domain, configurable via environment variable) |
+| Domain | scrapifie.io (primary domain, configurable via environment variable) |
 | SEO | Fully optimized, server-rendered landing pages or pre-rendered static pages |
 | Pages | Landing, Pricing, About, Contact, Blog, Status, Legal pages |
 
@@ -127,7 +127,7 @@ The internal administration area for platform operators. Only accessible to user
 
 ```
 +------------------------------------------------------------------+
-|                         SCRAPERX PLATFORM                         |
+|                         SCRAPIFIE PLATFORM                         |
 +------------------------------------------------------------------+
 |                                                                    |
 |  ZONE 1: PUBLIC WEBSITE          No auth required                  |

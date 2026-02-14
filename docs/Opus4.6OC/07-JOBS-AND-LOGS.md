@@ -1,4 +1,4 @@
-# ScraperX Jobs and Logs
+# Scrapifie Jobs and Logs
 
 ## Document Information
 
@@ -37,7 +37,7 @@ The Jobs and Logs section of the user dashboard is the primary interface for use
 
 ### What a Job Represents
 
-A job is a single scraping request submitted via the ScraperX API. Each job has exactly one target URL, one engine type, and one set of configuration parameters. A single API call from the user creates exactly one job. Batch endpoints (future) would create multiple jobs, each tracked independently.
+A job is a single scraping request submitted via the Scrapifie API. Each job has exactly one target URL, one engine type, and one set of configuration parameters. A single API call from the user creates exactly one job. Batch endpoints (future) would create multiple jobs, each tracked independently.
 
 ### Key Terminology
 
@@ -486,7 +486,7 @@ When a job completes successfully, the result section displays the scraped data.
 | Line numbers | Shown for HTML, JSON, and text formats. Numbered starting at 1 |
 | Word wrap | Toggle between wrapped and horizontal-scroll modes. Default: wrapped |
 | Copy button | Copies the entire result content to clipboard. Shows "Copied" confirmation for 2 seconds |
-| Download button | Downloads the result as a file. Filename format: `scraperx-{jobId-first-8-chars}-{format}.{ext}` |
+| Download button | Downloads the result as a file. Filename format: `scrapifie-{jobId-first-8-chars}-{format}.{ext}` |
 | Search within result | Ctrl+F / Cmd+F activates browser's native find-in-page, which works within the scrollable viewer |
 | Truncation | Results larger than 100 KB are truncated in the preview. A "Show full response" button loads the complete content. Results larger than 5 MB can only be downloaded, not previewed |
 | Empty result | If the job completed but returned empty content, show message: "Job completed but returned no content. The target page may be empty or require different configuration." |
@@ -770,7 +770,7 @@ The Export button is a dropdown in the filter bar with the following options:
 | Scope | Exports all jobs matching the current filters, not just the current page |
 | Maximum rows | 10,000 jobs per export. If more jobs match the filters, a warning is shown: "Your filters match {count} jobs. Only the most recent 10,000 will be exported." |
 | Fields exported | Job ID (full UUID), Status, Target URL, Engine, API Key Name, Credits, Duration (seconds), Created At (ISO 8601), Completed At (ISO 8601), Error Type (if failed) |
-| Filename | `scraperx-jobs-{date}.{ext}` where date is YYYY-MM-DD format |
+| Filename | `scrapifie-jobs-{date}.{ext}` where date is YYYY-MM-DD format |
 | Generation | Server-side. A loading indicator shows "Generating export..." while the server compiles the file |
 | Rate limit | Maximum 5 exports per hour per user to prevent abuse |
 

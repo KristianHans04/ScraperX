@@ -1,4 +1,4 @@
-# ScraperX Team Management (Future Phase)
+# Scrapifie Team Management (Future Phase)
 
 ## Document Information
 
@@ -46,7 +46,7 @@ All sections below describe the planned future state, not current requirements.
 
 ## 1. Team Management Overview
 
-Team management allows multiple users to share a single ScraperX account (called an "organization") with shared API keys, shared credit pool, shared job history, and role-based access controls.
+Team management allows multiple users to share a single Scrapifie account (called an "organization") with shared API keys, shared credit pool, shared job history, and role-based access controls.
 
 ### Why Teams Matter
 
@@ -215,7 +215,7 @@ Note: These limits are on the organization's plan, not the creator's personal pl
 
 ### Invitation Email Content
 
-- Subject: "You've been invited to join {Organization Name} on ScraperX"
+- Subject: "You've been invited to join {Organization Name} on Scrapifie"
 - Body: "{Inviter Name} has invited you to join {Organization Name} as a {Role}."
 - Personal message included if provided
 - CTA button: "Accept Invitation" linking to the invitation acceptance page
@@ -223,7 +223,7 @@ Note: These limits are on the organization's plan, not the creator's personal pl
 
 ### Invitation Acceptance
 
-**If the invitee has a ScraperX account:**
+**If the invitee has a Scrapifie account:**
 1. Invitee clicks the link in the email
 2. If not logged in, redirected to login page with a return URL to the invitation page
 3. After login, sees the invitation details: organization name, role, inviter name
@@ -231,7 +231,7 @@ Note: These limits are on the organization's plan, not the creator's personal pl
 5. On acceptance: user is added to the organization with the assigned role. Redirected to the organization's dashboard
 6. On decline: invitation is marked as declined. Inviter is notified
 
-**If the invitee does NOT have a ScraperX account:**
+**If the invitee does NOT have a Scrapifie account:**
 1. Invitee clicks the link in the email
 2. Redirected to the registration page with the invitation token preserved in the URL
 3. After registration (and email verification), the invitation is automatically accepted

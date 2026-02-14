@@ -1,4 +1,4 @@
-# ScraperX Usage and Analytics
+# Scrapifie Usage and Analytics
 
 ## Document Information
 
@@ -35,7 +35,7 @@
 
 ## 1. Usage and Analytics Overview
 
-The Usage and Analytics page gives users visibility into how they are consuming the ScraperX platform. It aggregates job data into meaningful metrics, charts, and breakdowns so users can understand their spending patterns, optimize their scraping strategies, and anticipate credit needs.
+The Usage and Analytics page gives users visibility into how they are consuming the Scrapifie platform. It aggregates job data into meaningful metrics, charts, and breakdowns so users can understand their spending patterns, optimize their scraping strategies, and anticipate credit needs.
 
 This page is read-only. Users cannot modify any data here. All data is derived from the job records described in 07-JOBS-AND-LOGS.md and the credit transactions described in 09-BILLING-AND-CREDITS.md.
 
@@ -484,7 +484,7 @@ The export file contains one row per day in the selected time range:
 |------|--------|
 | Scope | All days in the selected time range |
 | Maximum rows | 90 rows (90 days maximum range) |
-| Filename | `scraperx-usage-{from}-to-{to}.{ext}` |
+| Filename | `scrapifie-usage-{from}-to-{to}.{ext}` |
 | Rate limit | Maximum 5 exports per hour per user |
 | Generation | Server-side, with loading indicator |
 

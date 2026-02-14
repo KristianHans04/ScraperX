@@ -1,4 +1,4 @@
-# ScraperX Security Framework
+# Scrapifie Security Framework
 
 ## Document Information
 
@@ -38,7 +38,7 @@
 
 ## 1. Security Framework Overview
 
-Security is not an optional layer added after development -- it is a mandatory requirement for every feature, every endpoint, and every user interaction across the ScraperX platform. This document defines the security standards, practices, and requirements that apply to all parts of the system.
+Security is not an optional layer added after development -- it is a mandatory requirement for every feature, every endpoint, and every user interaction across the Scrapifie platform. This document defines the security standards, practices, and requirements that apply to all parts of the system.
 
 ### Security Principles
 
@@ -273,7 +273,7 @@ The application encryption key is stored as an environment variable, never in th
 When a user deletes their account:
 
 1. Account status set to "deleted" (soft delete)
-2. User record anonymized: name replaced with "Deleted User", email replaced with "deleted_[uuid]@deleted.scraperx.com"
+2. User record anonymized: name replaced with "Deleted User", email replaced with "deleted_[uuid]@deleted.scrapifie.com"
 3. Avatar deleted from object storage
 4. Password hash cleared
 5. OAuth connections deleted
@@ -372,7 +372,7 @@ Content-Security-Policy header (see Section 14) restricts the sources from which
 
 ### CSRF Token Implementation
 
-Since ScraperX uses a combination of session cookies (for the SPA) and Bearer tokens (for the API), CSRF protection is needed for cookie-authenticated routes.
+Since Scrapifie uses a combination of session cookies (for the SPA) and Bearer tokens (for the API), CSRF protection is needed for cookie-authenticated routes.
 
 | Aspect | Implementation |
 |--------|----------------|
@@ -562,7 +562,7 @@ The API server and reverse proxy set the following security headers on all respo
 | Header | Value | Purpose |
 |--------|-------|---------|
 | Strict-Transport-Security | max-age=31536000; includeSubDomains | Force HTTPS for 1 year, including subdomains |
-| Content-Security-Policy | default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.scraperx.com; frame-ancestors 'none'; form-action 'self'; base-uri 'self' | Restrict resource loading sources |
+| Content-Security-Policy | default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.scrapifie.com; frame-ancestors 'none'; form-action 'self'; base-uri 'self' | Restrict resource loading sources |
 | X-Content-Type-Options | nosniff | Prevent MIME type sniffing |
 | X-Frame-Options | DENY | Prevent clickjacking via iframe embedding |
 | X-XSS-Protection | 0 | Disabled (CSP is the modern replacement. This header can cause issues in some browsers) |
@@ -577,7 +577,7 @@ The CSP is configured for a single-page application architecture:
 - `script-src 'self'` -- only scripts from the same origin. No inline scripts, no eval
 - `style-src 'self' 'unsafe-inline'` -- `unsafe-inline` is needed for CSS-in-JS solutions and Tailwind's style injection. Consider using nonces if moving away from inline styles
 - `img-src 'self' data: https:` -- allows images from the same origin, data URIs (for base64 images), and any HTTPS source (for user avatars, screenshots stored in object storage)
-- `connect-src 'self' https://api.scraperx.com` -- allows fetch/XHR to the same origin and the API domain
+- `connect-src 'self' https://api.scrapifie.com` -- allows fetch/XHR to the same origin and the API domain
 - `frame-ancestors 'none'` -- the application cannot be embedded in iframes
 
 ---
@@ -727,7 +727,7 @@ This checklist applies to every new feature developed for the platform.
 | Rate limit reached by concurrent requests | All concurrent requests that arrive after the limit is reached receive 429. No "first come first served" race condition -- the counter is atomic |
 | Password reset token is used from a different IP than the requester | Allow it. The token itself is the authentication factor for password reset, not the IP. The IP is logged for auditing |
 | User attempts to set their email to an email that belongs to a soft-deleted account | Allow it. The partial unique index excludes soft-deleted rows |
-| OAuth provider returns a different email than what is on the user's account | If the user's ScraperX email does not match the OAuth provider email, still authenticate via the provider_user_id. Email mismatch is logged but does not block authentication |
+| OAuth provider returns a different email than what is on the user's account | If the user's Scrapifie email does not match the OAuth provider email, still authenticate via the provider_user_id. Email mismatch is logged but does not block authentication |
 | Webhook URL resolves to a private IP | Block the webhook delivery. Return an error when the webhook URL is first configured: "Webhook URL must resolve to a public IP address" |
 | Admin changes platform config while other admins are viewing the same config page | Last-write-wins. Other admins see the old values until they refresh. No real-time sync of config page |
 | User submits a scrape URL that redirects to a private IP | The scraping engine must check the final resolved IP (after redirects) against the private IP blocklist, not just the initial URL |

@@ -1,4 +1,4 @@
-# ScraperX Settings and Support
+# Scrapifie Settings and Support
 
 ## Document Information
 
@@ -116,7 +116,7 @@ Changing the email address is a sensitive operation with its own flow:
    - New email is not already registered to another account
    - New email is different from current email
 5. Verification email sent to the NEW email address:
-   - Subject: "Verify Your New Email Address - ScraperX"
+   - Subject: "Verify Your New Email Address - Scrapifie"
    - Body: "Click the link below to confirm changing your email to {new_email}. This link expires in 24 hours."
    - CTA: "Verify Email" linking to verification endpoint
 6. Until the new email is verified:
@@ -128,7 +128,7 @@ Changing the email address is a sensitive operation with its own flow:
    - Email is updated to the new address
    - All active sessions are preserved (no forced logout)
    - Confirmation email sent to BOTH the old and new email addresses
-   - Old email: "Your email address on ScraperX has been changed to {new_email}. If you did not make this change, contact support immediately."
+   - Old email: "Your email address on Scrapifie has been changed to {new_email}. If you did not make this change, contact support immediately."
    - New email: "Your email address has been successfully updated."
 
 ### Avatar Upload
@@ -395,7 +395,7 @@ The account deletion option appears in a "Danger Zone" section at the bottom of 
      - Email address is anonymized (to allow re-registration with the same email)
      - Personal data is cleared (name, avatar, etc.)
      - Job data, logs, and results are retained for the standard retention period, then purged
-   - Confirmation email sent to the user's email: "Your ScraperX account has been deleted."
+   - Confirmation email sent to the user's email: "Your Scrapifie account has been deleted."
 5. User is logged out and redirected to the home page
 6. Toast: "Your account has been deleted."
 
@@ -422,7 +422,7 @@ The account deletion option appears in a "Danger Zone" section at the bottom of 
 
 ## 8. Support System Overview
 
-The support system provides a ticket-based interface for users to contact the ScraperX team for help with technical issues, billing questions, account problems, and feature requests.
+The support system provides a ticket-based interface for users to contact the Scrapifie team for help with technical issues, billing questions, account problems, and feature requests.
 
 ### Support Design Principles
 

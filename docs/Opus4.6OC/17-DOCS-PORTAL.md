@@ -1,4 +1,4 @@
-# ScraperX Documentation Portal
+# Scrapifie Documentation Portal
 
 ## Document Information
 
@@ -35,7 +35,7 @@
 
 ## 1. Documentation Portal Overview
 
-The ScraperX Documentation Portal is a publicly accessible section of the website that provides comprehensive technical documentation for developers integrating with the ScraperX API. It serves as the primary self-service resource for understanding the API, onboarding new users, and reducing support ticket volume.
+The Scrapifie Documentation Portal is a publicly accessible section of the website that provides comprehensive technical documentation for developers integrating with the Scrapifie API. It serves as the primary self-service resource for understanding the API, onboarding new users, and reducing support ticket volume.
 
 ### Goals
 
@@ -122,7 +122,7 @@ Each documentation page may link to related pages. These relationships are defin
 
 ```
 +---------------------------------------------------------------+
-|  [Logo] ScraperX Docs    [Search bar]    [Dashboard/Sign In]  |
+|  [Logo] Scrapifie Docs    [Search bar]    [Dashboard/Sign In]  |
 +---------------+-----------------------------------------------+
 |               |                                               |
 |  Left         |  Content Area                                 |
@@ -217,10 +217,10 @@ The docs portal shares the global website navigation bar (01-PUBLIC-WEBSITE.md) 
 | Element | Behavior |
 |---------|----------|
 | Logo | Links to /docs (docs home), not / (main website) |
-| "ScraperX Docs" label | Appears next to the logo to indicate the docs context |
+| "Scrapifie Docs" label | Appears next to the logo to indicate the docs context |
 | Search bar | Centered, searches documentation content only (see Section 9) |
 | Dashboard / Sign In | Right-aligned, same as global header |
-| Main website link | A "Back to ScraperX" link in the header for navigating out of docs |
+| Main website link | A "Back to Scrapifie" link in the header for navigating out of docs |
 
 ---
 
@@ -234,8 +234,8 @@ The quickstart is the most important page in the documentation. It takes a devel
 
 | Section | Content |
 |---------|---------|
-| Introduction | One paragraph: what ScraperX does and what you will accomplish in this guide |
-| Prerequisites | List: ScraperX account, API key (link to dashboard to create one) |
+| Introduction | One paragraph: what Scrapifie does and what you will accomplish in this guide |
+| Prerequisites | List: Scrapifie account, API key (link to dashboard to create one) |
 | Step 1: Get Your API Key | Brief instructions with link to API key creation in dashboard. Show the key format (sk_live_ prefix). Link to 06-API-KEY-MANAGEMENT.md concepts (test vs live keys) |
 | Step 2: Make Your First Request | A cURL example showing a minimal POST /v1/scrape request with required parameters only. Tabbed code examples for cURL, JavaScript, and Python |
 | Step 3: Understand the Response | Annotated response body showing each field and what it means |
@@ -253,7 +253,7 @@ Each code example appears in a tabbed container with tabs for different language
 +--------+--------------+----------+
 |                                   |
 |  curl -X POST \                   |
-|    https://api.scraperx.com/...   |
+|    https://api.scrapifie.com/...   |
 |    -H "Authorization: ..."       |
 |    -H "Content-Type: ..."        |
 |    -d '{...}'                    |
@@ -278,7 +278,7 @@ The selected tab preference is persisted in localStorage so returning users see 
 
 ## 5. Guides Section
 
-Guides are task-oriented documents that explain how to accomplish specific goals with the ScraperX API. Unlike the API reference (which is specification-level), guides explain the "why" and "when" alongside the "how."
+Guides are task-oriented documents that explain how to accomplish specific goals with the Scrapifie API. Unlike the API reference (which is specification-level), guides explain the "why" and "when" alongside the "how."
 
 ### Guide Template
 
@@ -304,7 +304,7 @@ Every guide follows this structure:
 | HTTP Engine | /docs/guides/http-engine | Deep dive into the HTTP engine. Request options (headers, cookies, method). Response formats. When HTTP is sufficient. Limitations |
 | Browser Engine | /docs/guides/browser-engine | When to use browser rendering. Wait conditions (wait for selector, wait for network idle). JavaScript execution. Screenshot capture. Cookie injection |
 | Stealth Engine | /docs/guides/stealth-engine | Anti-detection capabilities. Fingerprint management. When detection avoidance is necessary. Stealth vs Browser tradeoffs. Higher credit cost justification |
-| Proxy Configuration | /docs/guides/proxy-configuration | How ScraperX handles proxy rotation. Geo-targeting options. Sticky sessions. When to specify proxy preferences vs letting the system choose |
+| Proxy Configuration | /docs/guides/proxy-configuration | How Scrapifie handles proxy rotation. Geo-targeting options. Sticky sessions. When to specify proxy preferences vs letting the system choose |
 | Error Handling | /docs/guides/error-handling | Error response format. Retryable vs non-retryable errors. Implementing retry logic. Interpreting error codes (links to APPENDICES/C-ERROR-CODES.md). Circuit breaker patterns |
 | Rate Limits | /docs/guides/rate-limits | Rate limit headers in responses. How to detect rate limiting. Backoff strategies. Per-plan limits. Requesting limit increases |
 | Webhooks | /docs/guides/webhooks | Configuring webhook URLs for async job completion. Webhook payload format. Verifying webhook signatures. Retry behavior for failed webhook deliveries. Security best practices |
@@ -336,7 +336,7 @@ This page covers conventions that apply to all endpoints:
 
 | Topic | Content |
 |-------|---------|
-| Base URL | The API base URL (configured via environment variable, displayed as a placeholder: https://api.scraperx.com) |
+| Base URL | The API base URL (configured via environment variable, displayed as a placeholder: https://api.scrapifie.com) |
 | Authentication | All requests require an API key in the Authorization header: `Authorization: Bearer sk_live_...`. Link to authentication guide |
 | Content Type | All request bodies are JSON. All responses are JSON (except result downloads). Content-Type: application/json |
 | HTTP Methods | Which methods are used (POST for creating jobs, GET for retrieving data) |
@@ -474,8 +474,8 @@ Each SDK page (/docs/sdks/javascript, /docs/sdks/python) covers:
 
 | SDK | Status | Package Name |
 |-----|--------|-------------|
-| JavaScript/Node.js | Planned | @scraperx/sdk |
-| Python | Planned | scraperx |
+| JavaScript/Node.js | Planned | @scrapifie/sdk |
+| Python | Planned | scrapifie |
 | cURL | Not a SDK, but documented as a tool | -- |
 
 SDKs will be developed as part of a future phase (post-platform launch). The documentation portal includes placeholder pages explaining that official SDKs are coming soon, with cURL examples available immediately and community SDKs welcome.
@@ -721,7 +721,7 @@ Entries are listed in reverse chronological order (newest first). Each entry is 
 
 | Tactic | Implementation |
 |--------|----------------|
-| Unique titles | Each page has a unique, descriptive title tag: "[Page Title] - ScraperX Docs" |
+| Unique titles | Each page has a unique, descriptive title tag: "[Page Title] - Scrapifie Docs" |
 | Meta descriptions | Each page has a unique meta description from frontmatter (max 160 characters) |
 | Canonical URLs | Each page has a canonical URL to prevent duplicate content issues |
 | Open Graph tags | Title, description, and a default docs OG image for social sharing |
