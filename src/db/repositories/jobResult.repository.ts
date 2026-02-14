@@ -4,7 +4,7 @@ import type { JobResult, Cookie } from '../../types/index.js';
 interface JobResultRow {
   id: string;
   job_id: string;
-  organization_id: string;
+  account_id: string; // Updated from organization_id
   status_code: number | null;
   status_text: string | null;
   headers: Record<string, string> | null;
@@ -57,7 +57,7 @@ function rowToJobResult(row: JobResultRow): JobResult {
   return {
     id: row.id,
     jobId: row.job_id,
-    organizationId: row.organization_id,
+    accountId: row.account_id, // Updated from organizationId
     statusCode: row.status_code ?? undefined,
     statusText: row.status_text ?? undefined,
     headers: row.headers ?? undefined,
@@ -126,7 +126,7 @@ export const jobResultRepository = {
 
   async create(data: {
     jobId: string;
-    organizationId: string;
+    accountId: string; // Updated from organizationId
     statusCode?: number;
     statusText?: string;
     headers?: Record<string, string>;
@@ -163,7 +163,7 @@ export const jobResultRepository = {
   }): Promise<JobResult> {
     const row = await queryOne<JobResultRow>(
       `INSERT INTO job_results (
-        job_id, organization_id, status_code, status_text, headers, cookies,
+        job_id, account_id, status_code, status_text, headers, cookies,
         content_type, content_length, content_encoding, final_url, redirect_count,
         content_storage_type, content_inline, content_minio_bucket, content_minio_key,
         content_hash, content_compressed, extracted_title, extracted_text, extracted_links,
@@ -175,7 +175,7 @@ export const jobResultRepository = {
       RETURNING *`,
       [
         data.jobId,
-        data.organizationId,
+        data.accountId, // Updated from organizationId
         data.statusCode ?? null,
         data.statusText ?? null,
         data.headers ? JSON.stringify(data.headers) : null,

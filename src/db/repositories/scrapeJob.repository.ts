@@ -4,7 +4,7 @@ import { hashUrl, generateJobId } from '../../utils/crypto.js';
 
 interface ScrapeJobRow {
   id: string;
-  organization_id: string;
+  account_id: string; // Updated from organization_id
   api_key_id: string | null;
   batch_id: string | null;
   parent_job_id: string | null;
@@ -55,7 +55,7 @@ interface ScrapeJobRow {
 function rowToScrapeJob(row: ScrapeJobRow): ScrapeJob {
   return {
     id: row.id,
-    organizationId: row.organization_id,
+    accountId: row.account_id, // Updated from organizationId
     apiKeyId: row.api_key_id ?? undefined,
     batchId: row.batch_id ?? undefined,
     parentJobId: row.parent_job_id ?? undefined,
@@ -113,24 +113,24 @@ export const scrapeJobRepository = {
     return row ? rowToScrapeJob(row) : null;
   },
 
-  async findByIdAndOrganization(id: string, organizationId: string): Promise<ScrapeJob | null> {
+  async findByIdAndAccount(id: string, accountId: string): Promise<ScrapeJob | null> {
     const row = await queryOne<ScrapeJobRow>(
-      'SELECT * FROM scrape_jobs WHERE id = $1 AND organization_id = $2',
-      [id, organizationId]
+      'SELECT * FROM scrape_jobs WHERE id = $1 AND account_id = $2',
+      [id, accountId]
     );
     return row ? rowToScrapeJob(row) : null;
   },
 
-  async findByIdempotencyKey(organizationId: string, idempotencyKey: string): Promise<ScrapeJob | null> {
+  async findByIdempotencyKey(accountId: string, idempotencyKey: string): Promise<ScrapeJob | null> {
     const row = await queryOne<ScrapeJobRow>(
-      'SELECT * FROM scrape_jobs WHERE organization_id = $1 AND idempotency_key = $2',
-      [organizationId, idempotencyKey]
+      'SELECT * FROM scrape_jobs WHERE account_id = $1 AND idempotency_key = $2',
+      [accountId, idempotencyKey]
     );
     return row ? rowToScrapeJob(row) : null;
   },
 
-  async findByOrganization(
-    organizationId: string,
+  async findByAccount(
+    accountId: string,
     options: {
       status?: JobStatus;
       limit?: number;
@@ -138,8 +138,8 @@ export const scrapeJobRepository = {
     } = {}
   ): Promise<ScrapeJob[]> {
     const { status, limit = 50, offset = 0 } = options;
-    let sql = 'SELECT * FROM scrape_jobs WHERE organization_id = $1';
-    const params: unknown[] = [organizationId];
+    let sql = 'SELECT * FROM scrape_jobs WHERE account_id = $1';
+    const params: unknown[] = [accountId];
     let paramIndex = 2;
 
     if (status) {
@@ -163,7 +163,7 @@ export const scrapeJobRepository = {
   },
 
   async create(data: {
-    organizationId: string;
+    accountId: string; // Updated from organizationId
     apiKeyId?: string;
     batchId?: string;
     url: string;
@@ -187,14 +187,14 @@ export const scrapeJobRepository = {
 
     const row = await queryOne<ScrapeJobRow>(
       `INSERT INTO scrape_jobs (
-        id, organization_id, api_key_id, batch_id, url, url_hash, method, headers, body,
+        id, account_id, api_key_id, batch_id, url, url_hash, method, headers, body,
         engine, options, proxy_tier, proxy_country, credits_estimated, credit_breakdown,
         webhook_url, webhook_secret, client_reference, idempotency_key, priority
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
       RETURNING *`,
       [
         id,
-        data.organizationId,
+        data.accountId, // Updated from organizationId
         data.apiKeyId ?? null,
         data.batchId ?? null,
         data.url,
@@ -312,15 +312,15 @@ export const scrapeJobRepository = {
     return row?.attempts ?? 0;
   },
 
-  async countByStatus(organizationId: string, status: JobStatus): Promise<number> {
+  async countByStatus(accountId: string, status: JobStatus): Promise<number> {
     const row = await queryOne<{ count: string }>(
-      'SELECT COUNT(*) FROM scrape_jobs WHERE organization_id = $1 AND status = $2',
-      [organizationId, status]
+      'SELECT COUNT(*) FROM scrape_jobs WHERE account_id = $1 AND status = $2',
+      [accountId, status]
     );
     return parseInt(row?.count ?? '0', 10);
   },
 
-  async countRunning(organizationId: string): Promise<number> {
-    return this.countByStatus(organizationId, 'running');
+  async countRunning(accountId: string): Promise<number> {
+    return this.countByStatus(accountId, 'running');
   },
 };

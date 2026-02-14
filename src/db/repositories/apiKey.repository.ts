@@ -4,7 +4,7 @@ import { generateApiKey, hashApiKey, extractApiKeyPrefix } from '../../utils/cry
 
 interface ApiKeyRow {
   id: string;
-  organization_id: string;
+  account_id: string; // Updated from organization_id
   created_by_user_id: string | null;
   key_prefix: string;
   key_hash: string;
@@ -34,7 +34,7 @@ interface ApiKeyRow {
 function rowToApiKey(row: ApiKeyRow): ApiKey {
   return {
     id: row.id,
-    organizationId: row.organization_id,
+    accountId: row.account_id, // Updated from organizationId
     createdByUserId: row.created_by_user_id ?? undefined,
     keyPrefix: row.key_prefix,
     keyHash: row.key_hash,
@@ -91,29 +91,29 @@ export const apiKeyRepository = {
     return row ? rowToApiKey(row) : null;
   },
 
-  async findByOrganization(organizationId: string): Promise<ApiKey[]> {
+  async findByAccount(accountId: string): Promise<ApiKey[]> {
     const rows = await queryAll<ApiKeyRow>(
-      'SELECT * FROM api_keys WHERE organization_id = $1 ORDER BY created_at DESC',
-      [organizationId]
+      'SELECT * FROM api_keys WHERE account_id = $1 ORDER BY created_at DESC',
+      [accountId]
     );
     return rows.map(rowToApiKey);
   },
 
-  async findActiveByOrganization(organizationId: string): Promise<ApiKey[]> {
+  async findActiveByAccount(accountId: string): Promise<ApiKey[]> {
     const rows = await queryAll<ApiKeyRow>(
       `SELECT * FROM api_keys 
-       WHERE organization_id = $1 
+       WHERE account_id = $1 
        AND is_active = TRUE 
        AND revoked_at IS NULL 
        AND (expires_at IS NULL OR expires_at > NOW())
        ORDER BY created_at DESC`,
-      [organizationId]
+      [accountId]
     );
     return rows.map(rowToApiKey);
   },
 
   async create(data: {
-    organizationId: string;
+    accountId: string; // Updated from organizationId
     createdByUserId?: string;
     name: string;
     description?: string;
@@ -131,13 +131,13 @@ export const apiKeyRepository = {
 
     const row = await queryOne<ApiKeyRow>(
       `INSERT INTO api_keys (
-        organization_id, created_by_user_id, key_prefix, key_hash, name, description,
+        account_id, created_by_user_id, key_prefix, key_hash, name, description,
         scopes, allowed_ips, allowed_domains, rate_limit_override, max_concurrent_override,
         environment, expires_at
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
       RETURNING *`,
       [
-        data.organizationId,
+        data.accountId, // Updated from organizationId
         data.createdByUserId ?? null,
         keyPrefix,
         keyHash,
