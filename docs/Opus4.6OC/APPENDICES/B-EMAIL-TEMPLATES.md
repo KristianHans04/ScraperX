@@ -30,9 +30,9 @@
 
 ## 1. Overview
 
-This appendix documents every transactional email the ScraperX platform sends. For each email template, the following is specified: trigger event, sender, recipient, subject line, body content sections, dynamic variables, call-to-action button (if any), and plain text fallback notes.
+This appendix documents every transactional email the Scrapifie platform sends. For each email template, the following is specified: trigger event, sender, recipient, subject line, body content sections, dynamic variables, call-to-action button (if any), and plain text fallback notes.
 
-ScraperX does NOT send marketing emails. All emails listed here are transactional -- triggered by user actions, system events, or administrative actions.
+Scrapifie does NOT send marketing emails. All emails listed here are transactional -- triggered by user actions, system events, or administrative actions.
 
 ### Email Categories
 
@@ -55,9 +55,9 @@ ScraperX does NOT send marketing emails. All emails listed here are transactiona
 
 | Field | Value |
 |-------|-------|
-| From name | ScraperX |
-| From address | Configurable via environment variable (e.g., notifications@scraperx.com) |
-| Reply-to | Configurable, defaults to support@scraperx.com for support emails, no-reply@scraperx.com for automated notifications |
+| From name | Scrapifie |
+| From address | Configurable via environment variable (e.g., notifications@scrapifie.com) |
+| Reply-to | Configurable, defaults to support@scrapifie.com for support emails, no-reply@scrapifie.com for automated notifications |
 
 ### Design Principles
 
@@ -72,7 +72,7 @@ ScraperX does NOT send marketing emails. All emails listed here are transactiona
 | Colors | Minimal: primary text color, muted secondary text, one accent color for CTA buttons. Light background. All colors high-contrast for accessibility. |
 | CTA button | Centered, padded, rounded corners, high contrast text on accent background. Fallback plain text link below button for email clients that do not render HTML buttons. |
 | Unsubscribe | All non-critical emails include an unsubscribe link in the footer. Security and billing emails do not include unsubscribe (they are mandatory). |
-| Footer | Every email includes: "ScraperX" name, support email link, link to notification preferences (for logged-in users), unsubscribe link (where applicable). |
+| Footer | Every email includes: "Scrapifie" name, support email link, link to notification preferences (for logged-in users), unsubscribe link (where applicable). |
 
 ### Variable Syntax
 
@@ -88,9 +88,9 @@ Variables in templates are referenced as {{variable_name}} throughout this docum
 |-------|-------|
 | Template ID | AUTH-001 |
 | Trigger | User registers a new account |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Verify your ScraperX account |
+| Subject | Verify your Scrapifie account |
 | Priority | High (send immediately, no batching) |
 | Unsubscribable | No |
 
@@ -99,7 +99,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "Thank you for creating a ScraperX account. Please verify your email address to activate your account." |
+| Body | "Thank you for creating a Scrapifie account. Please verify your email address to activate your account." |
 | CTA button | "Verify Email Address" linking to {{verification_url}} |
 | Expiry notice | "This link expires in 24 hours. If you did not create this account, you can safely ignore this email." |
 | Fallback link | "If the button does not work, copy and paste this URL into your browser: {{verification_url}}" |
@@ -118,9 +118,9 @@ Variables:
 |-------|-------|
 | Template ID | AUTH-002 |
 | Trigger | User successfully verifies their email address |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Your ScraperX account is verified |
+| Subject | Your Scrapifie account is verified |
 | Priority | Normal |
 | Unsubscribable | No |
 
@@ -129,7 +129,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "Your email address has been verified. Your ScraperX account is now fully active." |
+| Body | "Your email address has been verified. Your Scrapifie account is now fully active." |
 | Next steps | "Get started by creating your first API key in the dashboard." |
 | CTA button | "Go to Dashboard" linking to {{dashboard_url}} |
 
@@ -139,9 +139,9 @@ Body content:
 |-------|-------|
 | Template ID | AUTH-003 |
 | Trigger | User requests a password reset |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Reset your ScraperX password |
+| Subject | Reset your Scrapifie password |
 | Priority | High (send immediately) |
 | Unsubscribable | No |
 
@@ -150,7 +150,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello," (no name, for anti-enumeration -- same email sent even if account does not exist, but only actually delivered if account exists) |
-| Body | "We received a request to reset the password for the ScraperX account associated with this email address." |
+| Body | "We received a request to reset the password for the Scrapifie account associated with this email address." |
 | CTA button | "Reset Password" linking to {{reset_url}} |
 | Expiry notice | "This link expires in 1 hour. If you did not request a password reset, you can safely ignore this email. Your password will not be changed." |
 | Security note | "If you did not request this, someone may have entered your email address by mistake. No action is needed." |
@@ -169,9 +169,9 @@ Variables:
 |-------|-------|
 | Template ID | AUTH-004 |
 | Trigger | User successfully changes their password (via reset flow or settings) |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Your ScraperX password has been changed |
+| Subject | Your Scrapifie password has been changed |
 | Priority | High (send immediately) |
 | Unsubscribable | No |
 
@@ -180,7 +180,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "The password for your ScraperX account was changed on {{change_date}} at {{change_time}} UTC." |
+| Body | "The password for your Scrapifie account was changed on {{change_date}} at {{change_time}} UTC." |
 | Security notice | "If you made this change, no further action is needed. If you did not change your password, please reset it immediately and contact support." |
 | CTA button | "Reset Password" linking to {{reset_request_url}} |
 | Support link | "Contact support: {{support_email}}" |
@@ -191,9 +191,9 @@ Body content:
 |-------|-------|
 | Template ID | AUTH-005 |
 | Trigger | User enables MFA (TOTP) on their account |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Two-factor authentication enabled on your ScraperX account |
+| Subject | Two-factor authentication enabled on your Scrapifie account |
 | Priority | Normal |
 | Unsubscribable | No |
 
@@ -202,7 +202,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "Two-factor authentication has been enabled on your ScraperX account. You will now be required to enter a verification code from your authenticator app when logging in." |
+| Body | "Two-factor authentication has been enabled on your Scrapifie account. You will now be required to enter a verification code from your authenticator app when logging in." |
 | Backup codes reminder | "Make sure you have saved your backup codes in a secure location. Each backup code can only be used once." |
 | Security notice | "If you did not enable this, please contact support immediately." |
 
@@ -212,9 +212,9 @@ Body content:
 |-------|-------|
 | Template ID | AUTH-006 |
 | Trigger | User disables MFA on their account, or admin force-disables MFA |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Two-factor authentication disabled on your ScraperX account |
+| Subject | Two-factor authentication disabled on your Scrapifie account |
 | Priority | High (send immediately) |
 | Unsubscribable | No |
 
@@ -223,7 +223,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "Two-factor authentication has been disabled on your ScraperX account on {{change_date}} at {{change_time}} UTC." |
+| Body | "Two-factor authentication has been disabled on your Scrapifie account on {{change_date}} at {{change_time}} UTC." |
 | Security warning | "Your account is now protected by password only. We recommend re-enabling two-factor authentication for enhanced security." |
 | CTA button | "Security Settings" linking to {{security_settings_url}} |
 | Not you notice | "If you did not make this change, please reset your password immediately and contact support." |
@@ -234,9 +234,9 @@ Body content:
 |-------|-------|
 | Template ID | AUTH-007 |
 | Trigger | User logs in from a browser/device not seen in their recent session history |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | New login to your ScraperX account |
+| Subject | New login to your Scrapifie account |
 | Priority | High (send immediately) |
 | Unsubscribable | No |
 
@@ -245,7 +245,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "A new login to your ScraperX account was detected." |
+| Body | "A new login to your Scrapifie account was detected." |
 | Login details table | Date: {{login_date}}, Time: {{login_time}} UTC, Browser: {{browser_name}}, Operating System: {{os_name}}, IP Address: {{ip_address}}, Approximate Location: {{location}} |
 | Not you notice | "If this was you, no action is needed. If you do not recognize this login, please change your password immediately and review your active sessions." |
 | CTA button | "Review Active Sessions" linking to {{security_settings_url}} |
@@ -256,9 +256,9 @@ Body content:
 |-------|-------|
 | Template ID | AUTH-008 |
 | Trigger | User links a new OAuth provider (Google or GitHub) to their account |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | {{provider_name}} account linked to your ScraperX account |
+| Subject | {{provider_name}} account linked to your Scrapifie account |
 | Priority | Normal |
 | Unsubscribable | No |
 
@@ -267,7 +267,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "Your {{provider_name}} account ({{provider_email}}) has been linked to your ScraperX account. You can now sign in using {{provider_name}}." |
+| Body | "Your {{provider_name}} account ({{provider_email}}) has been linked to your Scrapifie account. You can now sign in using {{provider_name}}." |
 | Not you notice | "If you did not link this account, please contact support immediately." |
 
 ---
@@ -280,9 +280,9 @@ Body content:
 |-------|-------|
 | Template ID | BILL-001 |
 | Trigger | User subscribes to a paid plan (Pro or Enterprise) |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Welcome to ScraperX {{plan_name}} |
+| Subject | Welcome to Scrapifie {{plan_name}} |
 | Priority | Normal |
 | Unsubscribable | No |
 
@@ -291,7 +291,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "Thank you for subscribing to ScraperX {{plan_name}}. Your account has been upgraded and your new features are available immediately." |
+| Body | "Thank you for subscribing to Scrapifie {{plan_name}}. Your account has been upgraded and your new features are available immediately." |
 | Plan details | Plan: {{plan_name}}, Monthly credits: {{credit_amount}}, Billing frequency: {{billing_frequency}}, Next billing date: {{next_billing_date}}, Amount: {{amount}} {{currency}} |
 | CTA button | "Go to Dashboard" linking to {{dashboard_url}} |
 
@@ -301,9 +301,9 @@ Body content:
 |-------|-------|
 | Template ID | BILL-002 |
 | Trigger | Subscription renews at the start of a new billing cycle |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Your ScraperX subscription has renewed |
+| Subject | Your Scrapifie subscription has renewed |
 | Priority | Normal |
 | Unsubscribable | No |
 
@@ -312,7 +312,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "Your ScraperX {{plan_name}} subscription has renewed for the next billing cycle." |
+| Body | "Your Scrapifie {{plan_name}} subscription has renewed for the next billing cycle." |
 | Renewal details | Amount charged: {{amount}} {{currency}}, Billing period: {{period_start}} to {{period_end}}, Credits refreshed: {{credit_amount}}, Next renewal: {{next_billing_date}} |
 | Invoice note | "Your invoice is available in your billing settings." |
 | CTA button | "View Invoice" linking to {{billing_url}} |
@@ -323,7 +323,7 @@ Body content:
 |-------|-------|
 | Template ID | BILL-003 |
 | Trigger | Any successful payment (subscription, credit pack) |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
 | Subject | Payment receipt -- {{amount}} {{currency}} |
 | Priority | Normal |
@@ -344,9 +344,9 @@ Body content:
 |-------|-------|
 | Template ID | BILL-004 |
 | Trigger | A payment attempt fails (subscription renewal or credit pack purchase) |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Payment failed for your ScraperX account |
+| Subject | Payment failed for your Scrapifie account |
 | Priority | High (send immediately) |
 | Unsubscribable | No |
 
@@ -367,9 +367,9 @@ Body content:
 |-------|-------|
 | Template ID | BILL-005 |
 | Trigger | User upgrades from a lower plan to a higher plan |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Your ScraperX plan has been upgraded to {{new_plan_name}} |
+| Subject | Your Scrapifie plan has been upgraded to {{new_plan_name}} |
 | Priority | Normal |
 | Unsubscribable | No |
 
@@ -378,7 +378,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "Your ScraperX plan has been upgraded from {{old_plan_name}} to {{new_plan_name}}. Your new features are available immediately." |
+| Body | "Your Scrapifie plan has been upgraded from {{old_plan_name}} to {{new_plan_name}}. Your new features are available immediately." |
 | Upgrade details | Previous plan: {{old_plan_name}}, New plan: {{new_plan_name}}, Prorated charge: {{prorated_amount}} {{currency}}, New monthly credits: {{new_credit_amount}}, Credits added for remainder of cycle: {{prorated_credits}} |
 | CTA button | "Go to Dashboard" linking to {{dashboard_url}} |
 
@@ -388,9 +388,9 @@ Body content:
 |-------|-------|
 | Template ID | BILL-006 |
 | Trigger | User requests a plan downgrade (takes effect at end of billing cycle) |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Your ScraperX plan downgrade has been scheduled |
+| Subject | Your Scrapifie plan downgrade has been scheduled |
 | Priority | Normal |
 | Unsubscribable | No |
 
@@ -410,9 +410,9 @@ Body content:
 |-------|-------|
 | Template ID | BILL-007 |
 | Trigger | User cancels their subscription |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Your ScraperX subscription has been cancelled |
+| Subject | Your Scrapifie subscription has been cancelled |
 | Priority | Normal |
 | Unsubscribable | No |
 
@@ -421,7 +421,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "Your ScraperX {{plan_name}} subscription has been cancelled. You will continue to have access to {{plan_name}} features until {{end_date}}." |
+| Body | "Your Scrapifie {{plan_name}} subscription has been cancelled. You will continue to have access to {{plan_name}} features until {{end_date}}." |
 | After cancellation | "After {{end_date}}, your account will revert to the Free plan with 1,000 monthly credits." |
 | Reactivation | "Changed your mind? You can reactivate your subscription at any time before {{end_date}}." |
 | CTA button | "Reactivate Subscription" linking to {{billing_url}} |
@@ -432,9 +432,9 @@ Body content:
 |-------|-------|
 | Template ID | BILL-008 |
 | Trigger | A new invoice is generated (subscription renewal, credit pack purchase) |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | ScraperX Invoice {{invoice_number}} |
+| Subject | Scrapifie Invoice {{invoice_number}} |
 | Priority | Normal |
 | Unsubscribable | No |
 
@@ -443,7 +443,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "A new invoice is available for your ScraperX account." |
+| Body | "A new invoice is available for your Scrapifie account." |
 | Invoice summary | Invoice number: {{invoice_number}}, Date: {{invoice_date}}, Amount: {{amount}} {{currency}}, Status: {{invoice_status}}, Description: {{description}} |
 | CTA button | "View Invoice" linking to {{invoice_url}} |
 | PDF note | "You can download a PDF copy of this invoice from your billing settings." |
@@ -454,9 +454,9 @@ Body content:
 |-------|-------|
 | Template ID | BILL-009 |
 | Trigger | Admin approves and processes a refund |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Refund processed for your ScraperX account |
+| Subject | Refund processed for your Scrapifie account |
 | Priority | Normal |
 | Unsubscribable | No |
 
@@ -465,7 +465,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "A refund has been processed for your ScraperX account." |
+| Body | "A refund has been processed for your Scrapifie account." |
 | Refund details | Refund amount: {{refund_amount}} {{currency}}, Original invoice: {{invoice_number}}, Original charge: {{original_amount}} {{currency}}, Refund type: {{refund_type}} (Full or Partial), Processing time: Refunds typically appear on your statement within 5-10 business days. |
 | CTA button | "View Billing History" linking to {{billing_url}} |
 
@@ -475,9 +475,9 @@ Body content:
 |-------|-------|
 | Template ID | BILL-010 |
 | Trigger | Account reaches the "restricted" stage of the payment failure escalation (day 10) |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Action required: Your ScraperX account has been restricted |
+| Subject | Action required: Your Scrapifie account has been restricted |
 | Priority | High (send immediately) |
 | Unsubscribable | No |
 
@@ -486,7 +486,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "Due to an outstanding payment of {{amount}} {{currency}}, your ScraperX account has been restricted. You can still access your dashboard and data, but you cannot submit new scrape jobs or create API keys." |
+| Body | "Due to an outstanding payment of {{amount}} {{currency}}, your Scrapifie account has been restricted. You can still access your dashboard and data, but you cannot submit new scrape jobs or create API keys." |
 | Timeline | "Your payment has been overdue since {{original_due_date}}. If payment is not resolved by {{suspension_date}}, your account will be suspended." |
 | Action required | "Please update your payment method to restore full access." |
 | CTA button | "Update Payment Method" linking to {{billing_url}} |
@@ -501,9 +501,9 @@ Body content:
 |-------|-------|
 | Template ID | USAGE-001 |
 | Trigger | Account credit usage reaches 75% of the billing cycle allocation |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | You have used 75% of your ScraperX credits |
+| Subject | You have used 75% of your Scrapifie credits |
 | Priority | Normal |
 | Unsubscribable | Yes (via notification preferences) |
 
@@ -523,9 +523,9 @@ Body content:
 |-------|-------|
 | Template ID | USAGE-002 |
 | Trigger | Account credit usage reaches 90% of the billing cycle allocation |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | You have used 90% of your ScraperX credits |
+| Subject | You have used 90% of your Scrapifie credits |
 | Priority | High |
 | Unsubscribable | Yes (via notification preferences) |
 
@@ -544,9 +544,9 @@ Body content:
 |-------|-------|
 | Template ID | USAGE-003 |
 | Trigger | Account credit balance reaches zero |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Your ScraperX credits have been exhausted |
+| Subject | Your Scrapifie credits have been exhausted |
 | Priority | High (send immediately) |
 | Unsubscribable | No |
 
@@ -555,7 +555,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "Your ScraperX credits for this billing cycle have been exhausted. All API requests will be rejected until credits are available." |
+| Body | "Your Scrapifie credits for this billing cycle have been exhausted. All API requests will be rejected until credits are available." |
 | Next cycle | "Your credits will refresh on {{next_billing_date}} when your next billing cycle begins." |
 | Options | "You can restore access immediately by purchasing a credit pack or upgrading your plan." |
 | CTA button (Free) | "Upgrade Plan" linking to {{pricing_url}} |
@@ -567,7 +567,7 @@ Body content:
 |-------|-------|
 | Template ID | USAGE-004 |
 | Trigger | A job fails after all retry attempts are exhausted |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
 | Subject | Scrape job failed -- {{job_url_truncated}} |
 | Priority | Normal |
@@ -578,7 +578,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "A scrape job on your ScraperX account has failed after {{attempt_count}} attempts." |
+| Body | "A scrape job on your Scrapifie account has failed after {{attempt_count}} attempts." |
 | Job details | Job ID: {{job_id}}, URL: {{target_url}}, Engine: {{engine}}, Error: {{error_message}}, Credits charged: {{credits_charged}}, Time: {{failure_time}} UTC |
 | CTA button | "View Job Details" linking to {{job_detail_url}} |
 | Troubleshooting | "For help resolving this error, check our documentation on error handling." Link to docs error handling guide. |
@@ -593,8 +593,8 @@ Body content:
 |-------|-------|
 | Template ID | SUPPORT-001 |
 | Trigger | User creates a new support ticket |
-| Sender | ScraperX Support <support@scraperx.com> |
-| Reply-to | support@scraperx.com |
+| Sender | Scrapifie Support <support@scrapifie.com> |
+| Reply-to | support@scrapifie.com |
 | Recipient | {{user_email}} |
 | Subject | [Ticket #{{ticket_number}}] {{ticket_subject}} |
 | Priority | Normal |
@@ -616,8 +616,8 @@ Body content:
 |-------|-------|
 | Template ID | SUPPORT-002 |
 | Trigger | Admin replies to a user's support ticket |
-| Sender | ScraperX Support <support@scraperx.com> |
-| Reply-to | support@scraperx.com |
+| Sender | Scrapifie Support <support@scrapifie.com> |
+| Reply-to | support@scrapifie.com |
 | Recipient | {{user_email}} |
 | Subject | Re: [Ticket #{{ticket_number}}] {{ticket_subject}} |
 | Priority | Normal |
@@ -628,7 +628,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "ScraperX Support has replied to your ticket." |
+| Body | "Scrapifie Support has replied to your ticket." |
 | Reply preview | First 200 characters of the admin's reply message |
 | CTA button | "View Full Reply" linking to {{ticket_url}} |
 | Note | "You can reply directly from the ticket page." |
@@ -639,7 +639,7 @@ Body content:
 |-------|-------|
 | Template ID | SUPPORT-003 |
 | Trigger | Admin changes the status of a ticket (e.g., to Resolved, Waiting on User) |
-| Sender | ScraperX Support <support@scraperx.com> |
+| Sender | Scrapifie Support <support@scrapifie.com> |
 | Recipient | {{user_email}} |
 | Subject | [Ticket #{{ticket_number}}] Status updated to {{new_status}} |
 | Priority | Normal |
@@ -661,7 +661,7 @@ Body content:
 |-------|-------|
 | Template ID | SUPPORT-004 |
 | Trigger | Ticket has been in "Waiting on User" status for 7 days with no response |
-| Sender | ScraperX Support <support@scraperx.com> |
+| Sender | Scrapifie Support <support@scrapifie.com> |
 | Recipient | {{user_email}} |
 | Subject | [Ticket #{{ticket_number}}] Closing soon -- response needed |
 | Priority | Normal |
@@ -682,7 +682,7 @@ Body content:
 |-------|-------|
 | Template ID | SUPPORT-005 |
 | Trigger | Ticket auto-closed after 14 days of inactivity in "Waiting on User" status |
-| Sender | ScraperX Support <support@scraperx.com> |
+| Sender | Scrapifie Support <support@scrapifie.com> |
 | Recipient | {{user_email}} |
 | Subject | [Ticket #{{ticket_number}}] Automatically closed |
 | Priority | Normal |
@@ -707,9 +707,9 @@ Body content:
 |-------|-------|
 | Template ID | ACCOUNT-001 |
 | Trigger | User initiates an email change from profile settings |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{new_email}} (the new email address) |
-| Subject | Verify your new email address for ScraperX |
+| Subject | Verify your new email address for Scrapifie |
 | Priority | High (send immediately) |
 | Unsubscribable | No |
 
@@ -718,7 +718,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello," |
-| Body | "A request was made to change the email address for a ScraperX account to this address. Please verify this email address to complete the change." |
+| Body | "A request was made to change the email address for a Scrapifie account to this address. Please verify this email address to complete the change." |
 | CTA button | "Verify New Email" linking to {{verification_url}} |
 | Expiry notice | "This link expires in 24 hours. If you did not request this change, you can safely ignore this email." |
 
@@ -728,9 +728,9 @@ Body content:
 |-------|-------|
 | Template ID | ACCOUNT-002 |
 | Trigger | User completes the email change verification (new email confirmed) |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{old_email}} (the previous email address) |
-| Subject | Your ScraperX email address has been changed |
+| Subject | Your Scrapifie email address has been changed |
 | Priority | High (send immediately) |
 | Unsubscribable | No |
 
@@ -739,7 +739,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "The email address for your ScraperX account has been changed from {{old_email}} to a new address on {{change_date}} at {{change_time}} UTC." |
+| Body | "The email address for your Scrapifie account has been changed from {{old_email}} to a new address on {{change_date}} at {{change_time}} UTC." |
 | Security notice | "If you made this change, no further action is needed. If you did not change your email address, please contact support immediately." |
 | Support link | "Contact support: {{support_email}}" |
 
@@ -749,9 +749,9 @@ Body content:
 |-------|-------|
 | Template ID | ACCOUNT-003 |
 | Trigger | Admin suspends a user's account, or account is auto-suspended due to payment failure escalation |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Your ScraperX account has been suspended |
+| Subject | Your Scrapifie account has been suspended |
 | Priority | High (send immediately) |
 | Unsubscribable | No |
 
@@ -760,7 +760,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "Your ScraperX account has been suspended." |
+| Body | "Your Scrapifie account has been suspended." |
 | Reason | "Reason: {{suspension_reason}}" |
 | Impact | "While your account is suspended, you cannot log in, and all API keys are disabled." |
 | Resolution (payment-related) | "To resolve this, please update your payment method. Your account will be restored once payment is received." CTA button: "Update Payment Method" linking to {{billing_url}} |
@@ -772,9 +772,9 @@ Body content:
 |-------|-------|
 | Template ID | ACCOUNT-004 |
 | Trigger | Admin unsuspends a user's account |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Your ScraperX account has been restored |
+| Subject | Your Scrapifie account has been restored |
 | Priority | High (send immediately) |
 | Unsubscribable | No |
 
@@ -783,7 +783,7 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello {{user_name}}," |
-| Body | "Your ScraperX account has been restored. You can now log in and use all platform features." |
+| Body | "Your Scrapifie account has been restored. You can now log in and use all platform features." |
 | API keys note | "Your API keys have been re-enabled. If you previously had active integrations, they should resume working automatically." |
 | CTA button | "Go to Dashboard" linking to {{dashboard_url}} |
 
@@ -793,9 +793,9 @@ Body content:
 |-------|-------|
 | Template ID | ACCOUNT-005 |
 | Trigger | User completes the account deletion flow |
-| Sender | ScraperX <notifications@scraperx.com> |
+| Sender | Scrapifie <notifications@scrapifie.com> |
 | Recipient | {{user_email}} |
-| Subject | Your ScraperX account has been deleted |
+| Subject | Your Scrapifie account has been deleted |
 | Priority | Normal |
 | Unsubscribable | No |
 
@@ -804,9 +804,9 @@ Body content:
 | Section | Content |
 |---------|---------|
 | Greeting | "Hello," |
-| Body | "Your ScraperX account has been deleted as requested on {{deletion_date}}." |
+| Body | "Your Scrapifie account has been deleted as requested on {{deletion_date}}." |
 | Data retention | "Your personal data has been anonymized. Certain records may be retained in anonymized form for legal and financial compliance purposes as described in our Privacy Policy." |
-| Finality | "This action is permanent. If you wish to use ScraperX in the future, you will need to create a new account." |
+| Finality | "This action is permanent. If you wish to use Scrapifie in the future, you will need to create a new account." |
 | Feedback (optional) | "We are sorry to see you go. If you have any feedback about your experience, you can reach us at {{support_email}}." |
 
 ---
@@ -821,7 +821,7 @@ These emails are sent to admin email addresses, not to regular users.
 |-------|-------|
 | Template ID | ADMIN-001 |
 | Trigger | User creates a new support ticket |
-| Sender | ScraperX System <notifications@scraperx.com> |
+| Sender | Scrapifie System <notifications@scrapifie.com> |
 | Recipient | Admin notification email(s) |
 | Subject | New support ticket: [#{{ticket_number}}] {{ticket_subject}} |
 | Priority | Normal (High if ticket priority is Urgent) |
@@ -841,7 +841,7 @@ Body content:
 |-------|-------|
 | Template ID | ADMIN-002 |
 | Trigger | Automated abuse detection flags a user account |
-| Sender | ScraperX System <notifications@scraperx.com> |
+| Sender | Scrapifie System <notifications@scrapifie.com> |
 | Recipient | Admin notification email(s) |
 | Subject | Abuse flag: {{flag_reason}} -- {{user_email}} |
 | Priority | High |
@@ -861,7 +861,7 @@ Body content:
 |-------|-------|
 | Template ID | ADMIN-003 |
 | Trigger | A payment failure occurs and the user enters the escalation ladder |
-| Sender | ScraperX System <notifications@scraperx.com> |
+| Sender | Scrapifie System <notifications@scrapifie.com> |
 | Recipient | Admin notification email(s) |
 | Subject | Payment failure: {{user_email}} -- {{escalation_stage}} |
 | Priority | Normal |
@@ -881,7 +881,7 @@ Body content:
 |-------|-------|
 | Template ID | ADMIN-004 |
 | Trigger | An account is automatically suspended due to payment failure reaching day 14 |
-| Sender | ScraperX System <notifications@scraperx.com> |
+| Sender | Scrapifie System <notifications@scrapifie.com> |
 | Recipient | Admin notification email(s) |
 | Subject | Account auto-suspended: {{user_email}} |
 | Priority | High |
@@ -902,7 +902,7 @@ Body content:
 |-------|-------|
 | Template ID | ADMIN-005 |
 | Trigger | A critical or high-severity system health alert fires |
-| Sender | ScraperX System <notifications@scraperx.com> |
+| Sender | Scrapifie System <notifications@scrapifie.com> |
 | Recipient | Admin notification email(s) |
 | Subject | [{{severity}}] System alert: {{alert_name}} |
 | Priority | High (Critical alerts sent immediately) |
@@ -923,9 +923,9 @@ Body content:
 |-------|-------|
 | Template ID | ADMIN-006 |
 | Trigger | Scheduled daily at a configured time (e.g., 08:00 UTC) |
-| Sender | ScraperX System <notifications@scraperx.com> |
+| Sender | Scrapifie System <notifications@scrapifie.com> |
 | Recipient | Admin notification email(s) |
-| Subject | ScraperX Daily Digest -- {{date}} |
+| Subject | Scrapifie Daily Digest -- {{date}} |
 | Priority | Normal |
 | Unsubscribable | Yes (via admin notification preferences) |
 
@@ -949,7 +949,7 @@ Body content:
 |-------|-------|
 | Template ID | STATUS-001 |
 | Trigger | Admin creates a new incident or updates an existing incident on the status page |
-| Sender | ScraperX Status <status@scraperx.com> |
+| Sender | Scrapifie Status <status@scrapifie.com> |
 | Recipient | All status update subscribers |
 | Subject | [{{severity}}] {{incident_title}} |
 | Priority | High |
@@ -972,7 +972,7 @@ Body content:
 |-------|-------|
 | Template ID | STATUS-002 |
 | Trigger | Admin schedules a maintenance window (sent at the configured notification time, e.g., 24 hours before) |
-| Sender | ScraperX Status <status@scraperx.com> |
+| Sender | Scrapifie Status <status@scrapifie.com> |
 | Recipient | All status update subscribers |
 | Subject | Scheduled maintenance: {{maintenance_title}} |
 | Priority | Normal |

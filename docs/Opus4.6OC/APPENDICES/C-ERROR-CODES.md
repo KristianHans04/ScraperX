@@ -36,7 +36,7 @@
 
 ## 1. Overview
 
-This appendix documents every error code returned by the ScraperX API. Each error code has a unique identifier, an associated HTTP status code, a user-facing message (safe to display to end users), a developer-facing message (more detailed, suitable for documentation and debug logs), common causes, and resolution steps.
+This appendix documents every error code returned by the Scrapifie API. Each error code has a unique identifier, an associated HTTP status code, a user-facing message (safe to display to end users), a developer-facing message (more detailed, suitable for documentation and debug logs), common causes, and resolution steps.
 
 ### Error Code Format
 
@@ -60,7 +60,7 @@ All error codes follow the pattern: CATEGORY_SPECIFIC_ERROR
 
 ## 2. Error Response Format
 
-Every error response from the ScraperX API follows this structure:
+Every error response from the Scrapifie API follows this structure:
 
 ```
 HTTP/1.1 {status_code}
@@ -288,10 +288,10 @@ Rate limit response headers (included with all API responses):
 | Error Code | HTTP Status | User-Facing Message | Developer Message | Common Causes | Resolution |
 |------------|-------------|---------------------|-------------------|---------------|------------|
 | SYS_INTERNAL_ERROR | 500 | An unexpected error occurred. Please try again later. If the problem persists, contact support. | An unhandled server error occurred. The actual error is logged server-side with the request ID but never exposed to the client. | Bug in application code, unhandled edge case, dependency failure | Retry the request; if persistent, contact support with the request ID |
-| SYS_SERVICE_UNAVAILABLE | 503 | ScraperX is temporarily unavailable. Please try again in a few minutes. | The service is in maintenance mode or is unable to process requests due to overload or dependency failure. | Scheduled maintenance, database down, Redis down, deployment in progress | Wait and retry; check the status page for incident information |
+| SYS_SERVICE_UNAVAILABLE | 503 | Scrapifie is temporarily unavailable. Please try again in a few minutes. | The service is in maintenance mode or is unable to process requests due to overload or dependency failure. | Scheduled maintenance, database down, Redis down, deployment in progress | Wait and retry; check the status page for incident information |
 | SYS_DATABASE_ERROR | 500 | An unexpected error occurred. Please try again later. | A database query failed. This is a catch-all for database errors that are not handled by more specific error codes. Actual error is logged server-side. | Connection pool exhaustion, query timeout, constraint violation (unexpected) | Retry the request; if persistent, contact support |
 | SYS_QUEUE_ERROR | 500 | Job could not be submitted. Please try again. | The job could not be added to the BullMQ processing queue. | Redis down, queue full, serialization error | Retry the request; check status page |
-| SYS_MAINTENANCE | 503 | ScraperX is undergoing scheduled maintenance. We will be back shortly. | The platform is in a scheduled maintenance window. The Retry-After header indicates when maintenance is expected to end. | Active maintenance window | Wait until maintenance ends (check status page for updates) |
+| SYS_MAINTENANCE | 503 | Scrapifie is undergoing scheduled maintenance. We will be back shortly. | The platform is in a scheduled maintenance window. The Retry-After header indicates when maintenance is expected to end. | Active maintenance window | Wait until maintenance ends (check status page for updates) |
 
 ---
 

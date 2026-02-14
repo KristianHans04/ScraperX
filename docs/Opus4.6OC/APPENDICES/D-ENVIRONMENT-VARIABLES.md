@@ -1,4 +1,4 @@
-Document every environment variable used by the ScraperX platform. For each variable:
+Document every environment variable used by the Scrapifie platform. For each variable:
 - Variable name
 - Required or optional
 - Type (string, integer, boolean, URL, etc.)
@@ -23,4 +23,4 @@ Categories to cover:
 - Feature Flags (REGISTRATION_ENABLED, MAINTENANCE_MODE, etc.)
 - Monitoring (SENTRY_DSN or equivalent, LOG_AGGREGATION_URL, etc.)
 - Encryption (ENCRYPTION_KEY for application-level AES-256-GCM encryption of sensitive fields)
-Follow the same appendix format. Reference the existing .env.example file for the engine-specific variables already in use. The existing .env.example has variables for the scraping engine backend (Phases 1-5) — the new file should include ALL of those PLUS all new variables needed for the full platform (Phases 6-12).
+Follow the same appendix format. Reference the existing .env.example file for the engine-specific variables already in use. The existing .env.example has variables for the scraping engine backend (Phases 1-5) — the new file should include ALL of those PLUS all new variables needed for the full platform (Phases 6-12).2

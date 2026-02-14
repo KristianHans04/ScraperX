@@ -26,11 +26,11 @@
 
 ## 1. Overview
 
-This appendix provides the complete permission matrix for every action in the ScraperX platform. It is the authoritative reference for who can do what, used by developers implementing route guards, middleware, and frontend visibility controls.
+This appendix provides the complete permission matrix for every action in the Scrapifie platform. It is the authoritative reference for who can do what, used by developers implementing route guards, middleware, and frontend visibility controls.
 
 ### Permission Model
 
-ScraperX uses Role-Based Access Control (RBAC) with resource ownership enforcement. Permissions are determined by:
+Scrapifie uses Role-Based Access Control (RBAC) with resource ownership enforcement. Permissions are determined by:
 
 1. **Role** -- What type of user is making the request (User, Admin, or future team roles)
 2. **Resource Ownership** -- Does the user own the resource they are acting on (their own account, their own API keys, their own jobs)
