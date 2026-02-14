@@ -42,7 +42,7 @@ export function createRedisConnection(name?: string): Redis {
   const redis = new Redis({
     ...options,
     lazyConnect: true,
-    connectionName: name || 'scraperx',
+    connectionName: name || 'scrapifie',
   });
 
   redis.on('connect', () => {
@@ -73,7 +73,7 @@ export function createRedisConnection(name?: string): Redis {
  */
 export async function getRedisClient(): Promise<Redis> {
   if (!redisClient) {
-    redisClient = createRedisConnection('scraperx-main');
+    redisClient = createRedisConnection('scrapifie-main');
     await redisClient.connect();
   }
   return redisClient;
@@ -84,7 +84,7 @@ export async function getRedisClient(): Promise<Redis> {
  */
 export async function getSubscriberClient(): Promise<Redis> {
   if (!subscriberClient) {
-    subscriberClient = createRedisConnection('scraperx-subscriber');
+    subscriberClient = createRedisConnection('scrapifie-subscriber');
     await subscriberClient.connect();
   }
   return subscriberClient;
