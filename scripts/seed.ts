@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Database Seed Script for ScraperX
+ * Database Seed Script for Scrapifie
  * 
  * Seeds the database with initial/demo data for development.
  */
@@ -11,7 +11,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://scraperx:scraperx@localhost:5432/scraperx';
+const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://scrapifie:scrapifie@localhost:5432/scrapifie';
 
 // Helper to hash API key
 function hashApiKey(apiKey: string): string {
@@ -45,7 +45,7 @@ const seedData: SeedData = {
       id: '00000000-0000-0000-0000-000000000001',
       name: 'Demo Organization',
       slug: 'demo',
-      billingEmail: 'demo@scraperx.dev',
+      billingEmail: 'demo@scrapifie.dev',
       planId: 'starter',
       creditsBalance: 100000,
     },
@@ -53,7 +53,7 @@ const seedData: SeedData = {
       id: '00000000-0000-0000-0000-000000000002',
       name: 'Test Enterprise',
       slug: 'test-enterprise',
-      billingEmail: 'enterprise@scraperx.dev',
+      billingEmail: 'enterprise@scrapifie.dev',
       planId: 'enterprise',
       creditsBalance: 10000000,
     },
@@ -61,7 +61,7 @@ const seedData: SeedData = {
       id: '00000000-0000-0000-0000-000000000003',
       name: 'Free Tier User',
       slug: 'free-user',
-      billingEmail: 'free@scraperx.dev',
+      billingEmail: 'free@scrapifie.dev',
       planId: 'free',
       creditsBalance: 1000,
     },

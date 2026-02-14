@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Database Migration Script for ScraperX
+ * Database Migration Script for Scrapifie
  * 
  * Runs SQL migrations in order from the migrations folder.
  * Tracks executed migrations in a migrations table.
@@ -18,7 +18,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const MIGRATIONS_DIR = join(__dirname, '../src/db/migrations');
-const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://scraperx:scraperx@localhost:5432/scraperx';
+const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://scrapifie:scrapifie@localhost:5432/scrapifie';
 
 interface MigrationRecord {
   id: number;
