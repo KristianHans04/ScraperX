@@ -31,8 +31,8 @@
 ### 1.1 Base URL
 
 ```
-Production: https://api.scraperx.com/v1
-Sandbox:    https://sandbox.scraperx.com/v1
+Production: https://api.scrapifie.com/v1
+Sandbox:    https://sandbox.scrapifie.com/v1
 ```
 
 ### 1.2 API Conventions
@@ -100,7 +100,7 @@ Error responses:
 API keys are passed via the Authorization header:
 
 ```bash
-curl -X GET "https://api.scraperx.com/v1/account" \
+curl -X GET "https://api.scrapifie.com/v1/account" \
   -H "Authorization: Bearer sk_live_abc123..."
 ```
 
@@ -275,7 +275,7 @@ Retrieves the status and result of a scrape job.
       "final_url": "https://example.com/page",
       "html": "<!DOCTYPE html>...",
       "extracted": { ... },
-      "screenshot_url": "https://storage.scraperx.com/screenshots/...",
+      "screenshot_url": "https://storage.scrapifie.com/screenshots/...",
       "metrics": { ... }
     },
     "client_reference": "my-custom-id-123"
@@ -430,7 +430,7 @@ Submits multiple URLs for scraping in a single request.
     "created_at": "2025-01-31T12:00:00.000Z",
     "completed_at": "2025-01-31T12:04:30.000Z",
     "credits_charged": 475,
-    "results_url": "https://storage.scraperx.com/batches/batch_abc123/results.json"
+    "results_url": "https://storage.scrapifie.com/batches/batch_abc123/results.json"
   }
 }
 ```
@@ -748,8 +748,8 @@ Submits multiple URLs for scraping in a single request.
 Webhooks include a signature header for verification:
 
 ```
-X-ScraperX-Signature: sha256=abc123...
-X-ScraperX-Timestamp: 1706702400
+X-Scrapifie-Signature: sha256=abc123...
+X-Scrapifie-Timestamp: 1706702400
 ```
 
 **Verification (Node.js):**
@@ -809,7 +809,7 @@ function verifyWebhookSignature(payload, signature, timestamp, secret) {
       "reset_at": "2025-01-31T12:00:05.000Z",
       "retry_after": 5
     },
-    "help_url": "https://docs.scraperx.com/errors/rate-limit"
+    "help_url": "https://docs.scrapifie.com/errors/rate-limit"
   },
   "meta": {
     "request_id": "req_abc123",
@@ -836,7 +836,7 @@ function verifyWebhookSignature(payload, signature, timestamp, secret) {
 ```yaml
 openapi: 3.0.3
 info:
-  title: ScraperX API
+  title: Scrapifie API
   description: |
     Enterprise web scraping API with anti-detection capabilities.
     
@@ -847,17 +847,17 @@ info:
     Rate limits vary by plan. Check the X-RateLimit-* headers.
   version: 1.0.0
   contact:
-    name: ScraperX Support
-    url: https://scraperx.com/support
-    email: support@scraperx.com
+    name: Scrapifie Support
+    url: https://scrapifie.com/support
+    email: support@scrapifie.com
   license:
     name: Proprietary
-    url: https://scraperx.com/terms
+    url: https://scrapifie.com/terms
 
 servers:
-  - url: https://api.scraperx.com/v1
+  - url: https://api.scrapifie.com/v1
     description: Production
-  - url: https://sandbox.scraperx.com/v1
+  - url: https://sandbox.scrapifie.com/v1
     description: Sandbox
 
 security:

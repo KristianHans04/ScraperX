@@ -30,11 +30,11 @@
 
 ### 1.1 Purpose
 
-This appendix provides detailed information about proxy providers integrated with ScraperX, including pricing, features, API documentation, and integration code.
+This appendix provides detailed information about proxy providers integrated with Scrapifie, including pricing, features, API documentation, and integration code.
 
 ### 1.2 Proxy Tier Strategy
 
-ScraperX uses a tiered proxy strategy to optimize cost and success rate:
+Scrapifie uses a tiered proxy strategy to optimize cost and success rate:
 
 ```
 +------------------------------------------------------------------+

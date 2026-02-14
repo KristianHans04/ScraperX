@@ -31,7 +31,7 @@
 
 ### 1.1 Purpose
 
-This appendix contains the complete PostgreSQL Data Definition Language (DDL) for the ScraperX database, including all tables, indexes, functions, triggers, and partitioning configuration.
+This appendix contains the complete PostgreSQL Data Definition Language (DDL) for the Scrapifie database, including all tables, indexes, functions, triggers, and partitioning configuration.
 
 ### 1.2 Schema Diagram
 

@@ -30,7 +30,7 @@
 
 ### 1.1 Purpose
 
-This appendix provides a technical deep dive into anti-detection mechanisms, explaining how modern bot detection works and how ScraperX evades detection.
+This appendix provides a technical deep dive into anti-detection mechanisms, explaining how modern bot detection works and how Scrapifie evades detection.
 
 ### 1.2 Detection Landscape
 
@@ -95,7 +95,7 @@ Modern bot detection operates on multiple layers:
 
 ### 1.3 Detection Probability Matrix
 
-| Layer | Detection Method | Difficulty to Evade | ScraperX Solution |
+| Layer | Detection Method | Difficulty to Evade | Scrapifie Solution |
 |-------|------------------|---------------------|-------------------|
 | Network | IP Reputation | Medium | Multi-tier proxy |
 | TLS | Fingerprint | Hard | impit, Camoufox |
@@ -154,7 +154,7 @@ function assessIPRisk(classification: IPClassification): number {
 }
 ```
 
-**ScraperX Mitigation:**
+**Scrapifie Mitigation:**
 
 1. **Residential Proxies:** Real ISP-assigned IPs from actual households
 2. **Mobile Proxies:** CGNAT IPs shared by thousands of real users
@@ -173,7 +173,7 @@ function assessIPRisk(classification: IPClassification): number {
 | No idle periods | 100% utilization | High |
 | Exponential request growth | 2x every minute | Medium |
 
-**ScraperX Mitigation:**
+**Scrapifie Mitigation:**
 
 ```typescript
 // Rate limiting with jitter
