@@ -4,6 +4,7 @@ import { checkRedisHealth, getRedisClient } from '../../queue/redis.js';
 import { getAllQueueStats } from '../../queue/queues.js';
 import { logger } from '../../utils/logger.js';
 import { config } from '../../config/index.js';
+import { monitoring } from '../../utils/monitoring.js';
 
 const startTime = Date.now();
 
@@ -125,6 +126,14 @@ export const healthRoutes: FastifyPluginAsync = async (fastify) => {
       };
     }
 
+    // Get system health from monitoring service
+    const systemHealth = await monitoring.performHealthChecks();
+    
+    // Combine with system health
+    if (systemHealth.status === 'unhealthy') {
+      overallHealthy = false;
+    }
+
     const status = overallHealthy ? 'healthy' : 'degraded';
 
     return reply.status(overallHealthy ? 200 : 503).send({
@@ -134,6 +143,7 @@ export const healthRoutes: FastifyPluginAsync = async (fastify) => {
       uptime: Date.now() - startTime,
       timestamp: new Date().toISOString(),
       services,
+      systemHealth: systemHealth.checks,
     });
   });
 
@@ -152,31 +162,71 @@ export const healthRoutes: FastifyPluginAsync = async (fastify) => {
 
     try {
       const queueStats = await getAllQueueStats();
+      const requestStats = monitoring.getRequestStats();
+      const metricsSummary = monitoring.getMetricsSummary();
       
       let metrics = '';
       
       // Uptime metric
-      metrics += `# HELP scraperx_uptime_seconds Uptime in seconds\n`;
-      metrics += `# TYPE scraperx_uptime_seconds gauge\n`;
-      metrics += `scraperx_uptime_seconds ${Math.floor((Date.now() - startTime) / 1000)}\n\n`;
+      metrics += `# HELP scrapifie_uptime_seconds Uptime in seconds\n`;
+      metrics += `# TYPE scrapifie_uptime_seconds gauge\n`;
+      metrics += `scrapifie_uptime_seconds ${Math.floor((Date.now() - startTime) / 1000)}\n\n`;
+
+      // HTTP request metrics
+      metrics += `# HELP scrapifie_http_requests_total Total HTTP requests\n`;
+      metrics += `# TYPE scrapifie_http_requests_total counter\n`;
+      metrics += `scrapifie_http_requests_total ${requestStats.total}\n\n`;
+
+      metrics += `# HELP scrapifie_http_errors_total Total HTTP errors\n`;
+      metrics += `# TYPE scrapifie_http_errors_total counter\n`;
+      metrics += `scrapifie_http_errors_total ${requestStats.errors}\n\n`;
+
+      metrics += `# HELP scrapifie_http_error_rate HTTP error rate percentage\n`;
+      metrics += `# TYPE scrapifie_http_error_rate gauge\n`;
+      metrics += `scrapifie_http_error_rate ${requestStats.errorRate}\n\n`;
+
+      metrics += `# HELP scrapifie_http_response_time_p50 50th percentile response time\n`;
+      metrics += `# TYPE scrapifie_http_response_time_p50 gauge\n`;
+      metrics += `scrapifie_http_response_time_p50 ${requestStats.p50}\n\n`;
+
+      metrics += `# HELP scrapifie_http_response_time_p90 90th percentile response time\n`;
+      metrics += `# TYPE scrapifie_http_response_time_p90 gauge\n`;
+      metrics += `scrapifie_http_response_time_p90 ${requestStats.p90}\n\n`;
+
+      metrics += `# HELP scrapifie_http_response_time_p99 99th percentile response time\n`;
+      metrics += `# TYPE scrapifie_http_response_time_p99 gauge\n`;
+      metrics += `scrapifie_http_response_time_p99 ${requestStats.p99}\n\n`;
+
+      // System metrics
+      metrics += `# HELP scrapifie_nodejs_memory_heap_used Heap memory used in bytes\n`;
+      metrics += `# TYPE scrapifie_nodejs_memory_heap_used gauge\n`;
+      metrics += `scrapifie_nodejs_memory_heap_used ${metricsSummary.system.memory.heapUsed}\n\n`;
+
+      metrics += `# HELP scrapifie_nodejs_memory_heap_total Total heap memory in bytes\n`;
+      metrics += `# TYPE scrapifie_nodejs_memory_heap_total gauge\n`;
+      metrics += `scrapifie_nodejs_memory_heap_total ${metricsSummary.system.memory.heapTotal}\n\n`;
+
+      metrics += `# HELP scrapifie_nodejs_event_loop_lag Event loop lag in milliseconds\n`;
+      metrics += `# TYPE scrapifie_nodejs_event_loop_lag gauge\n`;
+      metrics += `scrapifie_nodejs_event_loop_lag ${metricsSummary.system.eventLoopLag}\n\n`;
 
       // Queue metrics
       for (const [queueName, stats] of Object.entries(queueStats)) {
-        metrics += `# HELP scraperx_queue_${queueName}_waiting Jobs waiting in queue\n`;
-        metrics += `# TYPE scraperx_queue_${queueName}_waiting gauge\n`;
-        metrics += `scraperx_queue_${queueName}_waiting ${stats.waiting}\n`;
+        metrics += `# HELP scrapifie_queue_${queueName}_waiting Jobs waiting in queue\n`;
+        metrics += `# TYPE scrapifie_queue_${queueName}_waiting gauge\n`;
+        metrics += `scrapifie_queue_${queueName}_waiting ${stats.waiting}\n`;
         
-        metrics += `# HELP scraperx_queue_${queueName}_active Jobs currently active\n`;
-        metrics += `# TYPE scraperx_queue_${queueName}_active gauge\n`;
-        metrics += `scraperx_queue_${queueName}_active ${stats.active}\n`;
+        metrics += `# HELP scrapifie_queue_${queueName}_active Jobs currently active\n`;
+        metrics += `# TYPE scrapifie_queue_${queueName}_active gauge\n`;
+        metrics += `scrapifie_queue_${queueName}_active ${stats.active}\n`;
         
-        metrics += `# HELP scraperx_queue_${queueName}_completed Total completed jobs\n`;
-        metrics += `# TYPE scraperx_queue_${queueName}_completed counter\n`;
-        metrics += `scraperx_queue_${queueName}_completed ${stats.completed}\n`;
+        metrics += `# HELP scrapifie_queue_${queueName}_completed Total completed jobs\n`;
+        metrics += `# TYPE scrapifie_queue_${queueName}_completed counter\n`;
+        metrics += `scrapifie_queue_${queueName}_completed ${stats.completed}\n`;
         
-        metrics += `# HELP scraperx_queue_${queueName}_failed Total failed jobs\n`;
-        metrics += `# TYPE scraperx_queue_${queueName}_failed counter\n`;
-        metrics += `scraperx_queue_${queueName}_failed ${stats.failed}\n\n`;
+        metrics += `# HELP scrapifie_queue_${queueName}_failed Total failed jobs\n`;
+        metrics += `# TYPE scrapifie_queue_${queueName}_failed counter\n`;
+        metrics += `scrapifie_queue_${queueName}_failed ${stats.failed}\n\n`;
       }
 
       reply.header('Content-Type', 'text/plain; charset=utf-8');
@@ -184,6 +234,34 @@ export const healthRoutes: FastifyPluginAsync = async (fastify) => {
     } catch (error) {
       logger.error({ error }, 'Failed to generate metrics');
       return reply.status(500).send({ error: 'Failed to generate metrics' });
+    }
+  });
+
+  /**
+   * GET /metrics/summary - JSON metrics summary
+   */
+  fastify.get('/metrics/summary', {
+    schema: {
+      description: 'JSON metrics summary for dashboards',
+      tags: ['Metrics'],
+    },
+  }, async (_request, reply) => {
+    if (!config.metrics.enabled) {
+      return reply.status(404).send({ error: 'Metrics disabled' });
+    }
+
+    try {
+      const summary = monitoring.getMetricsSummary();
+      const health = await monitoring.performHealthChecks();
+
+      return reply.status(200).send({
+        timestamp: new Date().toISOString(),
+        health: health.status,
+        ...summary,
+      });
+    } catch (error) {
+      logger.error({ error }, 'Failed to generate metrics summary');
+      return reply.status(500).send({ error: 'Failed to generate metrics summary' });
     }
   });
 };
