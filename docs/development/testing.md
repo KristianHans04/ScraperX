@@ -1,6 +1,6 @@
 # Testing
 
-ScraperX has a comprehensive test suite using Vitest. This document covers running and writing tests.
+Scrapifie has a comprehensive test suite using Vitest. This document covers running and writing tests.
 
 ## Test Suite Overview
 

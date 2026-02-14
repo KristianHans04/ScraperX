@@ -1,6 +1,6 @@
 # Contributing
 
-Guidelines for contributing to ScraperX development.
+Guidelines for contributing to Scrapifie development.
 
 ## Getting Started
 
@@ -14,8 +14,8 @@ Guidelines for contributing to ScraperX development.
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-org/scraperx.git
-   cd scraperx
+   git clone https://github.com/your-org/scrapifie.git
+   cd scrapifie
    ```
 
 2. **Install dependencies**

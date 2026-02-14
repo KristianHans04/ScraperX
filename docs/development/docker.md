@@ -1,6 +1,6 @@
 # Docker Setup
 
-ScraperX uses Docker for easy deployment and development. This document covers Docker configuration and usage.
+Scrapifie uses Docker for easy deployment and development. This document covers Docker configuration and usage.
 
 ## Overview
 
@@ -10,9 +10,9 @@ Docker Compose orchestrates all services:
 |---------|-------|---------|
 | postgres | postgres:16-alpine | Primary database |
 | redis | redis:7-alpine | Queue and caching |
-| api | scraperx:latest | Fastify API server |
-| worker | scraperx:latest | Job processing |
-| camoufox | scraperx-camoufox | Stealth browser |
+| api | scrapifie:latest | Fastify API server |
+| worker | scrapifie:latest | Job processing |
+| camoufox | scrapifie-camoufox | Stealth browser |
 
 ## Quick Start
 
@@ -54,9 +54,9 @@ docker-compose up -d --build
 postgres:
   image: postgres:16-alpine
   environment:
-    POSTGRES_DB: scraperx
-    POSTGRES_USER: scraperx
-    POSTGRES_PASSWORD: scraperx
+    POSTGRES_DB: scrapifie
+    POSTGRES_USER: scrapifie
+    POSTGRES_PASSWORD: scrapifie
   volumes:
     - postgres_data:/var/lib/postgresql/data
   ports:
@@ -84,7 +84,7 @@ api:
     target: api
   environment:
     - NODE_ENV=production
-    - DATABASE_URL=postgresql://scraperx:scraperx@postgres:5432/scraperx
+    - DATABASE_URL=postgresql://scrapifie:scrapifie@postgres:5432/scrapifie
     - REDIS_URL=redis://redis:6379
   ports:
     - "3000:3000"
@@ -102,7 +102,7 @@ worker:
     target: worker
   environment:
     - NODE_ENV=production
-    - DATABASE_URL=postgresql://scraperx:scraperx@postgres:5432/scraperx
+    - DATABASE_URL=postgresql://scrapifie:scrapifie@postgres:5432/scrapifie
     - REDIS_URL=redis://redis:6379
   depends_on:
     - postgres
@@ -122,7 +122,7 @@ camoufox:
 
 ## Dockerfile
 
-ScraperX uses a multi-stage Dockerfile:
+Scrapifie uses a multi-stage Dockerfile:
 
 ### Build Stage
 
@@ -214,7 +214,7 @@ Persistent data is stored in Docker volumes:
 ### Viewing Volumes
 
 ```bash
-docker volume ls | grep scraperx
+docker volume ls | grep scrapifie
 ```
 
 ### Removing Volumes (CAUTION: Deletes data)
@@ -259,7 +259,7 @@ docker-compose logs api
 docker-compose ps
 
 # Inspect container
-docker inspect scraperx_api_1
+docker inspect scrapifie_api_1
 ```
 
 ### Database Connection Issues
@@ -269,7 +269,7 @@ docker inspect scraperx_api_1
 docker-compose ps postgres
 
 # Connect to postgres
-docker-compose exec postgres psql -U scraperx -d scraperx
+docker-compose exec postgres psql -U scrapifie -d scrapifie
 ```
 
 ### Redis Connection Issues

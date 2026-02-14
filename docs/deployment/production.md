@@ -1,6 +1,6 @@
 # Production Deployment
 
-Guide for deploying ScraperX to production environments.
+Guide for deploying Scrapifie to production environments.
 
 ## Deployment Options
 
@@ -52,7 +52,7 @@ Guide for deploying ScraperX to production environments.
    ENCRYPTION_KEY=your-32-char-key-here
    
    # Database
-   DATABASE_URL=postgresql://user:pass@db-host:5432/scraperx
+   DATABASE_URL=postgresql://user:pass@db-host:5432/scrapifie
    
    # Redis
    REDIS_URL=redis://:password@redis-host:6379
@@ -113,20 +113,20 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: scraperx-api
+  name: scrapifie-api
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: scraperx-api
+      app: scrapifie-api
   template:
     metadata:
       labels:
-        app: scraperx-api
+        app: scrapifie-api
     spec:
       containers:
       - name: api
-        image: scraperx:latest
+        image: scrapifie:latest
         ports:
         - containerPort: 3000
         env:
@@ -134,7 +134,7 @@ spec:
           value: "production"
         envFrom:
         - secretRef:
-            name: scraperx-secrets
+            name: scrapifie-secrets
         resources:
           limits:
             memory: "1Gi"
@@ -162,17 +162,17 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: scraperx-worker
+  name: scrapifie-worker
 spec:
   replicas: 5
   selector:
     matchLabels:
-      app: scraperx-worker
+      app: scrapifie-worker
   template:
     spec:
       containers:
       - name: worker
-        image: scraperx:latest
+        image: scrapifie:latest
         command: ["node", "dist/workers/index.js"]
         resources:
           limits:
@@ -204,7 +204,7 @@ Set up automated backups:
 
 ```bash
 # Daily backup
-pg_dump -h localhost -U scraperx scraperx | gzip > backup_$(date +%Y%m%d).sql.gz
+pg_dump -h localhost -U scrapifie scrapifie | gzip > backup_$(date +%Y%m%d).sql.gz
 ```
 
 ### Connection Pooling
@@ -242,10 +242,10 @@ For high availability:
 ```nginx
 server {
     listen 443 ssl;
-    server_name api.scraperx.com;
+    server_name api.scrapifie.com;
 
-    ssl_certificate /etc/letsencrypt/live/api.scraperx.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/api.scraperx.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/api.scrapifie.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api.scrapifie.com/privkey.pem;
 
     location / {
         proxy_pass http://localhost:3000;
@@ -259,7 +259,7 @@ server {
 
 ### Health Endpoints
 
-ScraperX provides health endpoints:
+Scrapifie provides health endpoints:
 
 | Endpoint | Purpose |
 |----------|---------|
