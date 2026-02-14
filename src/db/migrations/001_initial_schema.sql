@@ -1,5 +1,5 @@
 -- Migration: 001_initial_schema
--- Description: Create initial database schema for ScraperX
+-- Description: Create initial database schema for Scrapifie
 
 -- Enable required extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
