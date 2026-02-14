@@ -17,7 +17,7 @@ const envSchema = z.object({
   API_PREFIX: z.string().default('/api'),
 
   // Database
-  DATABASE_URL: z.string().default('postgresql://scraperx:scraperx@localhost:5432/scraperx'),
+  DATABASE_URL: z.string().default('postgresql://scrapifie:scrapifie@localhost:5432/scrapifie'),
   DATABASE_POOL_SIZE: z.string().transform(Number).default('20'),
   DATABASE_SSL: z.string().transform(v => v === 'true').default('false'),
 
@@ -27,7 +27,7 @@ const envSchema = z.object({
   REDIS_DB: z.string().transform(Number).default('0'),
 
   // Queue
-  QUEUE_PREFIX: z.string().default('scraperx'),
+  QUEUE_PREFIX: z.string().default('scrapifie'),
   QUEUE_CONCURRENCY: z.string().transform(Number).default('10'),
 
   // Rate Limiting
@@ -68,8 +68,8 @@ const envSchema = z.object({
   MINIO_PORT: z.string().transform(Number).default('9000'),
   MINIO_ACCESS_KEY: z.string().default('minioadmin'),
   MINIO_SECRET_KEY: z.string().default('minioadmin'),
-  MINIO_BUCKET_CONTENT: z.string().default('scraperx-content'),
-  MINIO_BUCKET_SCREENSHOTS: z.string().default('scraperx-screenshots'),
+  MINIO_BUCKET_CONTENT: z.string().default('scrapifie-content'),
+  MINIO_BUCKET_SCREENSHOTS: z.string().default('scrapifie-screenshots'),
   MINIO_USE_SSL: z.string().transform(v => v === 'true').default('false'),
 
   // Metrics
