@@ -1,4 +1,4 @@
-# ScraperX Roadmap -- Phase 11: Public Website, Legal Pages, and Documentation Portal
+# Scrapifie Roadmap -- Phase 11: Public Website, Legal Pages, and Documentation Portal
 
 ## Document Information
 
@@ -38,7 +38,7 @@
 
 ## 1. Phase Overview
 
-Phase 11 builds the entire public-facing surface of ScraperX. This includes the marketing website (landing, pricing, about, contact), the blog (consuming posts created by admins in Phase 10), the status page (consuming status data set by admins in Phase 10), all legal pages (Terms of Service, Privacy Policy, Acceptable Use Policy, Cookie Policy, Data Processing Agreement), and the full documentation portal (quickstart, guides, API reference, changelog).
+Phase 11 builds the entire public-facing surface of Scrapifie. This includes the marketing website (landing, pricing, about, contact), the blog (consuming posts created by admins in Phase 10), the status page (consuming status data set by admins in Phase 10), all legal pages (Terms of Service, Privacy Policy, Acceptable Use Policy, Cookie Policy, Data Processing Agreement), and the full documentation portal (quickstart, guides, API reference, changelog).
 
 These pages do not require authentication. They serve as the front door for prospective users, the legal backbone for the business, and the self-service technical resource for developers.
 
@@ -87,7 +87,7 @@ These pages do not require authentication. They serve as the front door for pros
 
 | # | Goal |
 |---|------|
-| G1 | A visitor can understand what ScraperX does within 5 seconds of landing |
+| G1 | A visitor can understand what Scrapifie does within 5 seconds of landing |
 | G2 | A visitor can compare plans and start a free account from the pricing page |
 | G3 | All legal documents are accessible and version-managed |
 | G4 | Cookie consent is collected before any non-essential cookies are set |
@@ -147,7 +147,7 @@ Build the persistent top navigation bar for all public pages.
 | Height | 64px desktop, 56px mobile |
 | Background | Semi-transparent with backdrop blur (activates on scroll past 20px) |
 | Z-index | Highest layer (above all page content) |
-| Logo | ScraperX wordmark, left-aligned, links to / |
+| Logo | Scrapifie wordmark, left-aligned, links to / |
 | Navigation links (desktop) | Features, Pricing, Docs, Blog, Status -- horizontal row, center or left-of-center |
 | Auth area (desktop, unauthenticated) | "Sign In" text link + "Get Started" primary button, right-aligned |
 | Auth area (desktop, authenticated) | User avatar (32px circle) + "Dashboard" text link, right-aligned |
@@ -226,7 +226,7 @@ Create a layout wrapper that wraps all public pages with the header and footer.
 |---------|---------------|
 | Layout | Centered text content with optional illustration/graphic to the right on desktop, stacked on mobile |
 | Headline | Large heading (h1), maximum 10 words, communicates core value proposition |
-| Subheadline | 1-2 sentences below headline explaining what ScraperX does in plain language |
+| Subheadline | 1-2 sentences below headline explaining what Scrapifie does in plain language |
 | Primary CTA | "Get Started Free" button, links to /register |
 | Secondary CTA | "View Documentation" text link, links to /docs |
 | Visual | Abstract illustration or code-themed graphic (SVG or static image), decorative only (empty alt text) |
@@ -313,7 +313,7 @@ Create a layout wrapper that wraps all public pages with the header and footer.
 - Each section is its own component for maintainability
 - All text content comes from a constants file (not hardcoded in JSX)
 - All sections are responsive using Tailwind breakpoint utilities
-- Set page meta: title "ScraperX -- Web Scraping API", description summarizing the value proposition
+- Set page meta: title "Scrapifie -- Web Scraping API", description summarizing the value proposition
 - Add structured data (Organization schema) via a script tag in the head manager
 
 ---
@@ -415,7 +415,7 @@ Feature rows to include:
 - Fetch plan data from an API endpoint or a static configuration constant (same data used by the billing system in Phase 8)
 - Billing toggle state controls which prices are displayed
 - Sync billing toggle to URL query parameter
-- Set page meta: title "Pricing -- ScraperX", description about transparent pricing
+- Set page meta: title "Pricing -- Scrapifie", description about transparent pricing
 - Add structured data (Product schema with pricing offers)
 
 ---
@@ -428,11 +428,11 @@ Feature rows to include:
 
 | Section | Specification |
 |---------|---------------|
-| Hero | Heading "About ScraperX", 2-3 sentence mission statement |
-| What we do | 1-2 paragraphs explaining what ScraperX provides and for whom |
+| Hero | Heading "About Scrapifie", 2-3 sentence mission statement |
+| What we do | 1-2 paragraphs explaining what Scrapifie provides and for whom |
 | Values cards | 3-4 value cards in a grid (e.g., Reliability, Transparency, Developer-First, Privacy-Respecting), each with icon, heading, and 2-sentence description |
 | Layout | Single column, centered content, max-width 720px for text sections, wider for cards grid |
-| Page meta | Title "About -- ScraperX", description about the company mission |
+| Page meta | Title "About -- Scrapifie", description about the company mission |
 
 ### Task 7.2: Contact Page
 
@@ -447,8 +447,8 @@ Feature rows to include:
 | Success state | Replace form with success message: "Thank you for reaching out. We'll get back to you within 2 business days." with a "Send another message" link to reset the form |
 | Error state | Inline error messages below each invalid field; generic toast for server errors |
 | Rate limiting | Maximum 3 submissions per hour per IP; if exceeded, show message "You've sent too many messages. Please try again later." |
-| Contact info panel | Email address (support@scraperx.com placeholder), response time expectation ("Within 2 business days"), link to documentation ("Check our docs first"), link to status page ("Current system status") |
-| Page meta | Title "Contact -- ScraperX", description about getting in touch |
+| Contact info panel | Email address (support@scrapifie.com placeholder), response time expectation ("Within 2 business days"), link to documentation ("Check our docs first"), link to status page ("Current system status") |
+| Page meta | Title "Contact -- Scrapifie", description about getting in touch |
 
 **Backend endpoint for contact form:**
 
@@ -482,7 +482,7 @@ Feature rows to include:
 | Empty state | If no posts match filter: "No posts found for this topic." with CTA to clear filter |
 | Data source | Fetched from API endpoint that returns published blog posts only (excludes drafts and archived) |
 | Sorting | Newest first (by publication date) |
-| Page meta | Title "Blog -- ScraperX", description about developer content and updates |
+| Page meta | Title "Blog -- Scrapifie", description about developer content and updates |
 
 ### Task 8.2: Blog Post Page
 
@@ -555,7 +555,7 @@ Response fields per post:
 | Subscribe | "Subscribe to Updates" section with email input; when submitted, stores email for status notification distribution |
 | Empty state | If no incidents: "No incidents reported. All systems operational." |
 | Data refresh | Page polls for status updates every 60 seconds; status changes trigger an immediate visual update |
-| Page meta | Title "System Status -- ScraperX", description about current system health |
+| Page meta | Title "System Status -- Scrapifie", description about current system health |
 
 ### Task 9.2: Status Page API Endpoints
 
@@ -606,7 +606,7 @@ All legal pages share a common layout:
 | Content source | Stored as Markdown in the repository, rendered client-side |
 | Sections (from 02-LEGAL-FRAMEWORK.md) | Acceptance of Terms, Definitions, Account Registration, Use of the Service, Plans Billing and Credits, Intellectual Property, Data and Privacy, Disclaimers and Limitation of Liability, Indemnification, Termination, Modifications to Terms, Governing Law, General Provisions |
 | Jurisdiction placeholder | All jurisdiction references use "[Governing Jurisdiction]" placeholder text |
-| Page meta | Title "Terms of Service -- ScraperX" |
+| Page meta | Title "Terms of Service -- Scrapifie" |
 
 ### Task 10.3: Privacy Policy Page
 
@@ -616,7 +616,7 @@ All legal pages share a common layout:
 | Title | "Privacy Policy" |
 | Sections | Data We Collect, How We Use Your Data, Data Sharing, Data Retention, Security Measures, Your Rights, International Data Transfers, Children's Privacy, Changes to This Policy, Contact Information |
 | Data tables | Include tables listing: types of data collected with purpose and legal basis; retention periods per data type; user rights with how to exercise them |
-| Page meta | Title "Privacy Policy -- ScraperX" |
+| Page meta | Title "Privacy Policy -- Scrapifie" |
 
 ### Task 10.4: Acceptable Use Policy Page
 
@@ -626,7 +626,7 @@ All legal pages share a common layout:
 | Title | "Acceptable Use Policy" |
 | Sections | Permitted Uses, Prohibited Uses (11 categories from 02-LEGAL-FRAMEWORK.md), Rate and Volume Guidelines, Enforcement Actions (warning, rate limit, temporary suspension, permanent suspension, legal referral), Reporting Violations |
 | Enforcement ladder | Displayed as a visual progression (numbered steps or vertical timeline) |
-| Page meta | Title "Acceptable Use Policy -- ScraperX" |
+| Page meta | Title "Acceptable Use Policy -- Scrapifie" |
 
 ### Task 10.5: Cookie Policy Page
 
@@ -637,7 +637,7 @@ All legal pages share a common layout:
 | Sections | What Are Cookies, Cookies We Use, Managing Your Preferences, Changes to This Policy |
 | Cookie table | 3 categories: Necessary (always on, listed with name, purpose, expiry), Functional (optional, listed similarly), Analytics (optional, listed similarly); NO marketing cookies |
 | Preference link | "Manage cookie preferences" link that opens the cookie preference modal (same modal from the cookie consent banner) |
-| Page meta | Title "Cookie Policy -- ScraperX" |
+| Page meta | Title "Cookie Policy -- Scrapifie" |
 
 ### Task 10.6: Data Processing Agreement Page
 
@@ -647,7 +647,7 @@ All legal pages share a common layout:
 | Title | "Data Processing Agreement" |
 | Sections | Definitions, Roles (controller vs processor), Processor Obligations, Sub-Processors, Data Subject Rights, Cross-Border Transfers, Security Measures, Duration and Termination, Liability |
 | Note | This page is informational for transparency. Actual DPA signing is handled offline for Enterprise customers. |
-| Page meta | Title "Data Processing Agreement -- ScraperX" |
+| Page meta | Title "Data Processing Agreement -- Scrapifie" |
 
 ### Task 10.7: Cookie Consent Banner
 
@@ -765,7 +765,7 @@ API conventions documented on the overview page:
 
 | Convention | Detail |
 |------------|--------|
-| Base URL | Configurable via environment, e.g., https://api.scraperx.com |
+| Base URL | Configurable via environment, e.g., https://api.scrapifie.com |
 | Authentication | API key in X-API-Key header |
 | Content type | application/json for requests and responses |
 | HTTP methods | POST for creating jobs, GET for reading data, DELETE for removing resources |
@@ -835,13 +835,13 @@ For every public page, set:
 
 | Tag | Description |
 |-----|-------------|
-| title | Unique per page, format: "[Page Name] -- ScraperX" |
+| title | Unique per page, format: "[Page Name] -- Scrapifie" |
 | meta description | Unique per page, 120-160 characters, includes primary keyword |
 | meta robots | "index, follow" for all public pages; "noindex" for legal version history modals |
 | canonical URL | Absolute URL of the page |
 | og:title | Same as title |
 | og:description | Same as meta description |
-| og:image | Default ScraperX social share image (1200x630px) or post-specific image for blog posts |
+| og:image | Default Scrapifie social share image (1200x630px) or post-specific image for blog posts |
 | og:url | Canonical URL |
 | og:type | "website" for most pages, "article" for blog posts |
 | twitter:card | "summary_large_image" |
@@ -861,7 +861,7 @@ For every public page, set:
 
 ### Task 12.3: Pre-rendering for SPA
 
-Since ScraperX is a React SPA, search engine crawlers may not execute JavaScript. To ensure pages are indexed:
+Since Scrapifie is a React SPA, search engine crawlers may not execute JavaScript. To ensure pages are indexed:
 
 | Approach | Description |
 |----------|-------------|
@@ -1065,7 +1065,7 @@ Phase 11 is complete when ALL of the following are true:
 
 ## 17. Connection to Next Phase
 
-Phase 11 completes the public-facing surface of ScraperX. Phase 12 is the final phase before launch:
+Phase 11 completes the public-facing surface of Scrapifie. Phase 12 is the final phase before launch:
 
 - **Phase 12 (Security Hardening, Testing, and Launch Preparation)** conducts a full security audit, runs comprehensive penetration testing, optimizes performance, finalizes monitoring, and prepares the deployment pipeline and launch checklist
 - Phase 12 depends on Phase 11 because security testing must cover the public website, legal pages, and documentation portal

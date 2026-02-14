@@ -1,4 +1,4 @@
-# ScraperX Roadmap -- Phase 12: Security Hardening, Testing, and Launch Preparation
+# Scrapifie Roadmap -- Phase 12: Security Hardening, Testing, and Launch Preparation
 
 ## Document Information
 
@@ -38,7 +38,7 @@
 
 ## 1. Phase Overview
 
-Phase 12 is the final phase before ScraperX goes live. No new features are built in this phase. Instead, every feature built in Phases 1-11 is hardened, tested, optimized, and prepared for production deployment. This phase covers security auditing, penetration testing, performance optimization, SEO verification, monitoring setup, CI/CD pipeline finalization, backup and disaster recovery, full test suite execution, a comprehensive launch checklist, and a post-launch monitoring plan.
+Phase 12 is the final phase before Scrapifie goes live. No new features are built in this phase. Instead, every feature built in Phases 1-11 is hardened, tested, optimized, and prepared for production deployment. This phase covers security auditing, penetration testing, performance optimization, SEO verification, monitoring setup, CI/CD pipeline finalization, backup and disaster recovery, full test suite execution, a comprehensive launch checklist, and a post-launch monitoring plan.
 
 This phase is fundamentally different from Phases 6-11. It does not add routes, pages, or database tables. It verifies, hardens, and operationalizes everything that already exists.
 
@@ -904,7 +904,7 @@ Run the complete test suite (~1360 tests) and verify:
 
 ## 16. Definition of Done
 
-Phase 12 -- and the entire ScraperX platform build -- is complete when ALL of the following are true:
+Phase 12 -- and the entire Scrapifie platform build -- is complete when ALL of the following are true:
 
 | # | Criterion |
 |---|-----------|
@@ -958,4 +958,4 @@ Phase 12 marks the end of the initial platform build. After a successful launch,
 | Geographic Expansion | Add payment providers for additional regions, localize legal documents | 02-LEGAL-FRAMEWORK.md |
 | API v2 | Next API version based on user feedback and usage patterns | 17-DOCS-PORTAL.md Section 11 |
 
-**The ScraperX platform build is now fully documented across 22 main documents, 7 roadmap phases, and 4 appendices. Every page, field, flow, error state, and edge case has been specified. Build with confidence.**
+**The Scrapifie platform build is now fully documented across 22 main documents, 7 roadmap phases, and 4 appendices. Every page, field, flow, error state, and edge case has been specified. Build with confidence.**

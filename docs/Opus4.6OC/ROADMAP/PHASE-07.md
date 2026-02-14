@@ -1,4 +1,4 @@
-# ScraperX Roadmap -- Phase 7: User Dashboard (All Pages)
+# Scrapifie Roadmap -- Phase 7: User Dashboard (All Pages)
 
 ## Document Information
 
@@ -207,7 +207,7 @@ Build a typed API client for frontend-to-backend communication.
 
 | Element | Details |
 |---------|---------|
-| Logo | ScraperX logo/wordmark, links to /dashboard |
+| Logo | Scrapifie logo/wordmark, links to /dashboard |
 | Search trigger | Search icon button, opens command palette (Cmd+K shortcut) |
 | Theme toggle | Sun/moon icon button, cycles through light/dark/system |
 | User menu | Avatar (or initials), dropdown with: user name, email, Settings link, Billing link, Logout button |

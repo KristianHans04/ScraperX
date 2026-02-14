@@ -1,4 +1,4 @@
-# ScraperX Roadmap -- Phase 8: Billing and Credits
+# Scrapifie Roadmap -- Phase 8: Billing and Credits
 
 ## Document Information
 

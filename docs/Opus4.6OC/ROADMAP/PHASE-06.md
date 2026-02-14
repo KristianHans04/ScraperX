@@ -1,4 +1,4 @@
-# ScraperX Roadmap -- Phase 6: Database Schema Expansion, Authentication, and Roles
+# Scrapifie Roadmap -- Phase 6: Database Schema Expansion, Authentication, and Roles
 
 ## Document Information
 
@@ -345,7 +345,7 @@ Admin users can access any resource through admin-specific endpoints (/api/admin
 | Key format | session:{sessionId} |
 | Session ID | Cryptographically random, 32 bytes, base64url encoded |
 | Session data fields | userId, accountId, role, ipAddress, userAgent, createdAt, lastActivityAt, expiresAt, csrfToken |
-| Session cookie | Name: scraperx_session, HttpOnly, Secure, SameSite=Lax, Path=/ |
+| Session cookie | Name: scrapifie_session, HttpOnly, Secure, SameSite=Lax, Path=/ |
 
 ### Task 7.2: Session Lifecycle
 

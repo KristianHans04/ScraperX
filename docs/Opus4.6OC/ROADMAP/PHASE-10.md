@@ -1,4 +1,4 @@
-# ScraperX Roadmap -- Phase 10: Admin Dashboard (All Pages)
+# Scrapifie Roadmap -- Phase 10: Admin Dashboard (All Pages)
 
 ## Document Information
 
@@ -122,7 +122,7 @@ Before starting Phase 10, verify:
 | Element | Details |
 |---------|---------|
 | Visual distinction | Admin layout uses a distinct accent color (not the user dashboard primary color) and an "Admin" badge in the top bar to clearly indicate admin context |
-| Top bar | ScraperX logo with "Admin" badge, global search trigger (Cmd+K), user menu with "Switch to User Dashboard" link |
+| Top bar | Scrapifie logo with "Admin" badge, global search trigger (Cmd+K), user menu with "Switch to User Dashboard" link |
 | Sidebar | Admin navigation grouped by function (see below) |
 | Content area | Same structure as user dashboard (max width 1200px, padding, breadcrumbs) |
 
@@ -797,7 +797,7 @@ Phase 10 is complete when ALL of the following are true:
 
 Phase 10 completes the admin-facing features. Phase 11 builds the public-facing website:
 
-- **Phase 11 (Public Website, Legal, Docs Portal)** builds the marketing site, legal pages, and documentation portal that form the public face of ScraperX
+- **Phase 11 (Public Website, Legal, Docs Portal)** builds the marketing site, legal pages, and documentation portal that form the public face of Scrapifie
 - Phase 11 depends on Phase 10's blog management (blog posts published via admin are displayed on public blog)
 - Phase 11 depends on Phase 10's status page management (status set via admin is displayed on public status page)
 - The public pricing page links to the registration flow built in Phase 6

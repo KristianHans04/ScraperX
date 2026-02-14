@@ -1,4 +1,4 @@
-# ScraperX Roadmap -- Phase 9: Settings, Support, and Team Foundations
+# Scrapifie Roadmap -- Phase 9: Settings, Support, and Team Foundations
 
 ## Document Information
 
