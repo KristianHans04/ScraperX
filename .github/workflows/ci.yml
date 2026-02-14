@@ -102,7 +102,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: test_password
           POSTGRES_USER: test_user
-          POSTGRES_DB: scraperx_test
+          POSTGRES_DB: scrapifie_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -136,13 +136,13 @@ jobs:
       - name: Run database migrations
         run: npm run db:migrate
         env:
-          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/scraperx_test
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/scrapifie_test
       
       - name: Run integration tests
         run: npm run test:integration
         env:
           NODE_ENV: test
-          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/scraperx_test
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/scrapifie_test
           REDIS_URL: redis://localhost:6379
       
       - name: Upload coverage
@@ -203,7 +203,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: false
-          tags: scraperx:${{ github.sha }}
+          tags: scrapifie:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

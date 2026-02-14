@@ -1,4 +1,4 @@
-# ScraperX - Multi-stage Dockerfile
+# Scrapifie - Multi-stage Dockerfile
 # Enterprise-grade web scraping platform
 
 # ==============================================================================
@@ -60,7 +60,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
-RUN groupadd -r scraperx && useradd -r -g scraperx scraperx
+RUN groupadd -r scrapifie && useradd -r -g scrapifie scrapifie
 
 WORKDIR /app
 
@@ -75,10 +75,10 @@ COPY package*.json ./
 RUN npx playwright install chromium --with-deps
 
 # Change ownership
-RUN chown -R scraperx:scraperx /app
+RUN chown -R scrapifie:scrapifie /app
 
 # Switch to non-root user
-USER scraperx
+USER scrapifie
 
 # Environment variables
 ENV NODE_ENV=production
@@ -122,7 +122,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
-RUN groupadd -r scraperx && useradd -r -g scraperx scraperx
+RUN groupadd -r scrapifie && useradd -r -g scrapifie scrapifie
 
 WORKDIR /app
 
@@ -137,10 +137,10 @@ COPY package*.json ./
 RUN npx playwright install chromium --with-deps
 
 # Create browser data directory
-RUN mkdir -p /app/.cache && chown -R scraperx:scraperx /app
+RUN mkdir -p /app/.cache && chown -R scrapifie:scrapifie /app
 
 # Switch to non-root user
-USER scraperx
+USER scrapifie
 
 # Environment variables
 ENV NODE_ENV=production

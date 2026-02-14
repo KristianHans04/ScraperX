@@ -4,18 +4,18 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:16-alpine
-    container_name: scraperx-postgres
+    container_name: scrapifie-postgres
     environment:
-      POSTGRES_USER: scraperx
-      POSTGRES_PASSWORD: scraperx_secret
-      POSTGRES_DB: scraperx
+      POSTGRES_USER: scrapifie
+      POSTGRES_PASSWORD: scrapifie_secret
+      POSTGRES_DB: scrapifie
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./src/db/migrations:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U scraperx -d scraperx"]
+      test: ["CMD-SHELL", "pg_isready -U scrapifie -d scrapifie"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,7 +24,7 @@ services:
   # Redis for Queue and Caching
   redis:
     image: redis:7-alpine
-    container_name: scraperx-redis
+    container_name: scrapifie-redis
     command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     ports:
       - "6379:6379"
@@ -40,11 +40,11 @@ services:
   # MinIO for Object Storage (screenshots, PDFs, etc.)
   minio:
     image: minio/minio:latest
-    container_name: scraperx-minio
+    container_name: scrapifie-minio
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: scraperx
-      MINIO_ROOT_PASSWORD: scraperx_secret
+      MINIO_ROOT_USER: scrapifie
+      MINIO_ROOT_PASSWORD: scrapifie_secret
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -60,16 +60,16 @@ services:
   # MinIO Client - Create default bucket on startup
   minio-init:
     image: minio/mc:latest
-    container_name: scraperx-minio-init
+    container_name: scrapifie-minio-init
     depends_on:
       minio:
         condition: service_healthy
     entrypoint: >
       /bin/sh -c "
-      mc alias set scraperx http://minio:9000 scraperx scraperx_secret;
-      mc mb scraperx/scraperx-results --ignore-existing;
-      mc mb scraperx/scraperx-screenshots --ignore-existing;
-      mc anonymous set download scraperx/scraperx-screenshots;
+      mc alias set scrapifie http://minio:9000 scrapifie scrapifie_secret;
+      mc mb scrapifie/scrapifie-results --ignore-existing;
+      mc mb scrapifie/scrapifie-screenshots --ignore-existing;
+      mc anonymous set download scrapifie/scrapifie-screenshots;
       exit 0;
       "
 
@@ -78,7 +78,7 @@ services:
     build:
       context: ./docker/camoufox
       dockerfile: Dockerfile
-    container_name: scraperx-camoufox
+    container_name: scrapifie-camoufox
     ports:
       - "8765:8765"
     environment:
@@ -101,24 +101,24 @@ services:
         reservations:
           memory: 1G
 
-  # ScraperX API Server
+  # Scrapifie API Server
   api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: scraperx-api
+    container_name: scrapifie-api
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - DATABASE_URL=postgresql://scraperx:scraperx_secret@postgres:5432/scraperx
+      - DATABASE_URL=postgresql://scrapifie:scrapifie_secret@postgres:5432/scrapifie
       - REDIS_URL=redis://redis:6379
       - CAMOUFOX_URL=http://camoufox:8765
       - MINIO_ENDPOINT=minio
       - MINIO_PORT=9000
-      - MINIO_ACCESS_KEY=scraperx
-      - MINIO_SECRET_KEY=scraperx_secret
+      - MINIO_ACCESS_KEY=scrapifie
+      - MINIO_SECRET_KEY=scrapifie_secret
     depends_on:
       postgres:
         condition: service_healthy
@@ -135,22 +135,22 @@ services:
       retries: 3
     restart: unless-stopped
 
-  # ScraperX Worker
+  # Scrapifie Worker
   worker:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: scraperx-worker
+    container_name: scrapifie-worker
     command: ["node", "dist/workers/index.js"]
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://scraperx:scraperx_secret@postgres:5432/scraperx
+      - DATABASE_URL=postgresql://scrapifie:scrapifie_secret@postgres:5432/scrapifie
       - REDIS_URL=redis://redis:6379
       - CAMOUFOX_URL=http://camoufox:8765
       - MINIO_ENDPOINT=minio
       - MINIO_PORT=9000
-      - MINIO_ACCESS_KEY=scraperx
-      - MINIO_SECRET_KEY=scraperx_secret
+      - MINIO_ACCESS_KEY=scrapifie
+      - MINIO_SECRET_KEY=scrapifie_secret
     depends_on:
       postgres:
         condition: service_healthy
@@ -176,4 +176,4 @@ volumes:
 
 networks:
   default:
-    name: scraperx-network
+    name: scrapifie-network

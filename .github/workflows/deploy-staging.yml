@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: staging
-      url: https://staging.scraperx.io
+      url: https://staging.scrapifie.io
     
     steps:
       - uses: actions/checkout@v4
@@ -52,10 +52,10 @@ jobs:
       - name: Run smoke tests
         run: |
           echo "Running smoke tests against staging..."
-          echo "Health check: curl https://staging.scraperx.io/health"
+          echo "Health check: curl https://staging.scrapifie.io/health"
       
       - name: Notify deployment
         if: success()
         run: |
           echo "Deployment to staging successful!"
-          echo "Staging URL: https://staging.scraperx.io"
+          echo "Staging URL: https://staging.scrapifie.io"
