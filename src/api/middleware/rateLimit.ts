@@ -23,17 +23,18 @@ export async function rateLimitMiddleware(
   request: FastifyRequest,
   reply: FastifyReply
 ): Promise<void> {
-  // Skip rate limiting if no organization (for public endpoints)
-  if (!request.organization) {
+  // Skip rate limiting if no account (for public endpoints)
+  if (!request.account) {
     return;
   }
 
   const limiter = await getRateLimiter();
-  const orgId = request.organization.id;
+  const accountId = request.account.id;
   const apiKeyId = request.apiKey?.id;
 
-  // Determine rate limit - API key override > org setting > plan default
-  let rateLimit = request.organization.rateLimitPerSecond;
+  // Determine rate limit - API key override > default
+  // TODO: Add rate limits to Account model (Phase 10+)
+  let rateLimit = 100; // Default: 100 requests per second
   if (request.apiKey?.rateLimitOverride) {
     rateLimit = request.apiKey.rateLimitOverride;
   }
@@ -42,7 +43,7 @@ export async function rateLimitMiddleware(
   const windowMs = config.rateLimit.windowMs;
 
   // Create rate limit key
-  const rateLimitKey = apiKeyId ? `api:${apiKeyId}` : `org:${orgId}`;
+  const rateLimitKey = apiKeyId ? `api:${apiKeyId}` : `account:${accountId}`;
 
   try {
     const result = await limiter.isRateLimited(rateLimitKey, rateLimit, windowMs);
@@ -57,7 +58,7 @@ export async function rateLimitMiddleware(
       reply.header('Retry-After', Math.max(1, retryAfter).toString());
 
       logger.warn(
-        { orgId, apiKeyId, rateLimit, retryAfter },
+        { accountId, apiKeyId, rateLimit, retryAfter },
         'Rate limit exceeded'
       );
 
@@ -87,20 +88,21 @@ export async function concurrentLimitMiddleware(
   request: FastifyRequest,
   reply: FastifyReply
 ): Promise<void> {
-  if (!request.organization) {
+  if (!request.account) {
     return;
   }
 
   const limiter = await getRateLimiter();
-  const orgId = request.organization.id;
+  const accountId = request.account.id;
 
   // Determine concurrent limit
-  let concurrentLimit = request.organization.maxConcurrentJobs;
+  // TODO: Add concurrent limits to Account model (Phase 10+)
+  let concurrentLimit = 10; // Default: 10 concurrent requests
   if (request.apiKey?.maxConcurrentOverride) {
     concurrentLimit = request.apiKey.maxConcurrentOverride;
   }
 
-  const concurrentKey = `org:${orgId}`;
+  const concurrentKey = `account:${accountId}`;
 
   try {
     const result = await limiter.checkConcurrent(
@@ -115,7 +117,7 @@ export async function concurrentLimitMiddleware(
 
     if (!result.allowed) {
       logger.warn(
-        { orgId, concurrentLimit, current: result.current },
+        { accountId, concurrentLimit, current: result.current },
         'Concurrent limit exceeded'
       );
 
@@ -195,7 +197,7 @@ export async function checkCreditsMiddleware(
   request: FastifyRequest,
   reply: FastifyReply
 ): Promise<void> {
-  if (!request.organization) {
+  if (!request.account) {
     return;
   }
 
@@ -203,17 +205,17 @@ export async function checkCreditsMiddleware(
   const estimatedCredits = (request as FastifyRequest & { estimatedCredits?: number }).estimatedCredits ?? 1;
 
   // Enterprise plans have unlimited credits
-  if (request.organization.planId === 'enterprise') {
+  if (request.account.plan === 'enterprise') {
     return;
   }
 
   // Check credit balance
-  if (request.organization.creditsBalance < estimatedCredits) {
+  if (request.account.creditBalance < estimatedCredits) {
     logger.warn(
       {
-        orgId: request.organization.id,
+        accountId: request.account.id,
         required: estimatedCredits,
-        available: request.organization.creditsBalance,
+        available: request.account.creditBalance,
       },
       'Insufficient credits'
     );
@@ -222,11 +224,11 @@ export async function checkCreditsMiddleware(
       success: false,
       error: {
         code: 'INSUFFICIENT_CREDITS',
-        message: `Insufficient credits. Required: ${estimatedCredits}, Available: ${request.organization.creditsBalance}`,
+        message: `Insufficient credits. Required: ${estimatedCredits}, Available: ${request.account.creditBalance}`,
         retryable: false,
         details: {
           required: estimatedCredits,
-          available: request.organization.creditsBalance,
+          available: request.account.creditBalance,
         },
       },
     });

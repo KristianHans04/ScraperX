@@ -3,18 +3,18 @@ import { logger } from './utils/logger.js';
 import { initializeDatabase, closeDatabase } from './db/connection.js';
 import { getRedisClient, closeRedisConnections } from './queue/redis.js';
 import { closeAllQueues } from './queue/queues.js';
-import { createServer, startServer, stopServer, FastifyInstance } from './api/server.js';
+import { createServer, startServer, stopServer, Express } from './api/server.js';
 import { startAllWorkers, stopAllWorkers } from './workers/index.js';
 import { closeBrowserPool } from './engines/browser/index.js';
 
-let server: FastifyInstance | null = null;
+let server: Express | null = null;
 let shuttingDown = false;
 
 /**
  * Start the application
  */
 async function start(): Promise<void> {
-  logger.info({ env: config.env }, 'Starting ScraperX...');
+  logger.info({ env: config.env }, 'Starting Scrapifie...');
 
   try {
     // Initialize database
@@ -27,22 +27,24 @@ async function start(): Promise<void> {
 
     // Create and start server
     logger.info('Starting API server...');
-    server = await createServer();
+    server = createServer();
     await startServer(server);
 
     // Start workers (if configured to run in same process)
-    if (process.env.RUN_WORKERS !== 'false') {
+    if (process.env.RUN_WORKERS === 'true') {
       logger.info('Starting workers...');
       startAllWorkers();
+    } else {
+      logger.info('Workers disabled (set RUN_WORKERS=true to enable)');
     }
 
     logger.info({
       port: config.server.port,
       environment: config.env,
-    }, 'ScraperX started successfully');
+    }, 'Scrapifie started successfully');
 
   } catch (error) {
-    logger.error({ error }, 'Failed to start ScraperX');
+    logger.error({ error }, 'Failed to start Scrapifie');
     process.exit(1);
   }
 }
@@ -57,7 +59,7 @@ async function shutdown(signal: string): Promise<void> {
   }
 
   shuttingDown = true;
-  logger.info({ signal }, 'Shutting down ScraperX...');
+  logger.info({ signal }, 'Shutting down Scrapifie...');
 
   const shutdownTimeout = setTimeout(() => {
     logger.error('Shutdown timed out, forcing exit');
@@ -92,7 +94,7 @@ async function shutdown(signal: string): Promise<void> {
     await closeDatabase();
 
     clearTimeout(shutdownTimeout);
-    logger.info('ScraperX shutdown complete');
+    logger.info('Scrapifie shutdown complete');
     process.exit(0);
 
   } catch (error) {

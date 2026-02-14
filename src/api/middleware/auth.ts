@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { apiKeyRepository, organizationRepository } from '../../db/index.js';
+import { apiKeyRepository, accountRepository } from '../../db/index.js';
 import { hashApiKey } from '../../utils/crypto.js';
 import {
   MissingApiKeyError,
@@ -10,13 +10,13 @@ import {
   AccountSuspendedError,
 } from '../../utils/errors.js';
 import { logger } from '../../utils/logger.js';
-import type { ApiKey, Organization } from '../../types/index.js';
+import type { ApiKey, Account } from '../../types/index.js';
 
 // Extend FastifyRequest to include auth context
 declare module 'fastify' {
   interface FastifyRequest {
     apiKey?: ApiKey;
-    organization?: Organization;
+    account?: Account;
     clientIp?: string;
   }
 }
@@ -174,20 +174,24 @@ export async function authMiddleware(
       }
     }
 
-    // Get the organization
-    const organization = await organizationRepository.findById(apiKey.organizationId);
-    if (!organization) {
-      logger.error({ apiKeyId: apiKey.id, orgId: apiKey.organizationId }, 'Organization not found for API key');
-      throw new InvalidApiKeyError('Organization not found');
+    // Get the account
+    const account = await accountRepository.findById(apiKey.accountId);
+    if (!account) {
+      logger.error({ apiKeyId: apiKey.id, accountId: apiKey.accountId }, 'Account not found for API key');
+      throw new InvalidApiKeyError('Account not found');
     }
 
-    // Check organization status
-    if (organization.deletedAt) {
-      throw new AccountSuspendedError('Organization has been deleted');
+    // Check account status
+    if (account.deletedAt) {
+      throw new AccountSuspendedError('Account has been deleted');
     }
 
-    if (organization.subscriptionStatus === 'canceled' || organization.subscriptionStatus === 'paused') {
-      throw new AccountSuspendedError(`Subscription is ${organization.subscriptionStatus}`);
+    if (account.status === 'suspended') {
+      throw new AccountSuspendedError('Account is suspended');
+    }
+
+    if (account.status === 'restricted') {
+      throw new AccountSuspendedError('Account is restricted');
     }
 
     // Update last used (fire and forget)
@@ -200,13 +204,13 @@ export async function authMiddleware(
 
     // Attach to request
     request.apiKey = apiKey;
-    request.organization = organization;
+    request.account = account;
 
     const authTime = Date.now() - startTime;
     logger.debug(
       { 
         apiKeyId: apiKey.id, 
-        organizationId: organization.id, 
+        accountId: account.id, 
         authTimeMs: authTime 
       },
       'Request authenticated'
@@ -248,10 +252,10 @@ export async function optionalAuthMiddleware(
   const apiKey = await apiKeyRepository.findActiveByHash(keyHash);
   
   if (apiKey) {
-    const organization = await organizationRepository.findById(apiKey.organizationId);
-    if (organization && !organization.deletedAt) {
+    const account = await accountRepository.findById(apiKey.accountId);
+    if (account && !account.deletedAt) {
       request.apiKey = apiKey;
-      request.organization = organization;
+      request.account = account;
       request.clientIp = extractClientIp(request);
     }
   }
@@ -291,10 +295,11 @@ export function requireScope(scope: string) {
 
 /**
  * Feature flag checking middleware factory
+ * Note: Features are part of Phase 10+ and not yet implemented in Account model
  */
-export function requireFeature(feature: keyof Organization['features']) {
+export function requireFeature(feature: string) {
   return async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
-    if (!request.organization) {
+    if (!request.account) {
       return reply.status(401).send({
         success: false,
         error: {
@@ -305,17 +310,8 @@ export function requireFeature(feature: keyof Organization['features']) {
       });
     }
 
-    // Type assertion for feature access
-    const features = request.organization.features as Record<string, boolean>;
-    if (!features[feature]) {
-      return reply.status(403).send({
-        success: false,
-        error: {
-          code: 'FEATURE_NOT_AVAILABLE',
-          message: `The '${feature}' feature is not available on your plan`,
-          retryable: false,
-        },
-      });
-    }
+    // TODO: Implement feature flags in Account model (Phase 10+)
+    // For now, all features are available
+    return;
   };
 }
