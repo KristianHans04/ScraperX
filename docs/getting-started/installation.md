@@ -1,10 +1,10 @@
 # Installation
 
-This guide covers how to install and set up ScraperX on your local machine.
+This guide covers how to install and set up Scrapifie on your local machine.
 
 ## Prerequisites
 
-Before installing ScraperX, ensure you have:
+Before installing Scrapifie, ensure you have:
 
 | Requirement | Version | Purpose |
 |-------------|---------|---------|
@@ -17,7 +17,7 @@ Before installing ScraperX, ensure you have:
 
 ### Method 1: Docker (Recommended)
 
-The easiest way to run ScraperX is with Docker Compose, which handles all dependencies automatically.
+The easiest way to run Scrapifie is with Docker Compose, which handles all dependencies automatically.
 
 1. Clone the repository
 2. Copy the environment file:
@@ -32,8 +32,8 @@ The easiest way to run ScraperX is with Docker Compose, which handles all depend
 This starts:
 - PostgreSQL database
 - Redis server
-- ScraperX API server
-- ScraperX worker processes
+- Scrapifie API server
+- Scrapifie worker processes
 - Camoufox stealth browser service
 
 ### Method 2: Manual Installation
@@ -46,7 +46,7 @@ For development or custom deployments:
    ```
 
 2. **Set up PostgreSQL**
-   - Create a database named `scraperx`
+   - Create a database named `scrapifie`
    - Note the connection string
 
 3. **Set up Redis**
@@ -84,7 +84,7 @@ For development or custom deployments:
 
 ## Verifying Installation
 
-After starting ScraperX, verify it's running:
+After starting Scrapifie, verify it's running:
 
 1. Check the health endpoint:
    ```

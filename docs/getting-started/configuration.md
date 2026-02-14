@@ -1,6 +1,6 @@
 # Configuration
 
-ScraperX uses environment variables for configuration. All settings are validated at startup using Zod schemas to catch configuration errors early.
+Scrapifie uses environment variables for configuration. All settings are validated at startup using Zod schemas to catch configuration errors early.
 
 ## Environment File
 
@@ -12,11 +12,11 @@ cp .env.example .env
 
 ## Required Variables
 
-These must be set for ScraperX to start:
+These must be set for Scrapifie to start:
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/scraperx` |
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/scrapifie` |
 | `REDIS_URL` | Redis connection string | `redis://localhost:6379` |
 | `JWT_SECRET` | Secret for JWT token signing (min 32 chars) | `your-secure-random-string-here` |
 | `ENCRYPTION_KEY` | Key for encrypting sensitive data (32 chars) | `your-32-character-encryption-key` |
@@ -96,7 +96,7 @@ These must be set for ScraperX to start:
 
 ## Validation
 
-ScraperX validates all configuration at startup. If any required variable is missing or invalid, the application will fail to start with a descriptive error message.
+Scrapifie validates all configuration at startup. If any required variable is missing or invalid, the application will fail to start with a descriptive error message.
 
 ## Next Steps
 

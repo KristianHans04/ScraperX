@@ -1,10 +1,10 @@
 # Quick Start
 
-This guide will help you make your first scrape request with ScraperX in under 5 minutes.
+This guide will help you make your first scrape request with Scrapifie in under 5 minutes.
 
 ## Prerequisites
 
-- ScraperX is [installed and running](installation.md)
+- Scrapifie is [installed and running](installation.md)
 - You have an API key (created during seeding or via admin)
 
 ## Step 1: Get Your API Key
@@ -81,7 +81,7 @@ Response when complete:
 
 ## Understanding Engine Selection
 
-When you set `engine: "auto"`, ScraperX automatically selects the best approach:
+When you set `engine: "auto"`, Scrapifie automatically selects the best approach:
 
 | Engine | Used When | Credit Cost |
 |--------|-----------|-------------|
