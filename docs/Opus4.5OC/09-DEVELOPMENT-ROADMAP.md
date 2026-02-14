@@ -1,4 +1,4 @@
-# ScraperX Development Roadmap
+# Scrapifie Development Roadmap
 
 ## Document Information
 
@@ -34,7 +34,7 @@
 
 ### 1.1 Purpose
 
-This document defines the 12-month development roadmap for ScraperX, breaking down the project into six distinct phases with clear deliverables, milestones, and success criteria.
+This document defines the 12-month development roadmap for Scrapifie, breaking down the project into six distinct phases with clear deliverables, milestones, and success criteria.
 
 ### 1.2 Scope
 
@@ -918,9 +918,9 @@ Phase 6:                                                    |██████�
 
 ```typescript
 // Python SDK Usage Example
-from scraperx import ScraperX
+from scrapifie import Scrapifie
 
-client = ScraperX(api_key="sk_live_xxx")
+client = Scrapifie(api_key="sk_live_xxx")
 
 # Simple scrape
 result = await client.scrape("https://example.com")
@@ -949,9 +949,9 @@ results = await client.batch_scrape([
 
 ```typescript
 // Node.js SDK Usage Example
-import { ScraperX } from '@scraperx/sdk';
+import { Scrapifie } from '@scrapifie/sdk';
 
-const client = new ScraperX({ apiKey: 'sk_live_xxx' });
+const client = new Scrapifie({ apiKey: 'sk_live_xxx' });
 
 // Simple scrape
 const result = await client.scrape('https://example.com');

@@ -1,4 +1,4 @@
-# ScraperX Security Architecture
+# Scrapifie Security Architecture
 
 ## Document Information
 
@@ -34,7 +34,7 @@
 
 ### 1.1 Purpose
 
-This document defines the comprehensive security architecture for ScraperX, covering authentication, authorization, rate limiting, abuse prevention, and infrastructure security.
+This document defines the comprehensive security architecture for Scrapifie, covering authentication, authorization, rate limiting, abuse prevention, and infrastructure security.
 
 ### 1.2 Security Objectives
 
@@ -1444,7 +1444,7 @@ export const DDOS_CONFIG = {
 export const HAPROXY_DDOS_CONFIG = `
 frontend http_front
     bind *:80
-    bind *:443 ssl crt /etc/ssl/certs/scraperx.pem
+    bind *:443 ssl crt /etc/ssl/certs/scrapifie.pem
     
     # Connection rate limiting
     stick-table type ip size 100k expire 30s store http_req_rate(10s),conn_cur
@@ -1794,7 +1794,7 @@ export class SecretManager {
   
   // Rotate database credentials
   async rotateDatabaseCredentials(): Promise<{ username: string; password: string }> {
-    const result = await this.vault.read('database/creds/scraperx');
+    const result = await this.vault.read('database/creds/scrapifie');
     return {
       username: result.data.username,
       password: result.data.password,
@@ -1804,7 +1804,7 @@ export class SecretManager {
   // Generate dynamic API encryption key
   async getEncryptionKey(purpose: string): Promise<Buffer> {
     const result = await this.vault.write('transit/datakey/plaintext', {
-      name: 'scraperx-encryption',
+      name: 'scrapifie-encryption',
       context: Buffer.from(purpose).toString('base64'),
     });
     
@@ -1904,7 +1904,7 @@ networks:
 services:
   # Firewall rules via iptables
   firewall:
-    image: scraperx/firewall:latest
+    image: scrapifie/firewall:latest
     cap_add:
       - NET_ADMIN
     network_mode: host
@@ -1957,15 +1957,15 @@ FROM node:20-alpine AS base
 RUN apk update && apk upgrade --no-cache
 
 # Create non-root user
-RUN addgroup -g 1001 scraperx && \
-    adduser -D -u 1001 -G scraperx scraperx
+RUN addgroup -g 1001 scrapifie && \
+    adduser -D -u 1001 -G scrapifie scrapifie
 
 # Set working directory
 WORKDIR /app
 
 # Copy with correct ownership
-COPY --chown=scraperx:scraperx package*.json ./
-COPY --chown=scraperx:scraperx dist ./dist
+COPY --chown=scrapifie:scrapifie package*.json ./
+COPY --chown=scrapifie:scrapifie dist ./dist
 
 # Install production dependencies only
 RUN npm ci --only=production && \
@@ -1975,11 +1975,11 @@ RUN npm ci --only=production && \
 RUN rm -rf /root/.npm /tmp/*
 
 # Switch to non-root user
-USER scraperx
+USER scrapifie
 
 # Security labels
-LABEL org.opencontainers.image.vendor="ScraperX" \
-      org.opencontainers.image.title="ScraperX API" \
+LABEL org.opencontainers.image.vendor="Scrapifie" \
+      org.opencontainers.image.title="Scrapifie API" \
       security.privileged="false" \
       security.capabilities="drop-all"
 
@@ -2028,12 +2028,12 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Build image
-        run: docker build -t scraperx/api:scan .
+        run: docker build -t scrapifie/api:scan .
       
       - name: Run Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'scraperx/api:scan'
+          image-ref: 'scrapifie/api:scan'
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
@@ -2680,10 +2680,10 @@ export const SECURITY_HEADERS = {
 
 | Role | Contact | Escalation |
 |------|---------|------------|
-| Security Lead | security@scraperx.io | Primary |
-| On-Call Engineer | oncall@scraperx.io | 24/7 PagerDuty |
-| CTO | cto@scraperx.io | P1 incidents |
-| Legal | legal@scraperx.io | Data breaches |
+| Security Lead | security@scrapifie.io | Primary |
+| On-Call Engineer | oncall@scrapifie.io | 24/7 PagerDuty |
+| CTO | cto@scrapifie.io | P1 incidents |
+| Legal | legal@scrapifie.io | Data breaches |
 
 ---
 
@@ -2705,4 +2705,4 @@ export const SECURITY_HEADERS = {
 
 ### Distribution
 
-This document is classified as **Internal - Confidential** and is approved for distribution to the ScraperX security, engineering, and operations teams only.
+This document is classified as **Internal - Confidential** and is approved for distribution to the Scrapifie security, engineering, and operations teams only.

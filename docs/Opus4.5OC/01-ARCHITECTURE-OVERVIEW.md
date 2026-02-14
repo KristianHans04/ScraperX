@@ -1,4 +1,4 @@
-# ScraperX Architecture Overview
+# Scrapifie Architecture Overview
 ## System Design and Component Specification
 
 **Document Version:** 1.0  
@@ -178,7 +178,7 @@
 
 ### 1.2 Architecture Principles
 
-The ScraperX architecture adheres to the following design principles:
+The Scrapifie architecture adheres to the following design principles:
 
 **Separation of Concerns**
 

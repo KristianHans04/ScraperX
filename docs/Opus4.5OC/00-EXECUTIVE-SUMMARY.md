@@ -1,4 +1,4 @@
-# ScraperX - Enterprise Web Scraping Platform
+# Scrapifie - Enterprise Web Scraping Platform
 ## Executive Summary and Vision Document
 
 **Document Version:** 1.0  
@@ -24,7 +24,7 @@
 
 ## 1. Vision Statement
 
-ScraperX is an enterprise-grade web scraping platform engineered to provide developers, businesses, and data-driven organizations with reliable, scalable, and undetectable data extraction capabilities through a straightforward API interface.
+Scrapifie is an enterprise-grade web scraping platform engineered to provide developers, businesses, and data-driven organizations with reliable, scalable, and undetectable data extraction capabilities through a straightforward API interface.
 
 The platform aims to establish itself as a competitive alternative to industry leaders including ScraperAPI, ScrapingBee, Bright Data, and Oxylabs by delivering superior anti-detection capabilities, competitive pricing structures, and exceptional developer experience.
 
@@ -34,7 +34,7 @@ To democratize access to web data by providing infrastructure that handles the c
 
 ### Strategic Positioning
 
-ScraperX will differentiate itself through:
+Scrapifie will differentiate itself through:
 
 - Multi-engine browser strategy with automatic failover
 - Intelligent proxy tier selection based on target site analysis
@@ -155,7 +155,7 @@ Service level objectives:
 
 ### 4.3 Unique Value Proposition
 
-ScraperX delivers enterprise-grade web scraping infrastructure with the simplicity of a startup product and the reliability of established players, at pricing that scales with customer growth.
+Scrapifie delivers enterprise-grade web scraping infrastructure with the simplicity of a startup product and the reliability of established players, at pricing that scales with customer growth.
 
 ---
 
@@ -249,7 +249,7 @@ Different request types consume varying credit amounts based on resource intensi
 
 **Multi-Engine Browser Strategy**
 
-Unlike competitors using single browser engines, ScraperX employs automatic failover between Playwright (Chromium) and Camoufox (Firefox) to maximize success rates against diverse protection systems. This approach ensures:
+Unlike competitors using single browser engines, Scrapifie employs automatic failover between Playwright (Chromium) and Camoufox (Firefox) to maximize success rates against diverse protection systems. This approach ensures:
 
 - Primary requests use fast Chromium-based rendering
 - Failed requests automatically retry with Firefox-based Camoufox
@@ -267,7 +267,7 @@ Machine learning-driven proxy selection optimizes cost and success rate:
 
 **Built-in Data Extraction**
 
-Unlike platforms returning only raw HTML, ScraperX includes extraction capabilities:
+Unlike platforms returning only raw HTML, Scrapifie includes extraction capabilities:
 
 - CSS and XPath selector support in API requests
 - Structured JSON output from unstructured HTML

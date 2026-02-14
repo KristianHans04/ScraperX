@@ -1,4 +1,4 @@
-# ScraperX Infrastructure
+# Scrapifie Infrastructure
 ## Deployment, Scaling, and Operations Guide
 
 **Document Version:** 1.0  
@@ -39,7 +39,7 @@ Hetzner is selected for:
 
 ```
 +------------------------------------------------------------------+
-|                    SCRAPERX INFRASTRUCTURE                        |
+|                    SCRAPIFIE INFRASTRUCTURE                        |
 +------------------------------------------------------------------+
 |                                                                   |
 |  Internet                                                         |
@@ -184,7 +184,7 @@ Hetzner is selected for:
 ```yaml
 # Hetzner Private Network
 network:
-  name: scraperx-internal
+  name: scrapifie-internal
   ip_range: 10.0.0.0/16
   subnets:
     - name: management
@@ -492,7 +492,7 @@ docker network create \
   --driver overlay \
   --attachable \
   --subnet 172.20.0.0/16 \
-  scraperx-network
+  scrapifie-network
 
 # Monitoring network
 docker network create \
@@ -527,7 +527,7 @@ services:
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.email=admin@scraperx.io"
+      - "--certificatesresolvers.letsencrypt.acme.email=admin@scrapifie.io"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
       - "--metrics.prometheus=true"
       - "--accesslog=true"
@@ -538,7 +538,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik-certificates:/letsencrypt
     networks:
-      - scraperx-network
+      - scrapifie-network
     deploy:
       mode: replicated
       replicas: 1
@@ -547,7 +547,7 @@ services:
           - node.role == manager
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.dashboard.rule=Host(`traefik.scraperx.io`)"
+        - "traefik.http.routers.dashboard.rule=Host(`traefik.scrapifie.io`)"
         - "traefik.http.routers.dashboard.service=api@internal"
         - "traefik.http.routers.dashboard.middlewares=auth"
         - "traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_AUTH}"
@@ -556,15 +556,15 @@ services:
   # API SERVERS
   # ===================
   api:
-    image: scraperx/api:latest
+    image: scrapifie/api:latest
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://scraperx:${DB_PASSWORD}@postgres:5432/scraperx
+      - DATABASE_URL=postgresql://scrapifie:${DB_PASSWORD}@postgres:5432/scrapifie
       - REDIS_URL=redis://redis:6379
       - JWT_SECRET=${JWT_SECRET}
       - API_RATE_LIMIT=100
     networks:
-      - scraperx-network
+      - scrapifie-network
     deploy:
       mode: replicated
       replicas: 3
@@ -587,7 +587,7 @@ services:
           memory: 512M
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.api.rule=Host(`api.scraperx.io`)"
+        - "traefik.http.routers.api.rule=Host(`api.scrapifie.io`)"
         - "traefik.http.routers.api.entrypoints=websecure"
         - "traefik.http.routers.api.tls.certresolver=letsencrypt"
         - "traefik.http.services.api.loadbalancer.server.port=3000"
@@ -598,7 +598,7 @@ services:
   # BROWSER WORKERS
   # ===================
   browser-worker:
-    image: scraperx/browser-worker:latest
+    image: scrapifie/browser-worker:latest
     environment:
       - NODE_ENV=production
       - REDIS_URL=redis://redis:6379
@@ -607,7 +607,7 @@ services:
     volumes:
       - /dev/shm:/dev/shm
     networks:
-      - scraperx-network
+      - scrapifie-network
     deploy:
       mode: replicated
       replicas: 15
@@ -631,7 +631,7 @@ services:
   # STEALTH WORKERS
   # ===================
   stealth-worker:
-    image: scraperx/stealth-worker:latest
+    image: scrapifie/stealth-worker:latest
     environment:
       - REDIS_URL=redis://redis:6379
       - MAX_BROWSERS=3
@@ -639,7 +639,7 @@ services:
     volumes:
       - /dev/shm:/dev/shm
     networks:
-      - scraperx-network
+      - scrapifie-network
     deploy:
       mode: replicated
       replicas: 6
@@ -659,13 +659,13 @@ services:
   # HTTP WORKERS
   # ===================
   http-worker:
-    image: scraperx/http-worker:latest
+    image: scrapifie/http-worker:latest
     environment:
       - NODE_ENV=production
       - REDIS_URL=redis://redis:6379
       - CONCURRENCY=50
     networks:
-      - scraperx-network
+      - scrapifie-network
     deploy:
       mode: replicated
       replicas: 80
@@ -690,13 +690,13 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      - POSTGRES_USER=scraperx
+      - POSTGRES_USER=scrapifie
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=scraperx
+      - POSTGRES_DB=scrapifie
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
-      - scraperx-network
+      - scrapifie-network
     deploy:
       mode: replicated
       replicas: 1
@@ -714,7 +714,7 @@ services:
     volumes:
       - redis-data:/data
     networks:
-      - scraperx-network
+      - scrapifie-network
     deploy:
       mode: replicated
       replicas: 1
@@ -737,7 +737,7 @@ services:
     volumes:
       - minio-data:/data
     networks:
-      - scraperx-network
+      - scrapifie-network
     deploy:
       mode: replicated
       replicas: 1
@@ -746,7 +746,7 @@ services:
           - node.role == manager
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.minio-console.rule=Host(`storage.scraperx.io`)"
+        - "traefik.http.routers.minio-console.rule=Host(`storage.scrapifie.io`)"
         - "traefik.http.services.minio-console.loadbalancer.server.port=9001"
 
   # ===================
@@ -762,7 +762,7 @@ services:
       - prometheus-config:/etc/prometheus
       - prometheus-data:/prometheus
     networks:
-      - scraperx-network
+      - scrapifie-network
       - monitoring-network
     deploy:
       mode: replicated
@@ -783,7 +783,7 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana
     networks:
-      - scraperx-network
+      - scrapifie-network
       - monitoring-network
     deploy:
       mode: replicated
@@ -793,11 +793,11 @@ services:
           - node.labels.type == utility
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.grafana.rule=Host(`grafana.scraperx.io`)"
+        - "traefik.http.routers.grafana.rule=Host(`grafana.scrapifie.io`)"
         - "traefik.http.services.grafana.loadbalancer.server.port=3000"
 
 networks:
-  scraperx-network:
+  scrapifie-network:
     external: true
   monitoring-network:
     external: true
@@ -816,28 +816,28 @@ volumes:
 
 ```bash
 #!/bin/bash
-# deploy.sh - Deploy or update the ScraperX stack
+# deploy.sh - Deploy or update the Scrapifie stack
 
 set -e
 
 # Load environment variables
-source /opt/scraperx/.env
+source /opt/scrapifie/.env
 
 # Pull latest images
-docker pull scraperx/api:latest
-docker pull scraperx/browser-worker:latest
-docker pull scraperx/stealth-worker:latest
-docker pull scraperx/http-worker:latest
+docker pull scrapifie/api:latest
+docker pull scrapifie/browser-worker:latest
+docker pull scrapifie/stealth-worker:latest
+docker pull scrapifie/http-worker:latest
 
 # Deploy stack
-docker stack deploy -c /opt/scraperx/docker-stack.yml scraperx
+docker stack deploy -c /opt/scrapifie/docker-stack.yml scrapifie
 
 # Wait for services to stabilize
 echo "Waiting for services to stabilize..."
 sleep 30
 
 # Check service status
-docker stack services scraperx
+docker stack services scrapifie
 
 echo "Deployment complete"
 ```
@@ -866,12 +866,12 @@ For internal service communication, use self-signed certificates or mTLS:
 # Create CA
 openssl genrsa -out ca.key 4096
 openssl req -new -x509 -days 3650 -key ca.key -out ca.crt \
-  -subj "/CN=ScraperX Internal CA"
+  -subj "/CN=Scrapifie Internal CA"
 
 # Create server certificate
 openssl genrsa -out server.key 2048
 openssl req -new -key server.key -out server.csr \
-  -subj "/CN=*.scraperx.internal"
+  -subj "/CN=*.scrapifie.internal"
 openssl x509 -req -days 365 -in server.csr -CA ca.crt -CAkey ca.key \
   -CAcreateserial -out server.crt
 ```
@@ -888,7 +888,7 @@ openssl x509 -req -days 365 -in server.csr -CA ca.crt -CAkey ca.key \
 | A | storage | 95.xxx.xxx.xxx | No |
 | A | grafana | 95.xxx.xxx.xxx | Yes |
 | A | traefik | 95.xxx.xxx.xxx | Yes |
-| CNAME | www | scraperx.io | Yes |
+| CNAME | www | scrapifie.io | Yes |
 | TXT | @ | v=spf1 include:_spf.google.com ~all | - |
 
 ### 8.2 Cloudflare Settings
@@ -915,13 +915,13 @@ openssl x509 -req -days 365 -in server.csr -CA ca.crt -CAkey ca.key \
 # Scale services manually
 
 # Scale API servers
-docker service scale scraperx_api=5
+docker service scale scrapifie_api=5
 
 # Scale browser workers
-docker service scale scraperx_browser-worker=25
+docker service scale scrapifie_browser-worker=25
 
 # Scale HTTP workers
-docker service scale scraperx_http-worker=100
+docker service scale scrapifie_http-worker=100
 ```
 
 ### 9.2 Auto-Scaling Script
@@ -941,18 +941,18 @@ while true; do
   QUEUE_DEPTH=$($REDIS_CLI LLEN bull:scrape:http:waiting)
   
   # Get current worker count
-  CURRENT_WORKERS=$(docker service inspect scraperx_http-worker --format '{{.Spec.Mode.Replicated.Replicas}}')
+  CURRENT_WORKERS=$(docker service inspect scrapifie_http-worker --format '{{.Spec.Mode.Replicated.Replicas}}')
   
   if [ $QUEUE_DEPTH -gt $SCALE_UP_THRESHOLD ] && [ $CURRENT_WORKERS -lt $MAX_WORKERS ]; then
     NEW_COUNT=$((CURRENT_WORKERS + 10))
     NEW_COUNT=$((NEW_COUNT > MAX_WORKERS ? MAX_WORKERS : NEW_COUNT))
     echo "Scaling up HTTP workers to $NEW_COUNT (queue depth: $QUEUE_DEPTH)"
-    docker service scale scraperx_http-worker=$NEW_COUNT
+    docker service scale scrapifie_http-worker=$NEW_COUNT
   elif [ $QUEUE_DEPTH -lt $SCALE_DOWN_THRESHOLD ] && [ $CURRENT_WORKERS -gt $MIN_WORKERS ]; then
     NEW_COUNT=$((CURRENT_WORKERS - 10))
     NEW_COUNT=$((NEW_COUNT < MIN_WORKERS ? MIN_WORKERS : NEW_COUNT))
     echo "Scaling down HTTP workers to $NEW_COUNT (queue depth: $QUEUE_DEPTH)"
-    docker service scale scraperx_http-worker=$NEW_COUNT
+    docker service scale scrapifie_http-worker=$NEW_COUNT
   fi
   
   sleep 60
@@ -1010,7 +1010,7 @@ echo "Node $NEW_NODE_IP added as $NODE_TYPE"
 #!/bin/bash
 # backup-postgres.sh - Backup PostgreSQL database
 
-BACKUP_DIR=/opt/scraperx/backups/postgres
+BACKUP_DIR=/opt/scrapifie/backups/postgres
 DATE=$(date +%Y%m%d_%H%M%S)
 CONTAINER=$(docker ps -q -f name=postgres)
 
@@ -1018,15 +1018,15 @@ CONTAINER=$(docker ps -q -f name=postgres)
 mkdir -p $BACKUP_DIR
 
 # Dump database
-docker exec $CONTAINER pg_dump -U scraperx scraperx | gzip > $BACKUP_DIR/scraperx_$DATE.sql.gz
+docker exec $CONTAINER pg_dump -U scrapifie scrapifie | gzip > $BACKUP_DIR/scrapifie_$DATE.sql.gz
 
 # Upload to S3/MinIO
-mc cp $BACKUP_DIR/scraperx_$DATE.sql.gz minio/backups/postgres/
+mc cp $BACKUP_DIR/scrapifie_$DATE.sql.gz minio/backups/postgres/
 
 # Remove old local backups (keep 7 days)
 find $BACKUP_DIR -name "*.sql.gz" -mtime +7 -delete
 
-echo "Backup completed: scraperx_$DATE.sql.gz"
+echo "Backup completed: scrapifie_$DATE.sql.gz"
 ```
 
 ### 10.2 Redis Backup
@@ -1035,7 +1035,7 @@ echo "Backup completed: scraperx_$DATE.sql.gz"
 #!/bin/bash
 # backup-redis.sh - Backup Redis data
 
-BACKUP_DIR=/opt/scraperx/backups/redis
+BACKUP_DIR=/opt/scrapifie/backups/redis
 DATE=$(date +%Y%m%d_%H%M%S)
 CONTAINER=$(docker ps -q -f name=redis)
 
@@ -1068,7 +1068,7 @@ echo "Redis backup completed: dump_$DATE.rdb.gz"
 # disaster-recovery.sh - Restore from backups
 
 # 1. Stop all services
-docker stack rm scraperx
+docker stack rm scrapifie
 
 # 2. Restore PostgreSQL
 LATEST_PG=$(mc ls minio/backups/postgres/ | tail -1 | awk '{print $5}')
@@ -1082,7 +1082,7 @@ docker run -d --name pg-restore \
   postgres:16-alpine
 
 # Restore database
-cat /tmp/${LATEST_PG%.gz} | docker exec -i pg-restore psql -U scraperx
+cat /tmp/${LATEST_PG%.gz} | docker exec -i pg-restore psql -U scrapifie
 
 # Stop temporary container
 docker stop pg-restore && docker rm pg-restore
@@ -1098,7 +1098,7 @@ docker cp /tmp/${LATEST_REDIS%.gz} redis-restore:/data/dump.rdb
 docker stop redis-restore && docker rm redis-restore
 
 # 4. Redeploy stack
-docker stack deploy -c /opt/scraperx/docker-stack.yml scraperx
+docker stack deploy -c /opt/scrapifie/docker-stack.yml scrapifie
 
 echo "Disaster recovery complete"
 ```
@@ -1107,13 +1107,13 @@ echo "Disaster recovery complete"
 
 ```cron
 # PostgreSQL backup - every 6 hours
-0 */6 * * * /opt/scraperx/scripts/backup-postgres.sh >> /var/log/scraperx/backup.log 2>&1
+0 */6 * * * /opt/scrapifie/scripts/backup-postgres.sh >> /var/log/scrapifie/backup.log 2>&1
 
 # Redis backup - every hour
-0 * * * * /opt/scraperx/scripts/backup-redis.sh >> /var/log/scraperx/backup.log 2>&1
+0 * * * * /opt/scrapifie/scripts/backup-redis.sh >> /var/log/scrapifie/backup.log 2>&1
 
 # MinIO backup - daily at 3 AM
-0 3 * * * /opt/scraperx/scripts/backup-minio.sh >> /var/log/scraperx/backup.log 2>&1
+0 3 * * * /opt/scrapifie/scripts/backup-minio.sh >> /var/log/scrapifie/backup.log 2>&1
 ```
 
 ---

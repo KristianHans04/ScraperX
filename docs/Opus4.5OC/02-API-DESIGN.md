@@ -1,4 +1,4 @@
-# ScraperX API Design
+# Scrapifie API Design
 ## RESTful API Specification and Integration Guide
 
 **Document Version:** 1.0  
@@ -26,7 +26,7 @@
 
 ### 1.1 Core Philosophy
 
-The ScraperX API adheres to the following design principles:
+The Scrapifie API adheres to the following design principles:
 
 **Simplicity First**
 
@@ -47,8 +47,8 @@ Credit consumption, usage metrics, and error reasons are clearly communicated in
 ### 1.2 API Base URL
 
 ```
-Production:  https://api.scraperx.io/v1
-Sandbox:     https://sandbox.scraperx.io/v1
+Production:  https://api.scrapifie.io/v1
+Sandbox:     https://sandbox.scrapifie.io/v1
 ```
 
 ### 1.3 Content Type
@@ -90,7 +90,7 @@ Example: sk_live_xxxxxREPLACE_WITH_YOUR_KEYxxxxx
 
 ```http
 POST /v1/scrape HTTP/1.1
-Host: api.scraperx.io
+Host: api.scrapifie.io
 Authorization: Bearer sk_live_xxxxxREPLACE_WITH_YOUR_KEYxxxxx
 Content-Type: application/json
 
@@ -105,7 +105,7 @@ For environments where headers cannot be modified:
 
 ```http
 POST /v1/scrape?api_key=sk_live_xxxxxREPLACE_WITH_YOUR_KEYxxxxx HTTP/1.1
-Host: api.scraperx.io
+Host: api.scrapifie.io
 Content-Type: application/json
 
 {
@@ -336,7 +336,7 @@ Scrape a URL and receive results via webhook.
   "status": "queued",
   "url": "https://example.com/page",
   "webhook_url": "https://yourapp.com/webhooks/scraper",
-  "status_url": "https://api.scraperx.io/v1/jobs/job_7a8b9c0d1e2f3g4h",
+  "status_url": "https://api.scrapifie.io/v1/jobs/job_7a8b9c0d1e2f3g4h",
   "estimated_completion": "2025-01-15T10:30:15Z"
 }
 ```
@@ -382,7 +382,7 @@ Scrape multiple URLs in a single request.
   "created_at": "2025-01-15T10:25:00Z",
   "estimated_completion": "2025-01-15T10:30:00Z",
   "webhook_url": "https://yourapp.com/webhooks/batch",
-  "status_url": "https://api.scraperx.io/v1/batch/batch_1a2b3c4d5e6f",
+  "status_url": "https://api.scrapifie.io/v1/batch/batch_1a2b3c4d5e6f",
   "estimated_credits": 15
 }
 ```
@@ -405,7 +405,7 @@ Retrieve the status and result of a job.
   "completed_at": "2025-01-15T10:25:03Z",
   "result": {
     "status_code": 200,
-    "content_url": "https://storage.scraperx.io/results/job_7a8b9c0d1e2f3g4h/content.html",
+    "content_url": "https://storage.scrapifie.io/results/job_7a8b9c0d1e2f3g4h/content.html",
     "extracted": {
       "title": "Example Page"
     }
@@ -456,23 +456,23 @@ Retrieve the status and results of a batch.
       "url": "https://example.com/page1",
       "job_id": "job_1111111111",
       "status": "completed",
-      "result_url": "https://storage.scraperx.io/results/batch_1a2b3c4d5e6f/0.json"
+      "result_url": "https://storage.scrapifie.io/results/batch_1a2b3c4d5e6f/0.json"
     },
     {
       "url": "https://example.com/page2",
       "job_id": "job_2222222222",
       "status": "completed",
-      "result_url": "https://storage.scraperx.io/results/batch_1a2b3c4d5e6f/1.json"
+      "result_url": "https://storage.scrapifie.io/results/batch_1a2b3c4d5e6f/1.json"
     },
     {
       "url": "https://example.com/page3",
       "job_id": "job_3333333333",
       "status": "completed",
-      "result_url": "https://storage.scraperx.io/results/batch_1a2b3c4d5e6f/2.json"
+      "result_url": "https://storage.scrapifie.io/results/batch_1a2b3c4d5e6f/2.json"
     }
   ],
   "credits_used": 15,
-  "download_url": "https://storage.scraperx.io/results/batch_1a2b3c4d5e6f/all.zip"
+  "download_url": "https://storage.scrapifie.io/results/batch_1a2b3c4d5e6f/all.zip"
 }
 ```
 
@@ -783,7 +783,7 @@ All API responses follow a consistent structure:
     "message": "Human-readable error message",
     "details": "Additional context if available",
     "retryable": true,
-    "documentation_url": "https://docs.scraperx.io/errors/ERROR_CODE"
+    "documentation_url": "https://docs.scrapifie.io/errors/ERROR_CODE"
   },
   "meta": {
     "request_id": "req_abc123",
@@ -805,7 +805,7 @@ All API responses follow a consistent structure:
 | 404 | Not Found | Job or batch not found |
 | 408 | Request Timeout | Scrape operation timed out |
 | 429 | Too Many Requests | Rate limit exceeded |
-| 500 | Internal Server Error | ScraperX system error |
+| 500 | Internal Server Error | Scrapifie system error |
 | 502 | Bad Gateway | Target site error |
 | 503 | Service Unavailable | Temporary maintenance |
 
@@ -895,7 +895,7 @@ All API responses follow a consistent structure:
       "Use residential proxy: set premium_proxy to true",
       "Try mobile proxy for heavily protected sites: set mobile_proxy to true"
     ],
-    "documentation_url": "https://docs.scraperx.io/errors/BLOCKED"
+    "documentation_url": "https://docs.scrapifie.io/errors/BLOCKED"
   },
   "credits": {
     "used": 0,
@@ -915,7 +915,7 @@ All API responses follow a consistent structure:
     "details": "Current rate: 32 requests per second",
     "retryable": true,
     "retry_after": 2,
-    "documentation_url": "https://docs.scraperx.io/errors/RATE_LIMITED"
+    "documentation_url": "https://docs.scrapifie.io/errors/RATE_LIMITED"
   }
 }
 ```
@@ -980,7 +980,7 @@ Authorization: Bearer sk_live_xxx
     "status": "completed",
     "result": {
       "status_code": 200,
-      "content_url": "https://storage.scraperx.io/results/job_7a8b9c0d1e2f3g4h/content.html",
+      "content_url": "https://storage.scrapifie.io/results/job_7a8b9c0d1e2f3g4h/content.html",
       "extracted": {
         "title": "Example Page"
       },
@@ -1010,7 +1010,7 @@ Authorization: Bearer sk_live_xxx
     "failed": 2,
     "credits_used": 490,
     "duration_ms": 45000,
-    "results_url": "https://storage.scraperx.io/results/batch_1a2b3c4d5e6f/all.zip"
+    "results_url": "https://storage.scrapifie.io/results/batch_1a2b3c4d5e6f/all.zip"
   }
 }
 ```
@@ -1025,14 +1025,14 @@ All webhook requests include a signature header for verification:
 POST /webhooks/scraper HTTP/1.1
 Host: yourapp.com
 Content-Type: application/json
-X-ScraperX-Signature: t=1704067200,v1=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd
-X-ScraperX-Webhook-Id: wh_abc123
+X-Scrapifie-Signature: t=1704067200,v1=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd
+X-Scrapifie-Webhook-Id: wh_abc123
 ```
 
 **Signature Format:**
 
 ```
-X-ScraperX-Signature: t={timestamp},v1={signature}
+X-Scrapifie-Signature: t={timestamp},v1={signature}
 ```
 
 **Verification Algorithm:**
@@ -1066,7 +1066,7 @@ def verify_webhook(payload: bytes, signature_header: str, secret: str) -> bool:
 
 ### 8.5 Webhook Retry Policy
 
-If webhook delivery fails, ScraperX will retry with exponential backoff:
+If webhook delivery fails, Scrapifie will retry with exponential backoff:
 
 | Attempt | Delay |
 |---------|-------|
@@ -1087,15 +1087,15 @@ After 5 failed attempts, the webhook is marked as failed. Failed webhooks can be
 **Installation:**
 
 ```bash
-pip install scraperx
+pip install scrapifie
 ```
 
 **Basic Usage:**
 
 ```python
-from scraperx import ScraperX
+from scrapifie import Scrapifie
 
-client = ScraperX(api_key="sk_live_xxx")
+client = Scrapifie(api_key="sk_live_xxx")
 
 # Simple scrape
 result = client.scrape("https://example.com")
@@ -1152,10 +1152,10 @@ print(f"Credits remaining: {usage.credits_remaining}")
 
 ```python
 import asyncio
-from scraperx import AsyncScraperX
+from scrapifie import AsyncScrapifie
 
 async def main():
-    client = AsyncScraperX(api_key="sk_live_xxx")
+    client = AsyncScrapifie(api_key="sk_live_xxx")
     
     # Concurrent scraping
     urls = ["https://example.com/1", "https://example.com/2"]
@@ -1173,15 +1173,15 @@ asyncio.run(main())
 **Installation:**
 
 ```bash
-npm install @scraperx/sdk
+npm install @scrapifie/sdk
 ```
 
 **Basic Usage:**
 
 ```javascript
-const ScraperX = require('@scraperx/sdk');
+const Scrapifie = require('@scrapifie/sdk');
 
-const client = new ScraperX({ apiKey: 'sk_live_xxx' });
+const client = new Scrapifie({ apiKey: 'sk_live_xxx' });
 
 // Simple scrape
 const result = await client.scrape('https://example.com');
@@ -1227,9 +1227,9 @@ console.log(`Credits remaining: ${usage.creditsRemaining}`);
 **TypeScript Support:**
 
 ```typescript
-import ScraperX, { ScrapeResult, ScrapeOptions } from '@scraperx/sdk';
+import Scrapifie, { ScrapeResult, ScrapeOptions } from '@scrapifie/sdk';
 
-const client = new ScraperX({ apiKey: 'sk_live_xxx' });
+const client = new Scrapifie({ apiKey: 'sk_live_xxx' });
 
 const options: ScrapeOptions = {
   renderJs: true,
@@ -1247,7 +1247,7 @@ const result: ScrapeResult = await client.scrape('https://example.com', options)
 **Installation:**
 
 ```bash
-go get github.com/scraperx/scraperx-go
+go get github.com/scrapifie/scrapifie-go
 ```
 
 **Basic Usage:**
@@ -1259,14 +1259,14 @@ import (
     "fmt"
     "log"
     
-    "github.com/scraperx/scraperx-go"
+    "github.com/scrapifie/scrapifie-go"
 )
 
 func main() {
-    client := scraperx.NewClient("sk_live_xxx")
+    client := scrapifie.NewClient("sk_live_xxx")
     
     // Simple scrape
-    result, err := client.Scrape(&scraperx.ScrapeRequest{
+    result, err := client.Scrape(&scrapifie.ScrapeRequest{
         URL: "https://example.com",
     })
     if err != nil {
@@ -1275,9 +1275,9 @@ func main() {
     fmt.Println(result.Content)
     
     // With options
-    result, err = client.Scrape(&scraperx.ScrapeRequest{
+    result, err = client.Scrape(&scrapifie.ScrapeRequest{
         URL: "https://example.com",
-        Options: scraperx.ScrapeOptions{
+        Options: scrapifie.ScrapeOptions{
             RenderJS:     true,
             PremiumProxy: true,
             Country:      "US",
@@ -1312,7 +1312,7 @@ func main() {
 The API version is included in the URL path:
 
 ```
-https://api.scraperx.io/v1/scrape
+https://api.scrapifie.io/v1/scrape
 ```
 
 ### 10.2 Version Lifecycle
@@ -1348,15 +1348,15 @@ Request a specific API version or get version information:
 
 ```http
 GET /v1/scrape HTTP/1.1
-X-ScraperX-Version: 2025-01-15
+X-Scrapifie-Version: 2025-01-15
 ```
 
 Response includes version information:
 
 ```http
 HTTP/1.1 200 OK
-X-ScraperX-API-Version: v1
-X-ScraperX-Release: 2025-01-15
+X-Scrapifie-API-Version: v1
+X-Scrapifie-Release: 2025-01-15
 ```
 
 ### 10.5 Beta Features
@@ -1365,7 +1365,7 @@ Beta features are available via opt-in headers:
 
 ```http
 POST /v1/scrape HTTP/1.1
-X-ScraperX-Beta: ai-extraction
+X-Scrapifie-Beta: ai-extraction
 ```
 
 Beta features may change without notice and are not covered by the stability guarantee.

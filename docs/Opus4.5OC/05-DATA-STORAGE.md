@@ -1,4 +1,4 @@
-# ScraperX Data Storage Architecture
+# Scrapifie Data Storage Architecture
 
 ## Document Information
 
@@ -32,7 +32,7 @@
 
 ### 1.1 Purpose
 
-This document defines the complete data storage architecture for ScraperX, including database schemas, caching strategies, object storage design, and data lifecycle management.
+This document defines the complete data storage architecture for Scrapifie, including database schemas, caching strategies, object storage design, and data lifecycle management.
 
 ### 1.2 Scope
 
@@ -1219,7 +1219,7 @@ bull:{queueName}:delayed
 // Priority queue (sorted set)
 bull:{queueName}:priority
 
-// Custom ScraperX queue configuration
+// Custom Scrapifie queue configuration
 const queueConfig = {
   defaultJobOptions: {
     removeOnComplete: {
@@ -1719,7 +1719,7 @@ class ContentStorageService {
       "Sid": "AllowAppServerAccess",
       "Effect": "Allow",
       "Principal": {
-        "AWS": ["arn:aws:iam::ACCOUNT:user/scraperx-app"]
+        "AWS": ["arn:aws:iam::ACCOUNT:user/scrapifie-app"]
       },
       "Action": [
         "s3:GetObject",
@@ -1736,7 +1736,7 @@ class ContentStorageService {
       "Sid": "AllowWorkerReadWrite",
       "Effect": "Allow",
       "Principal": {
-        "AWS": ["arn:aws:iam::ACCOUNT:user/scraperx-worker"]
+        "AWS": ["arn:aws:iam::ACCOUNT:user/scrapifie-worker"]
       },
       "Action": [
         "s3:GetObject",
@@ -2051,7 +2051,7 @@ async function initializeLifecycleRules(): Promise<void> {
 
 ```bash
 #!/bin/bash
-# /opt/scraperx/scripts/backup-postgres.sh
+# /opt/scrapifie/scripts/backup-postgres.sh
 
 set -euo pipefail
 
@@ -2059,21 +2059,21 @@ set -euo pipefail
 BACKUP_DIR="/var/backups/postgresql"
 REMOTE_BACKUP_DIR="/backup/postgresql"
 RETENTION_DAYS=30
-S3_BUCKET="s3://scraperx-backups/postgresql"
+S3_BUCKET="s3://scrapifie-backups/postgresql"
 
 # Create backup directory
 mkdir -p "${BACKUP_DIR}"
 
 # Generate backup filename
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-BACKUP_FILE="${BACKUP_DIR}/scraperx_${TIMESTAMP}.sql.gz"
+BACKUP_FILE="${BACKUP_DIR}/scrapifie_${TIMESTAMP}.sql.gz"
 
 # Create logical backup with pg_dump
 pg_dump \
   --host=localhost \
   --port=5432 \
-  --username=scraperx \
-  --dbname=scraperx \
+  --username=scrapifie \
+  --dbname=scrapifie \
   --format=custom \
   --compress=9 \
   --file="${BACKUP_FILE}"
@@ -2090,7 +2090,7 @@ sha256sum "${BACKUP_FILE}" > "${BACKUP_FILE}.sha256"
 
 # Upload to remote storage
 rsync -avz "${BACKUP_FILE}" "${BACKUP_FILE}.sha256" \
-  backup@storage.scraperx.internal:${REMOTE_BACKUP_DIR}/
+  backup@storage.scrapifie.internal:${REMOTE_BACKUP_DIR}/
 
 # Upload to S3 for offsite backup
 aws s3 cp "${BACKUP_FILE}" "${S3_BUCKET}/${TIMESTAMP}/"
@@ -2101,7 +2101,7 @@ find "${BACKUP_DIR}" -name "*.sql.gz" -mtime +7 -delete
 find "${BACKUP_DIR}" -name "*.sha256" -mtime +7 -delete
 
 # Cleanup old remote backups
-ssh backup@storage.scraperx.internal \
+ssh backup@storage.scrapifie.internal \
   "find ${REMOTE_BACKUP_DIR} -name '*.sql.gz' -mtime +${RETENTION_DAYS} -delete"
 
 echo "Backup completed: ${BACKUP_FILE}"
@@ -2110,7 +2110,7 @@ echo "Backup completed: ${BACKUP_FILE}"
 ```yaml
 # WAL-G configuration for continuous archiving
 # /etc/wal-g/wal-g.yaml
-WALG_S3_PREFIX: s3://scraperx-backups/wal-g
+WALG_S3_PREFIX: s3://scrapifie-backups/wal-g
 AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY}
 AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_KEY}
 AWS_REGION: eu-central-1
@@ -2119,8 +2119,8 @@ WALG_DELTA_MAX_STEPS: 6
 WALG_UPLOAD_CONCURRENCY: 4
 PGHOST: localhost
 PGPORT: 5432
-PGUSER: scraperx
-PGDATABASE: scraperx
+PGUSER: scrapifie
+PGDATABASE: scrapifie
 ```
 
 ```ini
@@ -2137,7 +2137,7 @@ wal_keep_size = 1GB
 
 ```bash
 #!/bin/bash
-# /opt/scraperx/scripts/backup-redis.sh
+# /opt/scrapifie/scripts/backup-redis.sh
 
 set -euo pipefail
 
@@ -2167,7 +2167,7 @@ gzip "${BACKUP_DIR}/redis_${TIMESTAMP}.rdb"
 
 # Upload to remote
 rsync -avz "${BACKUP_DIR}/redis_${TIMESTAMP}.rdb.gz" \
-  backup@storage.scraperx.internal:${REMOTE_BACKUP_DIR}/
+  backup@storage.scrapifie.internal:${REMOTE_BACKUP_DIR}/
 
 # Cleanup old backups (keep 7 days locally)
 find "${BACKUP_DIR}" -name "*.rdb.gz" -mtime +7 -delete
@@ -2179,11 +2179,11 @@ echo "Redis backup completed"
 
 ```bash
 #!/bin/bash
-# /opt/scraperx/scripts/backup-minio.sh
+# /opt/scrapifie/scripts/backup-minio.sh
 
 set -euo pipefail
 
-MC_ALIAS="scraperx"
+MC_ALIAS="scrapifie"
 REMOTE_ALIAS="backup"
 BUCKETS=("scrx-content" "scrx-screenshots" "scrx-pdfs" "scrx-archives")
 
@@ -2196,7 +2196,7 @@ for bucket in "${BUCKETS[@]}"; do
   echo "Mirroring ${bucket}..."
   mc mirror --overwrite --remove \
     ${MC_ALIAS}/${bucket} \
-    ${REMOTE_ALIAS}/scraperx-backup-${bucket}
+    ${REMOTE_ALIAS}/scrapifie-backup-${bucket}
 done
 
 echo "MinIO backup completed"
@@ -2213,7 +2213,7 @@ echo "MinIO backup completed"
 
 1. Stop all application services
    ```bash
-   docker service scale scraperx_api=0 scraperx_worker=0
+   docker service scale scrapifie_api=0 scrapifie_worker=0
    ```
 
 2. Restore from latest WAL-G backup
@@ -2236,18 +2236,18 @@ echo "MinIO backup completed"
 
 3. Start PostgreSQL and verify recovery
    ```bash
-   docker service scale scraperx_postgres=1
-   docker logs -f scraperx_postgres
+   docker service scale scrapifie_postgres=1
+   docker logs -f scrapifie_postgres
    ```
 
 4. Verify data integrity
    ```bash
-   psql -U scraperx -d scraperx -c "SELECT count(*) FROM scrape_jobs;"
+   psql -U scrapifie -d scrapifie -c "SELECT count(*) FROM scrape_jobs;"
    ```
 
 5. Restart application services
    ```bash
-   docker service scale scraperx_api=3 scraperx_worker=10
+   docker service scale scrapifie_api=3 scrapifie_worker=10
    ```
 
 ## Scenario 2: Redis Cluster Failure
@@ -2284,17 +2284,17 @@ echo "MinIO backup completed"
 
 1. Identify affected buckets
    ```bash
-   mc admin info scraperx
+   mc admin info scrapifie
    ```
 
 2. Restore from Wasabi backup
    ```bash
-   mc mirror backup/scraperx-backup-scrx-content scraperx/scrx-content
+   mc mirror backup/scrapifie-backup-scrx-content scrapifie/scrx-content
    ```
 
 3. Verify data integrity
    ```bash
-   mc stat scraperx/scrx-content --recursive | wc -l
+   mc stat scrapifie/scrx-content --recursive | wc -l
    ```
 
 ## Recovery Time Objectives (RTO)
@@ -2331,7 +2331,7 @@ async function verifyBackups(): Promise<BackupStatus[]> {
   const statuses: BackupStatus[] = [];
   
   // Check PostgreSQL backups
-  const pgBackups = await listS3Objects('scraperx-backups/postgresql/');
+  const pgBackups = await listS3Objects('scrapifie-backups/postgresql/');
   const latestPgBackup = pgBackups.sort((a, b) => 
     b.LastModified.getTime() - a.LastModified.getTime()
   )[0];
@@ -2463,7 +2463,7 @@ WHERE options->>'jsRendering' = 'true';
 ```ini
 # /etc/pgbouncer/pgbouncer.ini
 [databases]
-scraperx = host=postgres port=5432 dbname=scraperx
+scrapifie = host=postgres port=5432 dbname=scrapifie
 
 [pgbouncer]
 listen_addr = 0.0.0.0
@@ -2497,7 +2497,7 @@ log_pooler_errors = 1
 stats_period = 60
 
 # Admin access
-admin_users = scraperx_admin
+admin_users = scrapifie_admin
 ```
 
 ### 8.3 Redis Memory Optimization
@@ -2679,7 +2679,7 @@ export async function down(pgm: MigrationBuilder): Promise<void> {
 
 ```bash
 #!/bin/bash
-# /opt/scraperx/scripts/migrate-zero-downtime.sh
+# /opt/scrapifie/scripts/migrate-zero-downtime.sh
 
 set -euo pipefail
 
@@ -2689,7 +2689,7 @@ npm run migrate:up
 
 # Step 2: Deploy new application version (canary)
 echo "Deploying canary..."
-docker service update --image scraperx/api:new --replicas 1 scraperx_api
+docker service update --image scrapifie/api:new --replicas 1 scrapifie_api
 
 # Step 3: Monitor for errors
 echo "Monitoring canary for 5 minutes..."
@@ -2699,13 +2699,13 @@ sleep 300
 ERROR_RATE=$(curl -s "http://prometheus:9090/api/v1/query?query=rate(http_requests_total{status=~'5..'}[5m])" | jq '.data.result[0].value[1]')
 if (( $(echo "$ERROR_RATE > 0.01" | bc -l) )); then
   echo "Error rate too high, rolling back..."
-  docker service rollback scraperx_api
+  docker service rollback scrapifie_api
   exit 1
 fi
 
 # Step 4: Full rollout
 echo "Canary successful, rolling out to all replicas..."
-docker service update --image scraperx/api:new scraperx_api
+docker service update --image scrapifie/api:new scrapifie_api
 
 # Step 5: Run any cleanup migrations
 echo "Running cleanup migrations..."
@@ -2804,7 +2804,7 @@ migrateToPartitionedTable().catch(console.error);
 ### 10.1 Complete Schema Diagram
 
 ```
-                                    SCRAPERX DATABASE SCHEMA
+                                    SCRAPIFIE DATABASE SCHEMA
 +--------------------------------------------------------------------------------------------------+
 |                                                                                                  |
 |   CORE DOMAIN                                                                                   |
@@ -2905,4 +2905,4 @@ migrateToPartitionedTable().catch(console.error);
 
 ### Distribution
 
-This document is approved for internal distribution to the ScraperX development and operations teams.
+This document is approved for internal distribution to the Scrapifie development and operations teams.

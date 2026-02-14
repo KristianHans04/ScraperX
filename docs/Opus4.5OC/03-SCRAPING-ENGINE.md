@@ -1,4 +1,4 @@
-# ScraperX Scraping Engine
+# Scrapifie Scraping Engine
 ## Core Engine Architecture and Anti-Detection Systems
 
 **Document Version:** 1.0  

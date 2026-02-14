@@ -1,4 +1,4 @@
-# ScraperX Monitoring and Observability
+# Scrapifie Monitoring and Observability
 
 ## Document Information
 
@@ -33,7 +33,7 @@
 
 ### 1.1 Purpose
 
-This document defines the complete monitoring and observability strategy for ScraperX, enabling real-time visibility into system health, performance, and business metrics.
+This document defines the complete monitoring and observability strategy for Scrapifie, enabling real-time visibility into system health, performance, and business metrics.
 
 ### 1.2 Observability Goals
 
@@ -410,7 +410,7 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
   external_labels:
-    cluster: scraperx-production
+    cluster: scrapifie-production
     replica: $(POD_NAME)
 
 # Alertmanager configuration
@@ -432,29 +432,29 @@ scrape_configs:
       - targets: ['localhost:9090']
 
   # API servers
-  - job_name: 'scraperx-api'
+  - job_name: 'scrapifie-api'
     docker_sd_configs:
       - host: unix:///var/run/docker.sock
         filters:
           - name: label
-            values: ['com.scraperx.service=api']
+            values: ['com.scrapifie.service=api']
     relabel_configs:
       - source_labels: [__meta_docker_container_name]
         target_label: instance
-      - source_labels: [__meta_docker_container_label_com_scraperx_version]
+      - source_labels: [__meta_docker_container_label_com_scrapifie_version]
         target_label: version
 
   # Workers
-  - job_name: 'scraperx-workers'
+  - job_name: 'scrapifie-workers'
     docker_sd_configs:
       - host: unix:///var/run/docker.sock
         filters:
           - name: label
-            values: ['com.scraperx.service=worker']
+            values: ['com.scrapifie.service=worker']
     relabel_configs:
       - source_labels: [__meta_docker_container_name]
         target_label: instance
-      - source_labels: [__meta_docker_container_label_com_scraperx_worker_type]
+      - source_labels: [__meta_docker_container_label_com_scrapifie_worker_type]
         target_label: worker_type
 
   # Redis
@@ -506,57 +506,57 @@ remote_write:
 # prometheus/rules/recording.yml
 
 groups:
-  - name: scraperx_recording_rules
+  - name: scrapifie_recording_rules
     interval: 30s
     rules:
       # Request rate (5m average)
-      - record: scraperx:http_requests:rate5m
+      - record: scrapifie:http_requests:rate5m
         expr: sum(rate(http_requests_total[5m])) by (method, path, status_code)
 
       # Error rate
-      - record: scraperx:http_error_rate:rate5m
+      - record: scrapifie:http_error_rate:rate5m
         expr: |
           sum(rate(http_requests_total{status_code=~"5.."}[5m]))
           /
           sum(rate(http_requests_total[5m]))
 
       # P50 latency
-      - record: scraperx:http_latency:p50
+      - record: scrapifie:http_latency:p50
         expr: histogram_quantile(0.5, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, path))
 
       # P95 latency
-      - record: scraperx:http_latency:p95
+      - record: scrapifie:http_latency:p95
         expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, path))
 
       # P99 latency
-      - record: scraperx:http_latency:p99
+      - record: scrapifie:http_latency:p99
         expr: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, path))
 
       # Scrape success rate by engine
-      - record: scraperx:scrape_success_rate:rate5m
+      - record: scrapifie:scrape_success_rate:rate5m
         expr: |
           sum(rate(scrape_jobs_total{status="completed"}[5m])) by (engine)
           /
           sum(rate(scrape_jobs_total[5m])) by (engine)
 
       # Scrape job duration P95
-      - record: scraperx:scrape_duration:p95
+      - record: scrapifie:scrape_duration:p95
         expr: histogram_quantile(0.95, sum(rate(scrape_job_duration_seconds_bucket[5m])) by (le, engine))
 
       # Queue depth
-      - record: scraperx:queue_depth:total
+      - record: scrapifie:queue_depth:total
         expr: sum(queue_size) by (queue_name)
 
       # Credits consumed per hour
-      - record: scraperx:credits_consumed:rate1h
+      - record: scrapifie:credits_consumed:rate1h
         expr: sum(increase(credits_consumed_total[1h])) by (plan)
 
       # Active concurrent jobs
-      - record: scraperx:concurrent_jobs:current
+      - record: scrapifie:concurrent_jobs:current
         expr: sum(scrape_jobs_in_progress) by (engine)
 
       # Proxy success rate by provider
-      - record: scraperx:proxy_success_rate:rate5m
+      - record: scrapifie:proxy_success_rate:rate5m
         expr: |
           sum(rate(proxy_requests_total{status="success"}[5m])) by (provider, proxy_type)
           /
@@ -570,7 +570,7 @@ groups:
 
 type: S3
 config:
-  bucket: scraperx-metrics
+  bucket: scrapifie-metrics
   endpoint: minio:9000
   access_key: ${MINIO_ACCESS_KEY}
   secret_key: ${MINIO_SECRET_KEY}
@@ -630,8 +630,8 @@ Grafana Dashboards/
 ```json
 {
   "dashboard": {
-    "title": "ScraperX Executive Dashboard",
-    "uid": "scraperx-executive",
+    "title": "Scrapifie Executive Dashboard",
+    "uid": "scrapifie-executive",
     "tags": ["executive", "overview"],
     "timezone": "browser",
     "refresh": "1m",
@@ -659,7 +659,7 @@ Grafana Dashboards/
         "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
         "targets": [
           {
-            "expr": "1 - scraperx:http_error_rate:rate5m",
+            "expr": "1 - scrapifie:http_error_rate:rate5m",
             "legendFormat": "Success Rate"
           }
         ],
@@ -724,7 +724,7 @@ Grafana Dashboards/
         "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
         "targets": [
           {
-            "expr": "scraperx:scrape_success_rate:rate5m",
+            "expr": "scrapifie:scrape_success_rate:rate5m",
             "legendFormat": "{{engine}}"
           }
         ],
@@ -785,8 +785,8 @@ Grafana Dashboards/
 // grafana/dashboards/operations.ts
 
 const operationsDashboard = {
-  title: 'ScraperX Operations Dashboard',
-  uid: 'scraperx-ops',
+  title: 'Scrapifie Operations Dashboard',
+  uid: 'scrapifie-ops',
   rows: [
     {
       title: 'System Health',
@@ -795,9 +795,9 @@ const operationsDashboard = {
           title: 'API Response Time (P50/P95/P99)',
           type: 'timeseries',
           targets: [
-            { expr: 'scraperx:http_latency:p50', legendFormat: 'P50' },
-            { expr: 'scraperx:http_latency:p95', legendFormat: 'P95' },
-            { expr: 'scraperx:http_latency:p99', legendFormat: 'P99' },
+            { expr: 'scrapifie:http_latency:p50', legendFormat: 'P50' },
+            { expr: 'scrapifie:http_latency:p95', legendFormat: 'P95' },
+            { expr: 'scrapifie:http_latency:p99', legendFormat: 'P99' },
           ],
         },
         {
@@ -819,7 +819,7 @@ const operationsDashboard = {
           title: 'Queue Depth',
           type: 'timeseries',
           targets: [
-            { expr: 'scraperx:queue_depth:total', legendFormat: '{{queue_name}}' },
+            { expr: 'scrapifie:queue_depth:total', legendFormat: '{{queue_name}}' },
           ],
         },
         {
@@ -927,7 +927,7 @@ const baseConfig: pino.LoggerOptions = {
     bindings: (bindings) => ({
       pid: bindings.pid,
       host: bindings.hostname,
-      service: 'scraperx',
+      service: 'scrapifie',
       version: process.env.APP_VERSION || 'unknown',
     }),
   },
@@ -1107,7 +1107,7 @@ storage_config:
     cache_location: /loki/boltdb-shipper-cache
     shared_store: s3
   aws:
-    s3: s3://scraperx-logs
+    s3: s3://scrapifie-logs
     s3forcepathstyle: true
     endpoint: minio:9000
     access_key_id: ${MINIO_ACCESS_KEY}
@@ -1151,7 +1151,7 @@ scrape_configs:
       - source_labels: ['__meta_docker_container_name']
         regex: '/(.*)'
         target_label: 'container'
-      - source_labels: ['__meta_docker_container_label_com_scraperx_service']
+      - source_labels: ['__meta_docker_container_label_com_scrapifie_service']
         target_label: 'service'
     pipeline_stages:
       - json:
@@ -1187,7 +1187,7 @@ import {
 } from '@opentelemetry/sdk-trace-base';
 
 // Custom sampler: Always trace errors, sample 10% of successes
-class ScraperXSampler extends ParentBasedSampler {
+class ScrapifieSampler extends ParentBasedSampler {
   constructor() {
     super({
       root: new TraceIdRatioBasedSampler(0.1), // 10% sampling
@@ -1197,7 +1197,7 @@ class ScraperXSampler extends ParentBasedSampler {
 
 const sdk = new NodeSDK({
   resource: new Resource({
-    [SemanticResourceAttributes.SERVICE_NAME]: 'scraperx',
+    [SemanticResourceAttributes.SERVICE_NAME]: 'scrapifie',
     [SemanticResourceAttributes.SERVICE_VERSION]: process.env.APP_VERSION || '1.0.0',
     [SemanticResourceAttributes.DEPLOYMENT_ENVIRONMENT]: process.env.NODE_ENV || 'development',
   }),
@@ -1217,7 +1217,7 @@ const sdk = new NodeSDK({
     }),
   ],
   
-  sampler: new ScraperXSampler(),
+  sampler: new ScrapifieSampler(),
 });
 
 // Start the SDK
@@ -1243,7 +1243,7 @@ export { sdk };
 
 import { trace, Span, SpanStatusCode, context } from '@opentelemetry/api';
 
-const tracer = trace.getTracer('scraperx');
+const tracer = trace.getTracer('scrapifie');
 
 export interface TraceOptions {
   attributes?: Record<string, string | number | boolean>;
@@ -1332,7 +1332,7 @@ storage:
   type: elasticsearch
   elasticsearch:
     server-urls: http://elasticsearch:9200
-    index-prefix: scraperx-traces
+    index-prefix: scrapifie-traces
     
 sampling:
   type: adaptive
@@ -1362,7 +1362,7 @@ processor:
 global:
   resolve_timeout: 5m
   smtp_smarthost: 'smtp.sendgrid.net:587'
-  smtp_from: 'alerts@scraperx.io'
+  smtp_from: 'alerts@scrapifie.io'
   smtp_auth_username: 'apikey'
   smtp_auth_password: ${SENDGRID_API_KEY}
   slack_api_url: ${SLACK_WEBHOOK_URL}
@@ -1453,29 +1453,29 @@ inhibit_rules:
 # prometheus/rules/alerts.yml
 
 groups:
-  - name: scraperx_critical_alerts
+  - name: scrapifie_critical_alerts
     rules:
       # Service Down
       - alert: ServiceDown
-        expr: up{job=~"scraperx-.*"} == 0
+        expr: up{job=~"scrapifie-.*"} == 0
         for: 1m
         labels:
           severity: critical
         annotations:
           summary: "Service {{ $labels.job }} is down"
           description: "{{ $labels.instance }} has been down for more than 1 minute."
-          runbook: "https://wiki.scraperx.io/runbooks/service-down"
+          runbook: "https://wiki.scrapifie.io/runbooks/service-down"
 
       # High Error Rate
       - alert: HighErrorRate
-        expr: scraperx:http_error_rate:rate5m > 0.05
+        expr: scrapifie:http_error_rate:rate5m > 0.05
         for: 2m
         labels:
           severity: critical
         annotations:
           summary: "High error rate detected"
           description: "Error rate is {{ printf \"%.2f\" $value | mul 100 }}% (threshold: 5%)"
-          runbook: "https://wiki.scraperx.io/runbooks/high-error-rate"
+          runbook: "https://wiki.scrapifie.io/runbooks/high-error-rate"
 
       # Database Connection Pool Exhausted
       - alert: DatabaseConnectionPoolExhausted
@@ -1487,11 +1487,11 @@ groups:
           summary: "PostgreSQL connection pool nearly exhausted"
           description: "{{ printf \"%.0f\" $value | mul 100 }}% of connections in use"
 
-  - name: scraperx_high_alerts
+  - name: scrapifie_high_alerts
     rules:
       # High Latency
       - alert: HighLatency
-        expr: scraperx:http_latency:p95 > 5
+        expr: scrapifie:http_latency:p95 > 5
         for: 5m
         labels:
           severity: high
@@ -1501,7 +1501,7 @@ groups:
 
       # Queue Backlog
       - alert: QueueBacklog
-        expr: scraperx:queue_depth:total > 10000
+        expr: scrapifie:queue_depth:total > 10000
         for: 5m
         labels:
           severity: high
@@ -1511,7 +1511,7 @@ groups:
 
       # Scrape Success Rate Low
       - alert: LowScrapeSuccessRate
-        expr: scraperx:scrape_success_rate:rate5m < 0.9
+        expr: scrapifie:scrape_success_rate:rate5m < 0.9
         for: 10m
         labels:
           severity: high
@@ -1529,7 +1529,7 @@ groups:
           summary: "Redis memory usage high"
           description: "Redis is using {{ printf \"%.0f\" $value | mul 100 }}% of max memory"
 
-  - name: scraperx_warning_alerts
+  - name: scrapifie_warning_alerts
     rules:
       # Certificate Expiring
       - alert: SSLCertificateExpiring
@@ -1563,7 +1563,7 @@ groups:
 
       # Proxy Provider Degraded
       - alert: ProxyProviderDegraded
-        expr: scraperx:proxy_success_rate:rate5m < 0.95
+        expr: scrapifie:proxy_success_rate:rate5m < 0.95
         for: 10m
         labels:
           severity: warning
@@ -1575,13 +1575,13 @@ groups:
 ### 8.3 Alert Notification Templates
 
 ```yaml
-# alertmanager/templates/scraperx.tmpl
+# alertmanager/templates/scrapifie.tmpl
 
-{{ define "slack.scraperx.title" }}
+{{ define "slack.scrapifie.title" }}
 [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .GroupLabels.alertname }}
 {{ end }}
 
-{{ define "slack.scraperx.text" }}
+{{ define "slack.scrapifie.text" }}
 {{ range .Alerts }}
 *Alert:* {{ .Annotations.summary }}
 *Severity:* {{ .Labels.severity }}
@@ -1591,7 +1591,7 @@ groups:
 {{ end }}
 {{ end }}
 
-{{ define "slack.scraperx.color" }}
+{{ define "slack.scrapifie.color" }}
 {{ if eq .Status "firing" }}
 {{ if eq (index .Alerts 0).Labels.severity "critical" }}danger{{ else if eq (index .Alerts 0).Labels.severity "high" }}warning{{ else }}#439FE0{{ end }}
 {{ else }}good{{ end }}
@@ -1752,7 +1752,7 @@ async function checkQueueHealth(redis: Redis): Promise<HealthCheck> {
 
 async function checkWorkerHealth(redis: Redis): Promise<HealthCheck> {
   try {
-    const workers = await redis.smembers('scraperx:workers:active');
+    const workers = await redis.smembers('scrapifie:workers:active');
     const activeCount = workers.length;
     const status = activeCount === 0 ? 'fail' : activeCount < 3 ? 'warn' : 'pass';
     return {
@@ -1782,7 +1782,7 @@ function determineOverallStatus(checks: HealthCheck[]): 'healthy' | 'degraded' |
 # prometheus/rules/sli.yml
 
 groups:
-  - name: scraperx_sli
+  - name: scrapifie_sli
     interval: 1m
     rules:
       # Availability SLI
@@ -1823,8 +1823,8 @@ groups:
 ```json
 {
   "dashboard": {
-    "title": "ScraperX SLO Dashboard",
-    "uid": "scraperx-slo",
+    "title": "Scrapifie SLO Dashboard",
+    "uid": "scrapifie-slo",
     "panels": [
       {
         "id": 1,
@@ -1939,13 +1939,13 @@ sum(rate(http_requests_total{status_code=~"5.."}[5m])) by (status_code, path)
 ### Step 2: Check Recent Deployments
 ```bash
 kubectl get deployments -o wide
-kubectl rollout history deployment/scraperx-api
+kubectl rollout history deployment/scrapifie-api
 ```
 
 ### Step 3: Check Logs
 ```bash
 # In Grafana Loki
-{service="scraperx-api"} |= "error" | json | level="error"
+{service="scrapifie-api"} |= "error" | json | level="error"
 ```
 
 ### Step 4: Check Dependencies
@@ -1957,7 +1957,7 @@ kubectl rollout history deployment/scraperx-api
 
 ### If Recent Deployment
 ```bash
-kubectl rollout undo deployment/scraperx-api
+kubectl rollout undo deployment/scrapifie-api
 ```
 
 ### If Database Issues
@@ -2015,7 +2015,7 @@ queue_size{queue_name="scrape:http", status="waiting"}
 ### Step 2: Check Worker Status
 ```bash
 # Active workers
-redis-cli SMEMBERS "scraperx:workers:active"
+redis-cli SMEMBERS "scrapifie:workers:active"
 
 # Worker health
 curl http://worker-1:3000/health
@@ -2031,10 +2031,10 @@ rate(queue_processing_time_seconds_count[5m])
 ### Scale Workers
 ```bash
 # Docker Swarm
-docker service scale scraperx_worker=20
+docker service scale scrapifie_worker=20
 
 # Kubernetes
-kubectl scale deployment scraperx-worker --replicas=20
+kubectl scale deployment scrapifie-worker --replicas=20
 ```
 
 ### Check for Stuck Jobs
@@ -2089,12 +2089,12 @@ redis-cli ZREMRANGEBYSCORE "bull:scrape:http:completed" 0 $(($(date +%s)*1000 - 
 
 | Dashboard | URL | Purpose |
 |-----------|-----|---------|
-| Executive | /d/scraperx-executive | Business KPIs |
-| Operations | /d/scraperx-ops | System health |
-| API | /d/scraperx-api | API performance |
-| Scraping | /d/scraperx-scraping | Scrape metrics |
-| Infrastructure | /d/scraperx-infra | Server metrics |
-| SLO | /d/scraperx-slo | Service levels |
+| Executive | /d/scrapifie-executive | Business KPIs |
+| Operations | /d/scrapifie-ops | System health |
+| API | /d/scrapifie-api | API performance |
+| Scraping | /d/scrapifie-scraping | Scrape metrics |
+| Infrastructure | /d/scrapifie-infra | Server metrics |
+| SLO | /d/scrapifie-slo | Service levels |
 
 ---
 
@@ -2116,4 +2116,4 @@ redis-cli ZREMRANGEBYSCORE "bull:scrape:http:completed" 0 $(($(date +%s)*1000 - 
 
 ### Distribution
 
-This document is approved for internal distribution to the ScraperX engineering, platform, and SRE teams.
+This document is approved for internal distribution to the Scrapifie engineering, platform, and SRE teams.

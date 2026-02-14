@@ -1,4 +1,4 @@
-# ScraperX Billing and Monetization
+# Scrapifie Billing and Monetization
 
 ## Document Information
 
@@ -32,7 +32,7 @@
 
 ### 1.1 Purpose
 
-This document defines the complete billing and monetization system for ScraperX, including subscription plans, credit calculations, Stripe integration, and revenue tracking.
+This document defines the complete billing and monetization system for Scrapifie, including subscription plans, credit calculations, Stripe integration, and revenue tracking.
 
 ### 1.2 Business Objectives
 
@@ -1498,7 +1498,7 @@ async function handleInvoicePaymentFailed(
       organizationId: org.id,
       invoiceId: invoice.id,
       amount: invoice.amount_due,
-      updatePaymentUrl: `https://app.scraperx.io/billing/update-payment`,
+      updatePaymentUrl: `https://app.scrapifie.io/billing/update-payment`,
     },
   }));
   
@@ -2217,8 +2217,8 @@ export async function onboardNewCustomer(
       stripeCustomer.id,
       input.planId,
       input.billingCycle,
-      `https://app.scraperx.io/onboarding/complete?session_id={CHECKOUT_SESSION_ID}`,
-      `https://app.scraperx.io/onboarding/canceled`,
+      `https://app.scrapifie.io/onboarding/complete?session_id={CHECKOUT_SESSION_ID}`,
+      `https://app.scrapifie.io/onboarding/canceled`,
     );
     
     return {
@@ -2745,17 +2745,17 @@ async function setupStripeProducts() {
   // Create products
   const products = await Promise.all([
     stripe.products.create({
-      name: 'ScraperX Starter',
+      name: 'Scrapifie Starter',
       description: '100K credits/month, 10 req/sec',
       metadata: { plan_id: 'starter' },
     }),
     stripe.products.create({
-      name: 'ScraperX Growth',
+      name: 'Scrapifie Growth',
       description: '500K credits/month, 50 req/sec',
       metadata: { plan_id: 'growth' },
     }),
     stripe.products.create({
-      name: 'ScraperX Business',
+      name: 'Scrapifie Business',
       description: '2M credits/month, 200 req/sec',
       metadata: { plan_id: 'business' },
     }),
@@ -2853,4 +2853,4 @@ setupStripeProducts().catch(console.error);
 
 ### Distribution
 
-This document is approved for internal distribution to the ScraperX product, engineering, and finance teams.
+This document is approved for internal distribution to the Scrapifie product, engineering, and finance teams.
