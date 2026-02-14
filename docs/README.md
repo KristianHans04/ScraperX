@@ -1,10 +1,10 @@
-# ScraperX Documentation
+# Scrapifie Documentation
 
-Welcome to the ScraperX documentation. ScraperX is an enterprise-grade web scraping platform that provides reliable, scalable data extraction with intelligent anti-detection capabilities.
+Welcome to the Scrapifie documentation. Scrapifie is an enterprise-grade web scraping platform that provides reliable, scalable data extraction with intelligent anti-detection capabilities.
 
-## What is ScraperX?
+## What is Scrapifie?
 
-ScraperX is a complete web scraping solution that handles the complexity of modern web scraping:
+Scrapifie is a complete web scraping solution that handles the complexity of modern web scraping:
 
 - **Multi-Engine Architecture** - Automatically selects the best scraping approach (HTTP, Browser, or Stealth) based on target complexity
 - **Anti-Detection** - Built-in fingerprint generation and stealth browsing capabilities
@@ -16,15 +16,15 @@ ScraperX is a complete web scraping solution that handles the complexity of mode
 
 ### Getting Started
 
-New to ScraperX? Start here:
+New to Scrapifie? Start here:
 
-- [Installation](getting-started/installation.md) - Set up ScraperX on your system
+- [Installation](getting-started/installation.md) - Set up Scrapifie on your system
 - [Configuration](getting-started/configuration.md) - Configure environment variables
 - [Quick Start](getting-started/quick-start.md) - Make your first scrape request
 
 ### Architecture
 
-Understand how ScraperX works:
+Understand how Scrapifie works:
 
 - [System Overview](architecture/overview.md) - High-level architecture and data flow
 - [Scraping Engines](architecture/engines.md) - HTTP, Browser, and Stealth engines explained
@@ -42,7 +42,7 @@ Learn how to use the API:
 
 ### Development
 
-Contributing to ScraperX:
+Contributing to Scrapifie:
 
 - [Testing](development/testing.md) - Running and writing tests
 - [Docker](development/docker.md) - Container setup and usage
@@ -50,7 +50,7 @@ Contributing to ScraperX:
 
 ### Deployment
 
-Running ScraperX in production:
+Running Scrapifie in production:
 
 - [Production Guide](deployment/production.md) - Production deployment best practices
 
