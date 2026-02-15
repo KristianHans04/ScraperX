@@ -1,5 +1,5 @@
 /**
- * API Integration Tests for ScraperX
+ * API Integration Tests for Scrapifie
  *
  * Tests for the Fastify API endpoints with mocked dependencies.
  */
@@ -61,11 +61,11 @@ vi.mock('../../src/queue/redis.js', () => ({
 // Mock queues
 vi.mock('../../src/queue/queues.js', () => ({
   QUEUE_NAMES: {
-    HTTP: 'scraperx:http',
-    BROWSER: 'scraperx:browser',
-    STEALTH: 'scraperx:stealth',
-    WEBHOOK: 'scraperx:webhook',
-    CLEANUP: 'scraperx:cleanup',
+    HTTP: 'scrapifie:http',
+    BROWSER: 'scrapifie:browser',
+    STEALTH: 'scrapifie:stealth',
+    WEBHOOK: 'scrapifie:webhook',
+    CLEANUP: 'scrapifie:cleanup',
   },
   addScrapeJob: vi.fn().mockResolvedValue({ id: 'job_test123' }),
   getQueue: vi.fn().mockReturnValue({

@@ -1,5 +1,5 @@
 /**
- * Scrape Workflow Integration Tests for ScraperX
+ * Scrape Workflow Integration Tests for Scrapifie
  *
  * Tests for end-to-end scraping workflows with mocked external services.
  */
@@ -52,10 +52,10 @@ const mockQueueAdd = vi.fn().mockResolvedValue({ id: 'job_workflow_test' });
 
 vi.mock('../../src/queue/queues.js', () => ({
   QUEUE_NAMES: {
-    HTTP: 'scraperx:http',
-    BROWSER: 'scraperx:browser',
-    STEALTH: 'scraperx:stealth',
-    WEBHOOK: 'scraperx:webhook',
+    HTTP: 'scrapifie:http',
+    BROWSER: 'scrapifie:browser',
+    STEALTH: 'scrapifie:stealth',
+    WEBHOOK: 'scrapifie:webhook',
   },
   addScrapeJob: mockQueueAdd,
   getQueue: vi.fn().mockReturnValue({
@@ -64,7 +64,7 @@ vi.mock('../../src/queue/queues.js', () => ({
   }),
   getQueueForEngine: vi.fn().mockReturnValue({
     add: mockQueueAdd,
-    name: 'scraperx:http',
+    name: 'scrapifie:http',
   }),
 }));
 
@@ -72,7 +72,7 @@ vi.mock('../../src/db/index.js', () => ({
   scrapeJobRepository: {
     create: vi.fn().mockResolvedValue({
       id: 'job_workflow_test',
-      organizationId: 'org_123',
+      accountId: 'acc_123',
       url: 'https://example.com',
       status: 'pending',
       engine: 'http',
@@ -97,18 +97,18 @@ vi.mock('../../src/db/index.js', () => ({
       contentInline: '<html><body>Test Content</body></html>',
     }),
   },
-  organizationRepository: {
+  accountRepository: {
     findById: vi.fn().mockResolvedValue({
-      id: 'org_123',
-      creditsBalance: 100000,
-      rateLimitPerSecond: 10,
+      id: 'acc_123',
+      creditBalance: 100000,
+      plan: 'pro',
     }),
     deductCredits: vi.fn().mockResolvedValue(undefined),
   },
   apiKeyRepository: {
     findByKeyHash: vi.fn().mockResolvedValue({
       id: 'key_123',
-      organizationId: 'org_123',
+      accountId: 'acc_123',
       isActive: true,
     }),
   },
@@ -116,7 +116,7 @@ vi.mock('../../src/db/index.js', () => ({
 
 import { calculateCredits, determineEngine, determineProxyTier } from '../../src/utils/credits.js';
 import {
-  mockOrganization,
+  mockAccount,
   mockScrapeJob,
   mockJobResult,
   defaultScrapeOptions,
@@ -251,7 +251,7 @@ describe('Scrape Workflow', () => {
 
       await addScrapeJob({
         jobId: 'test_job_123',
-        organizationId: 'org_123',
+        accountId: 'acc_123',
         url: 'https://example.com',
         method: 'GET',
         headers: {},
@@ -269,7 +269,7 @@ describe('Scrape Workflow', () => {
 
       await addScrapeJob({
         jobId: 'test_job_priority',
-        organizationId: 'org_123',
+        accountId: 'acc_123',
         url: 'https://example.com',
         method: 'GET',
         headers: {},
@@ -289,7 +289,7 @@ describe('Scrape Workflow', () => {
 
       const result = await jobResultRepository.create({
         jobId: 'job_123',
-        organizationId: 'org_123',
+        accountId: 'acc_123',
         statusCode: 200,
         headers: { 'content-type': 'text/html' },
         contentStorageType: 'inline',
@@ -312,11 +312,11 @@ describe('Scrape Workflow', () => {
 
   describe('Credit Deduction', () => {
     it('should deduct credits on job completion', async () => {
-      const { organizationRepository } = await import('../../src/db/index.js');
+      const { accountRepository } = await import('../../src/db/index.js');
 
-      await organizationRepository.deductCredits('org_123', 5);
+      await accountRepository.deductCredits('acc_123', 5);
 
-      expect(organizationRepository.deductCredits).toHaveBeenCalledWith('org_123', 5);
+      expect(accountRepository.deductCredits).toHaveBeenCalledWith('acc_123', 5);
     });
   });
 
