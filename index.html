@@ -2,10 +2,29 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" id="favicon" href="/Logo/Dark.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Scrapifie - Professional Web Scraping API Platform" />
     <title>Scrapifie - Web Scraping API</title>
+    <script>
+      (function() {
+        var favicon = document.getElementById('favicon');
+        function updateFavicon() {
+          var root = document.documentElement;
+          var isDark = root.classList.contains('dark') ||
+            (!root.classList.contains('light') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          favicon.href = isDark ? '/Logo/Dark.svg' : '/Logo/Light.svg';
+        }
+        updateFavicon();
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateFavicon);
+        var observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(m) {
+            if (m.attributeName === 'class') updateFavicon();
+          });
+        });
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
