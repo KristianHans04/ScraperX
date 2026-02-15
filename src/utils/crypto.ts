@@ -1,12 +1,64 @@
 import { createHash, randomBytes, timingSafeEqual } from 'crypto';
+import bcrypt from 'bcrypt';
 import { config } from '../config/index.js';
+import { isCommonPassword } from './commonPasswords.js';
+
+const BCRYPT_COST_FACTOR = 12;
+const MIN_PASSWORD_LENGTH = 8;
+const MAX_PASSWORD_LENGTH = 128;
 
 /**
- * Generate a random API key
+ * Validate password strength
  */
-export function generateApiKey(): string {
+export function validatePassword(password: string): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    errors.push(`Password must be at least ${MIN_PASSWORD_LENGTH} characters long`);
+  }
+
+  if (password.length > MAX_PASSWORD_LENGTH) {
+    errors.push(`Password must not exceed ${MAX_PASSWORD_LENGTH} characters`);
+  }
+
+  if (isCommonPassword(password)) {
+    errors.push('Password is too common. Please choose a different password');
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
+/**
+ * Hash a password for storage using bcrypt with cost factor 12
+ */
+export async function hashPassword(password: string): Promise<string> {
+  if (password.length > MAX_PASSWORD_LENGTH) {
+    throw new Error('Password is too long');
+  }
+  return bcrypt.hash(password, BCRYPT_COST_FACTOR);
+}
+
+/**
+ * Compare a password with its hash using constant-time comparison
+ */
+export async function comparePassword(password: string, hashedPassword: string): Promise<boolean> {
+  if (password.length > MAX_PASSWORD_LENGTH) {
+    return false;
+  }
+  return bcrypt.compare(password, hashedPassword);
+}
+
+/**
+ * Generate a random API key and return both the key and its hash
+ */
+export function generateApiKey(): { key: string; hash: string } {
   const randomPart = randomBytes(config.apiKey.length).toString('hex').slice(0, config.apiKey.length);
-  return `${config.apiKey.prefix}${randomPart}`;
+  const key = `${config.apiKey.prefix}${randomPart}`;
+  const hash = hashApiKey(key);
+  return { key, hash };
 }
 
 /**
