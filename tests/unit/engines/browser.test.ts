@@ -1,5 +1,5 @@
 /**
- * Browser Engine Tests for ScraperX
+ * Browser Engine Tests for Scrapifie
  *
  * Tests for Playwright-based browser scraping engine.
  */

@@ -1,5 +1,5 @@
 /**
- * HTTP Engine Tests for ScraperX
+ * HTTP Engine Tests for Scrapifie
  *
  * Tests for HTTP scraping engine functionality using undici.
  */
@@ -47,7 +47,7 @@ vi.mock('../../../src/utils/logger.js', () => ({
 vi.mock('../../../src/config/index.js', () => ({
   config: {
     httpEngine: {
-      userAgent: 'ScraperX/1.0',
+      userAgent: 'Scrapifie/1.0',
     },
     scraping: {
       timeoutMs: 30000,
