@@ -1,11 +1,12 @@
 /**
- * Test Fixtures for ScraperX
+ * Test Fixtures for Scrapifie
  * 
  * Provides mock data and factory functions for tests.
  */
 
 import type { 
   Organization, 
+  Account,
   ApiKey, 
   ScrapeJob, 
   JobResult, 
@@ -15,7 +16,35 @@ import type {
   Cookie,
 } from '../../src/types/index.js';
 
-// Organization Fixtures
+// Account Fixtures (Phase 6+)
+export const mockAccount: Account = {
+  id: '00000000-0000-0000-0000-000000000001',
+  displayName: 'Test Account',
+  plan: 'free',
+  status: 'active',
+  creditBalance: 100000,
+  creditCycleUsage: 0,
+  createdAt: new Date('2024-01-01T00:00:00Z'),
+  updatedAt: new Date('2024-01-01T00:00:00Z'),
+};
+
+export const mockProAccount: Account = {
+  ...mockAccount,
+  id: '00000000-0000-0000-0000-000000000002',
+  displayName: 'Pro Account',
+  plan: 'pro',
+  creditBalance: 500000,
+};
+
+export const mockEnterpriseAccount: Account = {
+  ...mockAccount,
+  id: '00000000-0000-0000-0000-000000000003',
+  displayName: 'Enterprise Account',
+  plan: 'enterprise',
+  creditBalance: 10000000,
+};
+
+// Organization Fixtures (Legacy - Pre Phase 6)
 export const mockOrganization: Organization = {
   id: '00000000-0000-0000-0000-000000000001',
   name: 'Test Organization',
@@ -70,7 +99,7 @@ export const mockEnterpriseOrganization: Organization = {
 // API Key Fixtures
 export const mockApiKey: ApiKey = {
   id: '00000000-0000-0000-0000-000000000101',
-  organizationId: mockOrganization.id,
+  accountId: mockAccount.id,
   keyPrefix: 'sk_test_demo',
   keyHash: 'a'.repeat(64),
   name: 'Test API Key',
@@ -110,7 +139,7 @@ export const mockExpiredApiKey: ApiKey = {
 // Scrape Job Fixtures
 export const mockScrapeJob: ScrapeJob = {
   id: 'job_test123abc',
-  organizationId: mockOrganization.id,
+  accountId: mockAccount.id,
   apiKeyId: mockApiKey.id,
   url: 'https://example.com',
   urlHash: 'a'.repeat(64),
@@ -181,7 +210,7 @@ export const mockBrowserJob: ScrapeJob = {
 export const mockJobResult: JobResult = {
   id: '00000000-0000-0000-0000-000000000201',
   jobId: mockCompletedJob.id,
-  organizationId: mockOrganization.id,
+  accountId: mockAccount.id,
   statusCode: 200,
   statusText: 'OK',
   headers: {
@@ -323,6 +352,10 @@ export const mockCookies: Cookie[] = [
 ];
 
 // Factory Functions
+export function createMockAccount(overrides?: Partial<Account>): Account {
+  return { ...mockAccount, ...overrides };
+}
+
 export function createMockOrganization(overrides?: Partial<Organization>): Organization {
   return { ...mockOrganization, ...overrides };
 }
