@@ -4,20 +4,19 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+// Define mockRateLimiter outside the mock
+const mockRateLimiter = {
+  isRateLimited: vi.fn(),
+  checkConcurrent: vi.fn(),
+  releaseConcurrent: vi.fn(),
+};
+
 // Define mocks inline to avoid hoisting issues
-vi.mock('../../../../src/queue/redis.js', () => {
-  const mockRateLimiter = {
-    isRateLimited: vi.fn(),
-    checkConcurrent: vi.fn(),
-    releaseConcurrent: vi.fn(),
-  };
-  return {
-    createRateLimiter: vi.fn().mockResolvedValue(mockRateLimiter),
-    RedisRateLimiter: vi.fn(),
-    getRateLimiter: vi.fn().mockReturnValue(mockRateLimiter),
-    __mockRateLimiter: mockRateLimiter,
-  };
-});
+vi.mock('../../../../src/queue/redis.js', () => ({
+  createRateLimiter: vi.fn().mockResolvedValue(mockRateLimiter),
+  RedisRateLimiter: vi.fn(),
+  getRateLimiter: vi.fn().mockReturnValue(mockRateLimiter),
+}));
 
 vi.mock('../../../../src/utils/logger.js', () => ({
   logger: {
@@ -43,8 +42,7 @@ import {
   releaseConcurrentSlot,
   checkCreditsMiddleware,
 } from '../../../../src/api/middleware/rateLimit.js';
-import { __mockRateLimiter as mockRateLimiter } from '../../../../src/queue/redis.js';
-import { mockOrganization, mockApiKey } from '../../../fixtures/index.js';
+import { mockAccount, mockApiKey } from '../../../fixtures/index.js';
 
 describe('Rate Limit Middleware', () => {
   let mockRequest: any;
@@ -54,7 +52,7 @@ describe('Rate Limit Middleware', () => {
     vi.clearAllMocks();
 
     mockRequest = {
-      organization: mockOrganization,
+      account: mockAccount,
       apiKey: mockApiKey,
       requestContext: {},
     };
@@ -68,7 +66,7 @@ describe('Rate Limit Middleware', () => {
 
   describe('rateLimitMiddleware', () => {
     it('should skip rate limiting for unauthenticated requests', async () => {
-      mockRequest.organization = undefined;
+      mockRequest.account = undefined;
 
       await rateLimitMiddleware(mockRequest, mockReply);
 
@@ -84,7 +82,7 @@ describe('Rate Limit Middleware', () => {
 
       await rateLimitMiddleware(mockRequest, mockReply);
 
-      expect(mockReply.header).toHaveBeenCalledWith('X-RateLimit-Limit', '10');
+      expect(mockReply.header).toHaveBeenCalledWith('X-RateLimit-Limit', '100');
       expect(mockReply.header).toHaveBeenCalledWith('X-RateLimit-Remaining', '9');
       expect(mockReply.status).not.toHaveBeenCalled();
     });
@@ -136,7 +134,7 @@ describe('Rate Limit Middleware', () => {
 
   describe('concurrentLimitMiddleware', () => {
     it('should skip for unauthenticated requests', async () => {
-      mockRequest.organization = undefined;
+      mockRequest.account = undefined;
 
       await concurrentLimitMiddleware(mockRequest, mockReply);
 
@@ -152,7 +150,7 @@ describe('Rate Limit Middleware', () => {
 
       await concurrentLimitMiddleware(mockRequest, mockReply);
 
-      expect(mockReply.header).toHaveBeenCalledWith('X-Concurrent-Limit', '50');
+      expect(mockReply.header).toHaveBeenCalledWith('X-Concurrent-Limit', '10');
       expect(mockReply.header).toHaveBeenCalledWith('X-Concurrent-Active', '10');
       expect(mockReply.status).not.toHaveBeenCalled();
     });
@@ -225,7 +223,7 @@ describe('Rate Limit Middleware', () => {
 
   describe('checkCreditsMiddleware', () => {
     it('should skip for unauthenticated requests', async () => {
-      mockRequest.organization = undefined;
+      mockRequest.account = undefined;
 
       await checkCreditsMiddleware(mockRequest, mockReply);
 
@@ -233,7 +231,7 @@ describe('Rate Limit Middleware', () => {
     });
 
     it('should skip for enterprise plans', async () => {
-      mockRequest.organization = { ...mockOrganization, planId: 'enterprise' };
+      mockRequest.account = { ...mockAccount, plan: 'enterprise' };
       mockRequest.estimatedCredits = 1000000;
 
       await checkCreditsMiddleware(mockRequest, mockReply);
@@ -242,7 +240,7 @@ describe('Rate Limit Middleware', () => {
     });
 
     it('should allow request with sufficient credits', async () => {
-      mockRequest.organization = { ...mockOrganization, creditsBalance: 1000 };
+      mockRequest.account = { ...mockAccount, creditBalance: 1000 };
       mockRequest.estimatedCredits = 10;
 
       await checkCreditsMiddleware(mockRequest, mockReply);
@@ -251,7 +249,7 @@ describe('Rate Limit Middleware', () => {
     });
 
     it('should reject request with insufficient credits', async () => {
-      mockRequest.organization = { ...mockOrganization, creditsBalance: 5 };
+      mockRequest.account = { ...mockAccount, creditBalance: 5 };
       mockRequest.estimatedCredits = 10;
 
       await checkCreditsMiddleware(mockRequest, mockReply);
@@ -269,7 +267,7 @@ describe('Rate Limit Middleware', () => {
     });
 
     it('should use default of 1 credit when not specified', async () => {
-      mockRequest.organization = { ...mockOrganization, creditsBalance: 0 };
+      mockRequest.account = { ...mockAccount, creditBalance: 0 };
       delete mockRequest.estimatedCredits;
 
       await checkCreditsMiddleware(mockRequest, mockReply);

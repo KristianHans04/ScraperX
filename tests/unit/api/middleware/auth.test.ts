@@ -11,7 +11,7 @@ vi.mock('../../../../src/db/index.js', () => ({
     findActiveByHash: vi.fn(),
     updateLastUsed: vi.fn().mockResolvedValue(undefined),
   },
-  organizationRepository: {
+  accountRepository: {
     findById: vi.fn(),
   },
 }));
@@ -39,8 +39,8 @@ vi.mock('../../../../src/config/index.js', () => ({
 
 // Import after mocks are set up
 import { authMiddleware, optionalAuthMiddleware, requireScope, requireFeature } from '../../../../src/api/middleware/auth.js';
-import { apiKeyRepository, organizationRepository } from '../../../../src/db/index.js';
-import { mockApiKey, mockOrganization } from '../../../fixtures/index.js';
+import { apiKeyRepository, accountRepository } from '../../../../src/db/index.js';
+import { mockApiKey, mockAccount } from '../../../fixtures/index.js';
 
 describe('Auth Middleware', () => {
   let mockRequest: any;
@@ -79,19 +79,19 @@ describe('Auth Middleware', () => {
       mockRequest.headers.authorization = 'Bearer sk_live_test123';
       
       vi.mocked(apiKeyRepository.findByHash).mockResolvedValue(mockApiKey);
-      vi.mocked(organizationRepository.findById).mockResolvedValue(mockOrganization);
+      vi.mocked(accountRepository.findById).mockResolvedValue(mockAccount);
 
       await authMiddleware(mockRequest, mockReply);
 
       expect(mockRequest.apiKey).toEqual(mockApiKey);
-      expect(mockRequest.organization).toEqual(mockOrganization);
+      expect(mockRequest.account).toEqual(mockAccount);
     });
 
     it('should extract API key from X-API-Key header', async () => {
       mockRequest.headers['x-api-key'] = 'sk_live_test123';
       
       vi.mocked(apiKeyRepository.findByHash).mockResolvedValue(mockApiKey);
-      vi.mocked(organizationRepository.findById).mockResolvedValue(mockOrganization);
+      vi.mocked(accountRepository.findById).mockResolvedValue(mockAccount);
 
       await authMiddleware(mockRequest, mockReply);
 
@@ -102,7 +102,7 @@ describe('Auth Middleware', () => {
       mockRequest.query.api_key = 'sk_live_test123';
       
       vi.mocked(apiKeyRepository.findByHash).mockResolvedValue(mockApiKey);
-      vi.mocked(organizationRepository.findById).mockResolvedValue(mockOrganization);
+      vi.mocked(accountRepository.findById).mockResolvedValue(mockAccount);
 
       await authMiddleware(mockRequest, mockReply);
 
@@ -184,7 +184,7 @@ describe('Auth Middleware', () => {
         ...mockApiKey,
         allowedIps: ['192.168.1.1'],
       });
-      vi.mocked(organizationRepository.findById).mockResolvedValue(mockOrganization);
+      vi.mocked(accountRepository.findById).mockResolvedValue(mockAccount);
 
       await authMiddleware(mockRequest, mockReply);
 
@@ -197,20 +197,20 @@ describe('Auth Middleware', () => {
       mockRequest.headers['x-forwarded-for'] = '203.0.113.1, 70.41.3.18';
       
       vi.mocked(apiKeyRepository.findByHash).mockResolvedValue(mockApiKey);
-      vi.mocked(organizationRepository.findById).mockResolvedValue(mockOrganization);
+      vi.mocked(accountRepository.findById).mockResolvedValue(mockAccount);
 
       await authMiddleware(mockRequest, mockReply);
 
       expect(mockRequest.clientIp).toBe('203.0.113.1');
     });
 
-    it('should reject suspended organization', async () => {
+    it('should reject suspended account', async () => {
       mockRequest.headers['x-api-key'] = 'sk_live_test123';
       
       vi.mocked(apiKeyRepository.findByHash).mockResolvedValue(mockApiKey);
-      vi.mocked(organizationRepository.findById).mockResolvedValue({
-        ...mockOrganization,
-        subscriptionStatus: 'canceled',
+      vi.mocked(accountRepository.findById).mockResolvedValue({
+        ...mockAccount,
+        status: 'suspended',
       });
 
       await authMiddleware(mockRequest, mockReply);
@@ -229,7 +229,7 @@ describe('Auth Middleware', () => {
       await optionalAuthMiddleware(mockRequest, mockReply);
 
       expect(mockRequest.apiKey).toBeUndefined();
-      expect(mockRequest.organization).toBeUndefined();
+      expect(mockRequest.account).toBeUndefined();
       expect(mockReply.status).not.toHaveBeenCalled();
     });
 
@@ -237,12 +237,12 @@ describe('Auth Middleware', () => {
       mockRequest.headers['x-api-key'] = 'sk_live_test123';
       
       vi.mocked(apiKeyRepository.findActiveByHash).mockResolvedValue(mockApiKey);
-      vi.mocked(organizationRepository.findById).mockResolvedValue(mockOrganization);
+      vi.mocked(accountRepository.findById).mockResolvedValue(mockAccount);
 
       await optionalAuthMiddleware(mockRequest, mockReply);
 
       expect(mockRequest.apiKey).toEqual(mockApiKey);
-      expect(mockRequest.organization).toEqual(mockOrganization);
+      expect(mockRequest.account).toEqual(mockAccount);
     });
   });
 
@@ -296,10 +296,7 @@ describe('Auth Middleware', () => {
     });
 
     it('should reject request without required feature', async () => {
-      mockRequest.organization = {
-        ...mockOrganization,
-        features: { ...mockOrganization.features, residentialProxies: false },
-      };
+      mockRequest.account = { ...mockAccount, plan: 'free' };
       
       const middleware = requireFeature('residentialProxies');
       await middleware(mockRequest, mockReply);
@@ -313,10 +310,7 @@ describe('Auth Middleware', () => {
     });
 
     it('should allow request with required feature', async () => {
-      mockRequest.organization = {
-        ...mockOrganization,
-        features: { ...mockOrganization.features, residentialProxies: true },
-      };
+      mockRequest.account = { ...mockAccount, plan: 'enterprise' };
       
       const middleware = requireFeature('residentialProxies');
       await middleware(mockRequest, mockReply);
