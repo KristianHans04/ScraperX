@@ -1,5 +1,5 @@
 /**
- * Queue Tests for ScraperX
+ * Queue Tests for Scrapifie
  *
  * Tests for BullMQ queue management, job processing, and queue operations.
  */
@@ -65,7 +65,7 @@ vi.mock('../../../src/utils/logger.js', () => ({
 vi.mock('../../../src/config/index.js', () => ({
   config: {
     queue: {
-      prefix: 'scraperx',
+      prefix: 'scrapifie',
       concurrency: 5,
     },
   },

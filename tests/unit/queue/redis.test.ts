@@ -28,7 +28,7 @@ vi.mock('../../../src/config/index.js', () => ({
       db: 0,
     },
     queue: {
-      prefix: 'scraperx',
+      prefix: 'scrapifie',
     },
   },
 }));
