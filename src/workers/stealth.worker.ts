@@ -1,6 +1,6 @@
 import { Job, Worker } from 'bullmq';
 import { QUEUE_NAMES, createWorker } from '../queue/queues.js';
-import { scrapeJobRepository, jobResultRepository, organizationRepository } from '../db/index.js';
+import { scrapeJobRepository, jobResultRepository, accountRepository } from '../db/index.js';
 import { getStealthEngine } from '../engines/stealth/index.js';
 import { generateFingerprint } from '../fingerprint/generator.js';
 import { getProxyManager } from '../proxy/index.js';
@@ -41,7 +41,7 @@ export class StealthWorker {
    * Process a stealth scrape job
    */
   private async processJob(job: Job<QueueJobData>): Promise<void> {
-    const { jobId, organizationId, url, method, headers, body, options, proxyConfig, fingerprint, attempt, maxAttempts } = job.data;
+    const { jobId, accountId, url, method, headers, body, options, proxyConfig, fingerprint, attempt, maxAttempts } = job.data;
 
     logger.info({ jobId, url, attempt }, 'Processing stealth job');
 
@@ -94,7 +94,7 @@ export class StealthWorker {
         // Store result
         const jobResult = await jobResultRepository.create({
           jobId,
-          organizationId,
+          accountId,
           statusCode: result.statusCode,
           headers: result.headers,
           cookies: result.cookies,
@@ -118,7 +118,7 @@ export class StealthWorker {
         const creditsToCharge = jobData?.creditsEstimated ?? 10;
 
         // Deduct credits
-        await organizationRepository.deductCredits(organizationId, creditsToCharge);
+        await accountRepository.deductCredits(accountId, creditsToCharge);
 
         // Update job status to completed
         await scrapeJobRepository.updateStatus(jobId, 'completed', {

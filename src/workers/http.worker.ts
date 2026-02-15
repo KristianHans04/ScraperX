@@ -1,6 +1,6 @@
 import { Job, Worker } from 'bullmq';
 import { QUEUE_NAMES, createWorker } from '../queue/queues.js';
-import { scrapeJobRepository, jobResultRepository, organizationRepository } from '../db/index.js';
+import { scrapeJobRepository, jobResultRepository, accountRepository } from '../db/index.js';
 import { getHttpEngine } from '../engines/http/index.js';
 import { hashContent } from '../utils/crypto.js';
 import { logger } from '../utils/logger.js';
@@ -38,7 +38,7 @@ export class HttpWorker {
    * Process a scrape job
    */
   private async processJob(job: Job<QueueJobData>): Promise<void> {
-    const { jobId, organizationId, url, method, headers, body, options, attempt, maxAttempts } = job.data;
+    const { jobId, accountId, url, method, headers, body, options, attempt, maxAttempts } = job.data;
 
     logger.info({ jobId, url, attempt }, 'Processing HTTP job');
 
@@ -63,7 +63,7 @@ export class HttpWorker {
         // Store result
         const jobResult = await jobResultRepository.create({
           jobId,
-          organizationId,
+          accountId,
           statusCode: result.statusCode,
           headers: result.headers,
           cookies: result.cookies,
@@ -83,7 +83,7 @@ export class HttpWorker {
         const creditsToCharge = jobData?.creditsEstimated ?? 1;
 
         // Deduct credits
-        await organizationRepository.deductCredits(organizationId, creditsToCharge);
+        await accountRepository.deductCredits(accountId, creditsToCharge);
 
         // Update job status to completed
         await scrapeJobRepository.updateStatus(jobId, 'completed', {
