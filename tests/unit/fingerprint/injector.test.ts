@@ -1,5 +1,5 @@
 /**
- * Fingerprint Injector Tests for ScraperX
+ * Fingerprint Injector Tests for Scrapifie
  *
  * Tests for browser fingerprint injection into Playwright pages.
  */
