@@ -4,7 +4,7 @@
 
 import { describe, it, expect } from 'vitest';
 import {
-  ScraperXError,
+  ScrapifieError,
   InvalidApiKeyError,
   ExpiredApiKeyError,
   RevokedApiKeyError,
@@ -34,24 +34,24 @@ import {
   DatabaseError,
   DatabaseConnectionError,
   isRetryableError,
-  toScraperXError,
+  toScrapifieError,
 } from '../../../src/utils/errors.js';
 
 describe('Error Utilities', () => {
-  describe('ScraperXError', () => {
+  describe('ScrapifieError', () => {
     it('should create error with all properties', () => {
-      const error = new ScraperXError('Test error', 'TEST_CODE', 400, true, { foo: 'bar' });
+      const error = new ScrapifieError('Test error', 'TEST_CODE', 400, true, { foo: 'bar' });
       
       expect(error.message).toBe('Test error');
       expect(error.code).toBe('TEST_CODE');
       expect(error.statusCode).toBe(400);
       expect(error.retryable).toBe(true);
       expect(error.details).toEqual({ foo: 'bar' });
-      expect(error.name).toBe('ScraperXError');
+      expect(error.name).toBe('ScrapifieError');
     });
 
     it('should use default values', () => {
-      const error = new ScraperXError('Test', 'CODE');
+      const error = new ScrapifieError('Test', 'CODE');
       
       expect(error.statusCode).toBe(500);
       expect(error.retryable).toBe(false);
@@ -59,13 +59,13 @@ describe('Error Utilities', () => {
     });
 
     it('should be instanceof Error', () => {
-      const error = new ScraperXError('Test', 'CODE');
+      const error = new ScrapifieError('Test', 'CODE');
       expect(error).toBeInstanceOf(Error);
-      expect(error).toBeInstanceOf(ScraperXError);
+      expect(error).toBeInstanceOf(ScrapifieError);
     });
 
     it('should capture stack trace', () => {
-      const error = new ScraperXError('Test', 'CODE');
+      const error = new ScrapifieError('Test', 'CODE');
       expect(error.stack).toBeDefined();
     });
   });
@@ -291,13 +291,13 @@ describe('Error Utilities', () => {
   });
 
   describe('isRetryableError', () => {
-    it('should return true for retryable ScraperXError', () => {
+    it('should return true for retryable ScrapifieError', () => {
       expect(isRetryableError(new TimeoutError(1000))).toBe(true);
       expect(isRetryableError(new RateLimitedError(60))).toBe(true);
       expect(isRetryableError(new BlockedError())).toBe(true);
     });
 
-    it('should return false for non-retryable ScraperXError', () => {
+    it('should return false for non-retryable ScrapifieError', () => {
       expect(isRetryableError(new InvalidApiKeyError())).toBe(false);
       expect(isRetryableError(new InvalidUrlError())).toBe(false);
       expect(isRetryableError(new ServiceMaintenanceError())).toBe(false);
@@ -308,29 +308,29 @@ describe('Error Utilities', () => {
     });
   });
 
-  describe('toScraperXError', () => {
-    it('should return same error if already ScraperXError', () => {
+  describe('toScrapifieError', () => {
+    it('should return same error if already ScrapifieError', () => {
       const original = new InvalidApiKeyError();
-      const result = toScraperXError(original);
+      const result = toScrapifieError(original);
       expect(result).toBe(original);
     });
 
     it('should convert regular Error to InternalError', () => {
       const original = new Error('Something went wrong');
-      const result = toScraperXError(original);
+      const result = toScrapifieError(original);
       expect(result).toBeInstanceOf(InternalError);
       expect(result.message).toBe('Something went wrong');
     });
 
     it('should convert unknown value to InternalError', () => {
-      const result = toScraperXError('string error');
+      const result = toScrapifieError('string error');
       expect(result).toBeInstanceOf(InternalError);
       expect(result.message).toBe('An unknown error occurred');
     });
 
     it('should handle null/undefined', () => {
-      expect(toScraperXError(null)).toBeInstanceOf(InternalError);
-      expect(toScraperXError(undefined)).toBeInstanceOf(InternalError);
+      expect(toScrapifieError(null)).toBeInstanceOf(InternalError);
+      expect(toScrapifieError(undefined)).toBeInstanceOf(InternalError);
     });
   });
 });
