@@ -1,5 +1,5 @@
 /**
- * HTTP Worker Tests for ScraperX
+ * HTTP Worker Tests for Scrapifie
  *
  * Tests for HTTP job processing, result handling, and error scenarios.
  */
@@ -39,7 +39,7 @@ vi.mock('../../../src/engines/http/index.js', () => ({
 // Mock queues
 vi.mock('../../../src/queue/queues.js', () => ({
   QUEUE_NAMES: {
-    HTTP: 'scraperx:http',
+    HTTP: 'scrapifie:http',
   },
   createWorker: vi.fn().mockReturnValue({
     close: vi.fn().mockResolvedValue(undefined),
@@ -115,7 +115,7 @@ describe('HttpWorker', () => {
       worker.start();
 
       expect(createWorker).toHaveBeenCalledWith(
-        'scraperx:http',
+        'scrapifie:http',
         expect.any(Function),
         expect.objectContaining({ concurrency: expect.any(Number) })
       );
