@@ -1,5 +1,5 @@
 /**
- * Test Setup for ScraperX
+ * Test Setup for Scrapifie
  * 
  * This file runs before all tests and sets up the test environment.
  */
@@ -8,11 +8,17 @@ import { vi, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
 
 // Set test environment variables BEFORE importing any app modules
 process.env.NODE_ENV = 'test';
-process.env.DATABASE_URL = 'postgresql://scraperx:scraperx@localhost:5432/scraperx_test';
+process.env.DATABASE_URL = 'postgresql://scrapifie:scrapifie@localhost:5432/scrapifie_test';
 process.env.REDIS_URL = 'redis://localhost:6379/1';
 process.env.LOG_LEVEL = 'error'; // Suppress logs during tests
 process.env.PROXY_ENABLED = 'false';
 process.env.CAMOUFOX_ENABLED = 'false';
+
+// Phase 8 Billing environment variables
+process.env.PAYSTACK_PRO_PLAN_CODE = 'PLN_pro_plan';
+process.env.PAYSTACK_ENTERPRISE_PLAN_CODE = 'PLN_enterprise_plan';
+process.env.PAYSTACK_SECRET_KEY = 'sk_test_123456789';
+process.env.PAYSTACK_WEBHOOK_SECRET = 'whsec_test_secret';
 
 // Mock pino logger to avoid pino-pretty dependency issues in tests
 vi.mock('pino', () => ({
