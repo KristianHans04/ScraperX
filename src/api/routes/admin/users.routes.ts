@@ -63,7 +63,7 @@ router.get('/', requireAdmin, async (req: AdminRequest, res) => {
         a.plan,
         a.credit_balance,
         a.status as account_status,
-        (SELECT COUNT(*) FROM scrape_job j WHERE j.account_id = a.id) as jobs_count
+        (SELECT COUNT(*) FROM scrape_jobs j WHERE j.account_id = a.id) as jobs_count
        FROM users u
        INNER JOIN account a ON a.id = u.account_id
        WHERE ${whereClause}
@@ -117,7 +117,7 @@ router.get('/:id', requireAdmin, async (req: AdminRequest, res) => {
     }
 
     const jobsResult = await getPool().query(
-      'SELECT COUNT(*) as count FROM scrape_job WHERE account_id = $1',
+      'SELECT COUNT(*) as count FROM scrape_jobs WHERE account_id = $1',
       [account.id]
     );
 

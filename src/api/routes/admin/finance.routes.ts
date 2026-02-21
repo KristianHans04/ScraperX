@@ -100,4 +100,52 @@ router.post(
   }
 );
 
+// GET /api/admin/finance/credits - credit ledger overview
+router.get('/credits', requireAdmin, async (req: AdminRequest, res) => {
+  try {
+    const result = await getPool().query(`
+      SELECT a.id, a.display_name as name, a.billing_email as email, a.plan,
+        a.credit_balance, a.credit_cycle_usage, a.created_at
+      FROM account a WHERE a.deleted_at IS NULL
+      ORDER BY a.credit_balance DESC LIMIT 100
+    `);
+    res.json({ credits: result.rows.map(r => ({
+      accountId: r.id, accountName: r.name, email: r.email, plan: r.plan,
+      balance: parseInt(r.credit_balance), cycleUsage: parseInt(r.credit_cycle_usage),
+    })) });
+  } catch (error) {
+    console.error('Error fetching credit ledger:', error);
+    res.status(500).json({ error: 'Failed to fetch credit ledger' });
+  }
+});
+
+// GET /api/admin/finance/invoices
+router.get('/invoices', requireAdmin, async (_req: AdminRequest, res) => {
+  res.json({ invoices: [] });
+});
+
+// GET /api/admin/finance/subscriptions
+router.get('/subscriptions', requireAdmin, async (req: AdminRequest, res) => {
+  try {
+    const result = await getPool().query(`
+      SELECT a.id, a.display_name as name, a.billing_email as email, a.plan, a.status,
+        a.created_at
+      FROM account a WHERE a.deleted_at IS NULL
+      ORDER BY a.created_at DESC LIMIT 100
+    `);
+    res.json({ subscriptions: result.rows.map(r => ({
+      accountId: r.id, accountName: r.name, email: r.email, plan: r.plan,
+      status: r.status, nextBillingDate: null,
+    })) });
+  } catch (error) {
+    console.error('Error fetching subscriptions:', error);
+    res.status(500).json({ error: 'Failed to fetch subscriptions' });
+  }
+});
+
+// GET /api/admin/finance/overview
+router.get('/overview', requireAdmin, async (req: AdminRequest, res) => {
+  res.json({ mrr: 0, totalRevenue: 0, activeSubscriptions: 0, revenue30d: 0, totalSubscriptions: 0 });
+});
+
 export default router;

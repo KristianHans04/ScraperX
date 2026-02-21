@@ -37,7 +37,7 @@ router.post('/', requireAdmin, async (req: AdminRequest, res) => {
 
     if (searchTypes.includes('job')) {
       const jobs = await getPool().query(
-        `SELECT id, url, status FROM scrape_job 
+        `SELECT id, url, status FROM scrape_jobs 
          WHERE id::text ILIKE $1 OR url ILIKE $1
          LIMIT $2`,
         [`%${query}%`, limit]

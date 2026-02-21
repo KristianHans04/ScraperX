@@ -65,4 +65,24 @@ router.patch(
   }
 );
 
+// GET /api/admin/operations/overview
+router.get('/overview', requireAdmin, async (_req: AdminRequest, res) => {
+  res.json({ workerStatus: 'disabled', jobsInQueue: 0, jobsProcessing: 0 });
+});
+
+// GET /api/admin/operations/queues
+router.get('/queues', requireAdmin, async (_req: AdminRequest, res) => {
+  res.json({ queues: [] });
+});
+
+// POST /api/admin/operations/queues/:name/:action
+router.post('/queues/:name/:action', requireAdmin, async (_req: AdminRequest, res) => {
+  res.json({ success: true });
+});
+
+// GET /api/admin/operations/errors
+router.get('/errors', requireAdmin, async (_req: AdminRequest, res) => {
+  res.json({ errors: [] });
+});
+
 export default router;
