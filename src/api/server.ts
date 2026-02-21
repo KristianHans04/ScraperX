@@ -22,6 +22,7 @@ import { createKeysRoutes } from './routes/keys.routes.js';
 import { createJobsRoutes } from './routes/jobs.routes.js';
 import { createUsageRoutes } from './routes/usage.routes.js';
 import { createDashboardRoutes } from './routes/dashboard.routes.js';
+import { createV1Routes } from './routes/v1/scrape.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -244,8 +245,8 @@ function registerRoutes(app: Express): void {
     });
   });
 
-  // API v1 routes will be mounted here
-  // TODO: Convert and register all API routes
+  // API v1 routes (API key authenticated)
+  try { app.use('/api/v1', createV1Routes()); } catch (err) { logger.warn('V1 API routes not registered'); }
 
   // Catch-all route to serve index.html for client-side routing
   app.get('*', (req: Request, res: Response) => {
