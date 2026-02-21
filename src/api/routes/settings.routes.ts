@@ -126,22 +126,14 @@ router.post('/password', requireAuth, async (req: Request, res: Response) => {
 router.get('/sessions', requireAuth, async (req: Request, res: Response) => {
   try {
     const sessionRepo = await getSessionRepository();
-    const sessionIds = await sessionRepo.getUserSessions(req.user!.id);
+    const sessions = await sessionRepo.listByUserId(req.user!.id);
 
-    const sessions = [];
-    for (const sessionId of sessionIds) {
-      const session = await sessionRepo.findById(sessionId);
-      if (session) {
-        sessions.push({
-          id: sessionId,
-          createdAt: session.createdAt,
-          lastActivityAt: session.lastActivityAt,
-          isCurrent: sessionId === req.sessionId,
-        });
-      }
-    }
-
-    res.json({ sessions });
+    res.json({ sessions: sessions.map(session => ({
+      id: session.id,
+      createdAt: session.createdAt,
+      lastActivityAt: session.lastActivityAt,
+      isCurrent: session.id === req.sessionId,
+    })) });
   } catch (error: any) {
     logger.error({ error, userId: req.user?.id }, 'Failed to fetch sessions');
     res.status(500).json({ error: 'Failed to fetch sessions' });

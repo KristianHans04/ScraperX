@@ -4,7 +4,11 @@ import { hashPassword, comparePassword, validatePassword } from '../../utils/cry
 import { userRepository } from '../../db/repositories/user.repository.js';
 import { accountRepository } from '../../db/repositories/account.repository.js';
 import { getSessionRepository } from '../../db/repositories/session.repository.js';
+import { emailVerificationTokenRepository, passwordResetTokenRepository, generateToken } from '../../db/repositories/token.repository.js';
+import { EmailService } from '../../services/email.service.js';
 import { logger } from '../../utils/logger.js';
+
+const emailService = new EmailService();
 
 const SESSION_COOKIE_NAME = 'session_id';
 const CSRF_COOKIE_NAME = 'csrf_token';
@@ -82,6 +86,21 @@ export function createAuthRoutes() {
         userAgent: req.get('user-agent') || 'unknown',
         rememberMe: false,
       });
+
+      // Send verification email (non-blocking)
+      try {
+        const verificationToken = generateToken();
+        await emailVerificationTokenRepository.create({
+          userId: user.id,
+          token: verificationToken,
+          email: user.email,
+          purpose: 'registration',
+          expiresInHours: 24,
+        });
+        await emailService.sendEmailVerification(user.email, verificationToken);
+      } catch (emailError) {
+        logger.warn({ emailError, userId: user.id }, 'Failed to send verification email (non-fatal)');
+      }
 
       const cookieOptions = {
         httpOnly: true,
@@ -326,6 +345,108 @@ export function createAuthRoutes() {
       res.status(500).json({
         error: 'Internal server error',
       });
+    }
+  });
+
+  // Verify email
+  router.post('/api/auth/verify-email', async (req: Request, res: Response) => {
+    try {
+      const { token } = req.body;
+      if (!token) {
+        return res.status(400).json({ error: 'Token is required' });
+      }
+
+      const tokenRecord = await emailVerificationTokenRepository.findByToken(token);
+      if (!tokenRecord) {
+        return res.status(400).json({ error: 'Invalid or expired verification token' });
+      }
+
+      if (tokenRecord.usedAt) {
+        return res.status(400).json({ error: 'Token already used' });
+      }
+
+      if (new Date(tokenRecord.expiresAt) < new Date()) {
+        return res.status(400).json({ error: 'Verification token has expired' });
+      }
+
+      await userRepository.verifyEmail(tokenRecord.userId);
+      await emailVerificationTokenRepository.markAsUsed(tokenRecord.tokenHash);
+
+      logger.info({ userId: tokenRecord.userId }, 'Email verified successfully');
+      res.json({ success: true, message: 'Email verified successfully' });
+    } catch (error) {
+      logger.error({ error }, 'Email verification error');
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Forgot password
+  router.post('/api/auth/forgot-password', async (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+
+      const user = await userRepository.findByEmail(email);
+      // Always return success to prevent email enumeration
+      if (user) {
+        try {
+          const resetToken = generateToken();
+          await passwordResetTokenRepository.create({
+            userId: user.id,
+            token: resetToken,
+            expiresInHours: 1,
+            ipAddress: req.ip || 'unknown',
+          });
+          await emailService.sendPasswordResetEmail(user.email, resetToken);
+        } catch (emailError) {
+          logger.warn({ emailError, email }, 'Failed to send password reset email');
+        }
+      }
+
+      res.json({ success: true, message: 'If that email is registered, a reset link has been sent' });
+    } catch (error) {
+      logger.error({ error }, 'Forgot password error');
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Reset password
+  router.post('/api/auth/reset-password', async (req: Request, res: Response) => {
+    try {
+      const { token, password } = req.body;
+      if (!token || !password) {
+        return res.status(400).json({ error: 'Token and password are required' });
+      }
+
+      const passwordValidation = validatePassword(password);
+      if (!passwordValidation.valid) {
+        return res.status(400).json({ error: 'Password validation failed', details: passwordValidation.errors });
+      }
+
+      const tokenRecord = await passwordResetTokenRepository.findByToken(token);
+      if (!tokenRecord) {
+        return res.status(400).json({ error: 'Invalid or expired reset token' });
+      }
+
+      if (tokenRecord.usedAt) {
+        return res.status(400).json({ error: 'Token already used' });
+      }
+
+      if (new Date(tokenRecord.expiresAt) < new Date()) {
+        return res.status(400).json({ error: 'Reset token has expired' });
+      }
+
+      const passwordHash = await hashPassword(password);
+      await userRepository.update(tokenRecord.userId, { passwordHash });
+      await passwordResetTokenRepository.markAsUsed(tokenRecord.tokenHash);
+
+      logger.info({ userId: tokenRecord.userId }, 'Password reset successfully');
+      res.json({ success: true, message: 'Password reset successfully' });
+    } catch (error) {
+      logger.error({ error }, 'Reset password error');
+      res.status(500).json({ error: 'Internal server error' });
     }
   });
 

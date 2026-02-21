@@ -30,3 +30,7 @@ router.post(
 );
 
 export default router;
+
+export function createWebhookRoutes() {
+  return router;
+}

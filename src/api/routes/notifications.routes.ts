@@ -1,129 +1,95 @@
-import { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify';
+import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { notificationService } from '../../services/notification.service.js';
+import { requireAuth } from '../middleware/authExpress.js';
 
 const paginationSchema = z.object({
   page: z.coerce.number().min(1).default(1),
   limit: z.coerce.number().min(1).max(100).default(20),
 });
 
-export const notificationsRoutes: FastifyPluginAsync = async (fastify) => {
-  fastify.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
-    const userId = request.user?.id;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
+export function createNotificationsRoutes() {
+  const router = Router();
 
-    const query = request.query as any;
-    const pagination = paginationSchema.parse(query);
-
+  router.get('/', requireAuth, async (req: Request, res: Response) => {
+    const userId = (req as any).user?.id;
+    const pagination = paginationSchema.parse(req.query);
     try {
       const result = await notificationService.getNotifications(userId, pagination);
-      return reply.send(result);
+      return res.json(result);
     } catch (error) {
-      return reply.status(500).send({ error: (error as Error).message });
+      return res.status(500).json({ error: (error as Error).message });
     }
   });
 
-  fastify.get('/recent', async (request: FastifyRequest, reply: FastifyReply) => {
-    const userId = request.user?.id;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
-
-    const { limit } = request.query as { limit?: string };
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-
+  router.get('/recent', requireAuth, async (req: Request, res: Response) => {
+    const userId = (req as any).user?.id;
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
     try {
-      const notifications = await notificationService.getRecentNotifications(
-        userId,
-        limitNum
-      );
-      return reply.send({ notifications });
+      const notifications = await notificationService.getRecentNotifications(userId, limit);
+      return res.json({ notifications });
     } catch (error) {
-      return reply.status(500).send({ error: (error as Error).message });
+      return res.status(500).json({ error: (error as Error).message });
     }
   });
 
-  fastify.get('/unread', async (request: FastifyRequest, reply: FastifyReply) => {
-    const userId = request.user?.id;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
-
+  router.get('/unread', requireAuth, async (req: Request, res: Response) => {
+    const userId = (req as any).user?.id;
     try {
       const notifications = await notificationService.getUnreadNotifications(userId);
-      return reply.send({ notifications });
+      return res.json({ notifications });
     } catch (error) {
-      return reply.status(500).send({ error: (error as Error).message });
+      return res.status(500).json({ error: (error as Error).message });
     }
   });
 
-  fastify.get('/unread-count', async (request: FastifyRequest, reply: FastifyReply) => {
-    const userId = request.user?.id;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
-
+  router.get('/unread-count', requireAuth, async (req: Request, res: Response) => {
+    const userId = (req as any).user?.id;
     try {
       const count = await notificationService.getUnreadCount(userId);
-      return reply.send({ count });
+      return res.json({ count });
     } catch (error) {
-      return reply.status(500).send({ error: (error as Error).message });
+      return res.status(500).json({ error: (error as Error).message });
     }
   });
 
-  fastify.patch('/:id/read', async (request: FastifyRequest, reply: FastifyReply) => {
-    const userId = request.user?.id;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
-
-    const { id } = request.params as { id: string };
-
+  router.patch('/:id/read', requireAuth, async (req: Request, res: Response) => {
+    const userId = (req as any).user?.id;
+    const { id } = req.params;
     try {
       await notificationService.markAsRead(id, userId);
-      return reply.send({ success: true });
+      return res.json({ success: true });
     } catch (error) {
       const errorMsg = (error as Error).message;
-      const status = errorMsg.includes('not found') || errorMsg.includes('unauthorized') 
-        ? 404 
-        : 400;
-      return reply.status(status).send({ error: errorMsg });
+      const status = errorMsg.includes('not found') || errorMsg.includes('unauthorized') ? 404 : 400;
+      return res.status(status).json({ error: errorMsg });
     }
   });
 
-  fastify.post('/read-all', async (request: FastifyRequest, reply: FastifyReply) => {
-    const userId = request.user?.id;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
-
+  router.post('/read-all', requireAuth, async (req: Request, res: Response) => {
+    const userId = (req as any).user?.id;
     try {
       const count = await notificationService.markAllAsRead(userId);
-      return reply.send({ success: true, count });
+      return res.json({ success: true, count });
     } catch (error) {
-      return reply.status(500).send({ error: (error as Error).message });
+      return res.status(500).json({ error: (error as Error).message });
     }
   });
 
-  fastify.delete('/:id', async (request: FastifyRequest, reply: FastifyReply) => {
-    const userId = request.user?.id;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
-
-    const { id } = request.params as { id: string };
-
+  router.delete('/:id', requireAuth, async (req: Request, res: Response) => {
+    const userId = (req as any).user?.id;
+    const { id } = req.params;
     try {
       await notificationService.deleteNotification(id, userId);
-      return reply.send({ success: true });
+      return res.json({ success: true });
     } catch (error) {
       const errorMsg = (error as Error).message;
-      const status = errorMsg.includes('not found') || errorMsg.includes('unauthorized') 
-        ? 404 
-        : 400;
-      return reply.status(status).send({ error: errorMsg });
+      const status = errorMsg.includes('not found') || errorMsg.includes('unauthorized') ? 404 : 400;
+      return res.status(status).json({ error: errorMsg });
     }
   });
-};
+
+  return router;
+}
+
+export const notificationsRoutes = createNotificationsRoutes;
