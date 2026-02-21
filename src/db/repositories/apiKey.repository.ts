@@ -125,8 +125,7 @@ export const apiKeyRepository = {
     environment?: 'development' | 'staging' | 'production';
     expiresAt?: Date;
   }): Promise<{ apiKey: ApiKey; rawKey: string }> {
-    const rawKey = generateApiKey();
-    const keyHash = hashApiKey(rawKey);
+    const { key: rawKey, hash: keyHash } = generateApiKey();
     const keyPrefix = extractApiKeyPrefix(rawKey);
 
     const row = await queryOne<ApiKeyRow>(

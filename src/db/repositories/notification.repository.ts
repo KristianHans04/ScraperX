@@ -1,4 +1,4 @@
-import { query, queryOne } from '../connection.js';
+import { query, queryOne, queryAll } from '../connection.js';
 import type { 
   Notification, 
   NotificationType, 
@@ -93,7 +93,7 @@ export const notificationRepository = {
       sql += ` LIMIT ${options.limit}`;
     }
 
-    const rows = await query<NotificationRow>(sql, params);
+    const rows = await queryAll<NotificationRow>(sql, params);
     return rows.map(rowToNotification);
   },
 
@@ -110,7 +110,7 @@ export const notificationRepository = {
     );
     const total = parseInt(countRow.count, 10);
 
-    const rows = await query<NotificationRow>(
+    const rows = await queryAll<NotificationRow>(
       `SELECT * FROM notification 
        WHERE user_id = $1
        ORDER BY created_at DESC
@@ -153,7 +153,7 @@ export const notificationRepository = {
       'UPDATE notification SET read_at = NOW() WHERE user_id = $1 AND read_at IS NULL',
       [userId]
     );
-    return result.length;
+    return result.rowCount ?? 0;
   },
 
   async deleteById(id: string): Promise<void> {
@@ -166,6 +166,6 @@ export const notificationRepository = {
        WHERE created_at < NOW() - INTERVAL '${daysOld} days'`,
       []
     );
-    return result.length;
+    return result.rowCount ?? 0;
   },
 };

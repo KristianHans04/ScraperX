@@ -1,4 +1,4 @@
-import { query, queryOne } from '../connection.js';
+import { query, queryOne, queryAll } from '../connection.js';
 
 export type OAuthProvider = 'google' | 'github';
 
@@ -56,11 +56,11 @@ export const oauthConnectionRepository = {
   },
 
   async findByUserId(userId: string): Promise<OAuthConnection[]> {
-    const rows = await query<OAuthConnectionRow>(
+    const rows = await queryAll<OAuthConnectionRow>(
       'SELECT * FROM oauth_connection WHERE user_id = $1 ORDER BY created_at DESC',
       [userId]
     );
-    return rows.rows.map(rowToOAuthConnection);
+    return rows.map(rowToOAuthConnection);
   },
 
   async findByUserIdAndProvider(

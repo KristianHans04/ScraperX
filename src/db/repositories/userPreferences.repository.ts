@@ -1,4 +1,4 @@
-import { query, queryOne } from '../connection.js';
+import { query, queryOne, queryAll } from '../connection.js';
 import type { 
   NotificationPreference,
   EmailChangeToken,
@@ -97,7 +97,7 @@ function rowToUserSession(row: UserSessionRow): UserSession {
 
 export const userPreferencesRepository = {
   async getNotificationPreferences(userId: string): Promise<NotificationPreference[]> {
-    const rows = await query<NotificationPreferenceRow>(
+    const rows = await queryAll<NotificationPreferenceRow>(
       'SELECT * FROM notification_preference WHERE user_id = $1 ORDER BY category',
       [userId]
     );
@@ -276,7 +276,7 @@ export const userPreferencesRepository = {
   },
 
   async getUserSessions(userId: string): Promise<UserSession[]> {
-    const rows = await query<UserSessionRow>(
+    const rows = await queryAll<UserSessionRow>(
       `SELECT * FROM user_session 
        WHERE user_id = $1 AND revoked_at IS NULL AND expires_at > NOW()
        ORDER BY last_activity_at DESC`,
@@ -304,7 +304,7 @@ export const userPreferencesRepository = {
       'SELECT revoke_user_sessions($1, $2)',
       [userId, exceptSessionId ?? null]
     );
-    return result.length;
+    return result.rowCount ?? 0;
   },
 
   async cleanupExpiredTokens(): Promise<void> {

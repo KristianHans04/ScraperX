@@ -1,4 +1,4 @@
-import { query, queryOne } from '../connection.js';
+import { query, queryOne, queryAll } from '../connection.js';
 import type { 
   SupportTicket,
   SupportTicketMessage,
@@ -159,7 +159,7 @@ export const supportTicketRepository = {
       sql += ` LIMIT ${options.limit}`;
     }
 
-    const rows = await query<SupportTicketRow>(sql, params);
+    const rows = await queryAll<SupportTicketRow>(sql, params);
     return rows.map(rowToTicket);
   },
 
@@ -193,7 +193,7 @@ export const supportTicketRepository = {
     );
     const total = parseInt(countRow.count, 10);
 
-    const rows = await query<SupportTicketRow>(
+    const rows = await queryAll<SupportTicketRow>(
       `SELECT * FROM support_ticket 
        ${whereClause}
        ORDER BY created_at DESC
@@ -256,7 +256,7 @@ export const supportTicketRepository = {
   },
 
   async getMessages(ticketId: string): Promise<SupportTicketMessage[]> {
-    const rows = await query<SupportTicketMessageRow>(
+    const rows = await queryAll<SupportTicketMessageRow>(
       `SELECT * FROM support_ticket_message 
        WHERE ticket_id = $1 AND is_internal = FALSE
        ORDER BY created_at ASC`,
@@ -300,7 +300,7 @@ export const supportTicketRepository = {
   },
 
   async getTicketsForAutoClose(daysResolved: number, daysInactive: number): Promise<SupportTicket[]> {
-    const rows = await query<SupportTicketRow>(
+    const rows = await queryAll<SupportTicketRow>(
       `SELECT * FROM support_ticket 
        WHERE status = 'resolved' 
          AND resolved_at < NOW() - INTERVAL '${daysResolved} days'

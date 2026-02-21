@@ -1,6 +1,6 @@
 import { query, queryOne, queryAll } from '../connection.js';
 import type { ScrapeJob, JobStatus, EngineType, ProxyTier, ScrapeOptions, CreditBreakdown } from '../../types/index.js';
-import { hashUrl, generateJobId } from '../../utils/crypto.js';
+import { hashUrl } from '../../utils/crypto.js';
 
 interface ScrapeJobRow {
   id: string;
@@ -182,18 +182,16 @@ export const scrapeJobRepository = {
     idempotencyKey?: string;
     priority?: number;
   }): Promise<ScrapeJob> {
-    const id = generateJobId();
     const urlHash = hashUrl(data.url);
 
     const row = await queryOne<ScrapeJobRow>(
       `INSERT INTO scrape_jobs (
-        id, account_id, api_key_id, batch_id, url, url_hash, method, headers, body,
+        account_id, api_key_id, batch_id, url, url_hash, method, headers, body,
         engine, options, proxy_tier, proxy_country, credits_estimated, credit_breakdown,
         webhook_url, webhook_secret, client_reference, idempotency_key, priority
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
       RETURNING *`,
       [
-        id,
         data.accountId, // Updated from organizationId
         data.apiKeyId ?? null,
         data.batchId ?? null,
