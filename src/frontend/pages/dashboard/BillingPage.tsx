@@ -109,7 +109,7 @@ export default function BillingPage() {
             <div>
               <p className="text-sm text-zinc-400 mb-1">Available Credits</p>
               <p className="text-5xl font-bold text-white">
-                {billingData?.credits.toLocaleString() || 0}
+                {(billingData?.credits ?? (billingData as any)?.creditBalance)?.toLocaleString() ?? 0}
               </p>
               <p className="text-sm text-zinc-400 mt-2">
                 Current Plan: <span className="text-white capitalize">{billingData?.plan || 'free'}</span>
