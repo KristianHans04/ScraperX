@@ -48,7 +48,7 @@ export function Header({ onMenuClick }: HeaderProps) {
             <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10">
               <CreditCard className="h-4 w-4 text-zinc-400" />
               <span className="text-sm font-medium text-white">
-                {(account.credits || 0).toLocaleString()} credits
+                {(account.creditBalance || 0).toLocaleString()} credits
               </span>
             </div>
           )}
