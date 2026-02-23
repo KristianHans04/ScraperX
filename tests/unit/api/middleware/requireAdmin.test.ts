@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { requireAdmin, AdminRequest } from '../../../../src/api/middleware/requireAdmin.js';
-import { mockAdminUser, mockRegularUser, createMockResponse, createMockNext } from '../../fixtures/admin.fixtures.js';
+import { mockAdminUser, mockRegularUser, createMockResponse, createMockNext } from '../../../fixtures/admin.fixtures.js';
 
 describe('requireAdmin Middleware', () => {
   let mockRequest: Partial<AdminRequest>;

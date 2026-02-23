@@ -169,7 +169,8 @@ describe('Input Validation Middleware', () => {
   describe('URL Validation', () => {
     it('should validate valid HTTP URLs', () => {
       expect(isValidUrl('https://example.com')).toBe(true);
-      expect(isValidUrl('http://localhost:3000')).toBe(true);
+      // localhost is intentionally rejected to prevent SSRF attacks
+      expect(isValidUrl('http://localhost:3000')).toBe(false);
       expect(isValidUrl('https://api.example.com/v1/resource')).toBe(true);
     });
 

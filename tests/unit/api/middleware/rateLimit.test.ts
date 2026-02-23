@@ -4,12 +4,12 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Define mockRateLimiter outside the mock
-const mockRateLimiter = {
+// Use vi.hoisted so mockRateLimiter is available in vi.mock factory (which is hoisted)
+const mockRateLimiter = vi.hoisted(() => ({
   isRateLimited: vi.fn(),
   checkConcurrent: vi.fn(),
   releaseConcurrent: vi.fn(),
-};
+}));
 
 // Define mocks inline to avoid hoisting issues
 vi.mock('../../../../src/queue/redis.js', () => ({
