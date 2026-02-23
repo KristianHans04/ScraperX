@@ -219,24 +219,33 @@ describe('Frontend Utilities', () => {
 
   describe('getInitials', () => {
     it('should get initials from first and last name', () => {
-      expect(getInitials('John', 'Doe')).toBe('JD');
+      expect(getInitials('John Doe')).toBe('JD');
     });
 
     it('should handle lowercase names', () => {
-      expect(getInitials('jane', 'smith')).toBe('JS');
+      expect(getInitials('jane smith')).toBe('JS');
     });
 
     it('should handle mixed case', () => {
-      expect(getInitials('Mary', 'jane')).toBe('MJ');
+      expect(getInitials('Mary jane')).toBe('MJ');
     });
 
     it('should handle single character names', () => {
-      expect(getInitials('A', 'B')).toBe('AB');
+      expect(getInitials('A B')).toBe('AB');
     });
 
     it('should return uppercase initials', () => {
-      const result = getInitials('robert', 'williams');
+      const result = getInitials('robert williams');
       expect(result).toBe(result.toUpperCase());
+    });
+
+    it('should return single initial for single name', () => {
+      expect(getInitials('Alice')).toBe('A');
+    });
+
+    it('should return ? for empty/undefined input', () => {
+      expect(getInitials(undefined)).toBe('?');
+      expect(getInitials('')).toBe('?');
     });
   });
 });
