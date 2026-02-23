@@ -7,7 +7,7 @@ dotenv.config();
 // Environment schema
 const envSchema = z.object({
   // Server
-  NODE_ENV: z.enum(['development', 'staging', 'production']).default('development'),
+  NODE_ENV: z.enum(['development', 'staging', 'production', 'test']).default('development'),
   PORT: z.string().transform(Number).default('3000'),
   HOST: z.string().default('0.0.0.0'),
   LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).default('info'),
