@@ -29,20 +29,31 @@ import {
 describe('Crypto Utilities', () => {
   describe('generateApiKey', () => {
     it('should generate an API key with the correct prefix', () => {
-      const key = generateApiKey();
+      const { key } = generateApiKey();
       expect(key).toMatch(/^sk_live_/);
     });
 
     it('should generate unique keys', () => {
-      const key1 = generateApiKey();
-      const key2 = generateApiKey();
+      const { key: key1 } = generateApiKey();
+      const { key: key2 } = generateApiKey();
       expect(key1).not.toEqual(key2);
     });
 
     it('should generate keys of consistent length', () => {
-      const key1 = generateApiKey();
-      const key2 = generateApiKey();
+      const { key: key1 } = generateApiKey();
+      const { key: key2 } = generateApiKey();
       expect(key1.length).toEqual(key2.length);
+    });
+
+    it('should return both key and hash', () => {
+      const { key, hash } = generateApiKey();
+      expect(key).toBeTruthy();
+      expect(hash).toMatch(/^[a-f0-9]{64}$/);
+    });
+
+    it('should return a hash that matches the key', () => {
+      const { key, hash } = generateApiKey();
+      expect(hashApiKey(key)).toEqual(hash);
     });
   });
 
