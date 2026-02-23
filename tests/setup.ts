@@ -20,9 +20,11 @@ process.env.PAYSTACK_ENTERPRISE_PLAN_CODE = 'PLN_enterprise_plan';
 process.env.PAYSTACK_SECRET_KEY = 'sk_test_123456789';
 process.env.PAYSTACK_WEBHOOK_SECRET = 'whsec_test_secret';
 
-// Mock pino logger to avoid pino-pretty dependency issues in tests
-vi.mock('pino', () => ({
-  default: vi.fn(() => ({
+// Mock pino logger to avoid pino-pretty dependency issues in tests.
+// The default export is a factory function, and stdTimeFunctions is a property
+// on that factory used at module-load time in src/utils/logger.ts.
+vi.mock('pino', () => {
+  const mockLogger = {
     trace: vi.fn(),
     debug: vi.fn(),
     info: vi.fn(),
@@ -30,8 +32,20 @@ vi.mock('pino', () => ({
     error: vi.fn(),
     fatal: vi.fn(),
     child: vi.fn().mockReturnThis(),
-  })),
-}));
+  };
+  const pinoFn = vi.fn(() => mockLogger) as any;
+  pinoFn.stdTimeFunctions = {
+    isoTime: () => `,"time":"${new Date().toISOString()}"`,
+    epochTime: () => `,"time":${Date.now()}`,
+    nullTime: () => '',
+    unixTime: () => `,"time":${Math.floor(Date.now() / 1000)}`,
+  };
+  pinoFn.levels = { values: {} };
+  pinoFn.destination = vi.fn();
+  pinoFn.transport = vi.fn();
+  pinoFn.multistream = vi.fn();
+  return { default: pinoFn };
+});
 
 // Mock external dependencies that require real connections
 vi.mock('pg', async (importOriginal) => {
@@ -91,7 +105,9 @@ afterAll(async () => {
 });
 
 beforeEach(() => {
-  // Reset mocks before each test
+  // Clear mock call history before each test.
+  // This preserves module-level mock implementations (set in vi.mock factories)
+  // while ensuring call counts and captured arguments are fresh.
   vi.clearAllMocks();
 });
 

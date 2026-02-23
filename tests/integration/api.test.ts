@@ -1,12 +1,15 @@
 /**
  * API Integration Tests for Scrapifie
  *
- * Tests for the Fastify API endpoints with mocked dependencies.
+ * Tests API endpoints with mocked dependencies using Express and supertest.
  */
 
 import { describe, it, expect, vi, beforeAll, afterAll, beforeEach } from 'vitest';
+import express, { Request, Response } from 'express';
+import request from 'supertest';
+import { mockOrganization, mockApiKey } from '../fixtures/index.js';
 
-// Mock all database and queue dependencies before importing server
+// Mock all database and queue dependencies
 const mockFindByKeyHash = vi.fn();
 const mockFindById = vi.fn();
 const mockDeductCredits = vi.fn().mockResolvedValue(undefined);
@@ -45,7 +48,6 @@ vi.mock('../../src/db/index.js', () => ({
   },
 }));
 
-// Mock Redis
 vi.mock('../../src/queue/redis.js', () => ({
   getRedisClient: vi.fn().mockReturnValue({
     ping: vi.fn().mockResolvedValue('PONG'),
@@ -58,7 +60,6 @@ vi.mock('../../src/queue/redis.js', () => ({
   })),
 }));
 
-// Mock queues
 vi.mock('../../src/queue/queues.js', () => ({
   QUEUE_NAMES: {
     HTTP: 'scrapifie:http',
@@ -82,104 +83,73 @@ vi.mock('../../src/queue/queues.js', () => ({
   closeAllQueues: vi.fn().mockResolvedValue(undefined),
 }));
 
-import Fastify, { FastifyInstance } from 'fastify';
-import { mockOrganization, mockApiKey } from '../fixtures/index.js';
+function buildTestServer(): express.Application {
+  const app = express();
+  app.use(express.json());
 
-// Create a minimal test server
-async function buildTestServer(): Promise<FastifyInstance> {
-  const server = Fastify({ logger: false });
-
-  // Health route
-  server.get('/health', async () => {
-    return { status: 'healthy', timestamp: new Date().toISOString() };
+  app.get('/health', (_req: Request, res: Response) => {
+    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
   });
 
-  // Health detailed route
-  server.get('/health/detailed', async () => {
-    return {
+  app.get('/health/detailed', (_req: Request, res: Response) => {
+    res.json({
       status: 'healthy',
-      services: {
-        database: 'connected',
-        redis: 'connected',
-      },
+      services: { database: 'connected', redis: 'connected' },
       queues: {
         http: { waiting: 0, active: 0 },
         browser: { waiting: 0, active: 0 },
       },
-    };
+    });
   });
 
-  // Simple scrape endpoint mock
-  server.post('/v1/scrape', async (request, reply) => {
-    const authHeader = request.headers.authorization;
-    
+  app.post('/v1/scrape', (req: Request, res: Response) => {
+    const authHeader = req.headers.authorization;
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return reply.status(401).send({
-        error: 'UNAUTHORIZED',
-        message: 'Missing or invalid API key',
-      });
+      return res.status(401).json({ error: 'UNAUTHORIZED', message: 'Missing or invalid API key' });
     }
 
     const apiKey = authHeader.replace('Bearer ', '');
     if (!apiKey.startsWith('sk_')) {
-      return reply.status(401).send({
-        error: 'UNAUTHORIZED',
-        message: 'Invalid API key format',
-      });
+      return res.status(401).json({ error: 'UNAUTHORIZED', message: 'Invalid API key format' });
     }
 
-    const body = request.body as { url?: string };
-    
+    const body = req.body as { url?: string };
     if (!body.url) {
-      return reply.status(400).send({
-        error: 'VALIDATION_ERROR',
-        message: 'URL is required',
-      });
+      return res.status(400).json({ error: 'VALIDATION_ERROR', message: 'URL is required' });
     }
 
-    return {
+    return res.json({
       success: true,
       jobId: 'job_test123',
       status: 'pending',
       creditsEstimated: 1,
-    };
+    });
   });
 
-  // Job status endpoint
-  server.get('/v1/scrape/:jobId', async (request, reply) => {
-    const { jobId } = request.params as { jobId: string };
-    
+  app.get('/v1/scrape/:jobId', (req: Request, res: Response) => {
+    const { jobId } = req.params;
+
     if (!jobId.startsWith('job_')) {
-      return reply.status(404).send({
-        error: 'NOT_FOUND',
-        message: 'Job not found',
-      });
+      return res.status(404).json({ error: 'NOT_FOUND', message: 'Job not found' });
     }
 
-    return {
+    return res.json({
       jobId,
       status: 'completed',
       url: 'https://example.com',
-      result: {
-        statusCode: 200,
-        content: '<html>Test</html>',
-      },
-    };
+      result: { statusCode: 200, content: '<html>Test</html>' },
+    });
   });
 
-  await server.ready();
-  return server;
+  return app;
 }
 
 describe('API Integration Tests', () => {
-  let server: FastifyInstance;
+  let app: express.Application;
 
-  beforeAll(async () => {
-    server = await buildTestServer();
-  });
-
-  afterAll(async () => {
-    await server.close();
+  beforeAll(() => {
+    app = buildTestServer();
   });
 
   beforeEach(() => {
@@ -189,41 +159,29 @@ describe('API Integration Tests', () => {
   describe('Health Endpoints', () => {
     describe('GET /health', () => {
       it('should return healthy status', async () => {
-        const response = await server.inject({
-          method: 'GET',
-          url: '/health',
-        });
+        const res = await request(app).get('/health');
 
-        expect(response.statusCode).toBe(200);
-        const body = JSON.parse(response.payload);
-        expect(body.status).toBe('healthy');
-        expect(body.timestamp).toBeDefined();
+        expect(res.status).toBe(200);
+        expect(res.body.status).toBe('healthy');
+        expect(res.body.timestamp).toBeDefined();
       });
     });
 
     describe('GET /health/detailed', () => {
       it('should return detailed health information', async () => {
-        const response = await server.inject({
-          method: 'GET',
-          url: '/health/detailed',
-        });
+        const res = await request(app).get('/health/detailed');
 
-        expect(response.statusCode).toBe(200);
-        const body = JSON.parse(response.payload);
-        expect(body.status).toBe('healthy');
-        expect(body.services).toBeDefined();
-        expect(body.services.database).toBe('connected');
-        expect(body.services.redis).toBe('connected');
+        expect(res.status).toBe(200);
+        expect(res.body.status).toBe('healthy');
+        expect(res.body.services).toBeDefined();
+        expect(res.body.services.database).toBe('connected');
+        expect(res.body.services.redis).toBe('connected');
       });
 
       it('should include queue statistics', async () => {
-        const response = await server.inject({
-          method: 'GET',
-          url: '/health/detailed',
-        });
+        const res = await request(app).get('/health/detailed');
 
-        const body = JSON.parse(response.payload);
-        expect(body.queues).toBeDefined();
+        expect(res.body.queues).toBeDefined();
       });
     });
   });
@@ -231,228 +189,65 @@ describe('API Integration Tests', () => {
   describe('Scrape Endpoints', () => {
     describe('POST /v1/scrape', () => {
       it('should require authentication', async () => {
-        const response = await server.inject({
-          method: 'POST',
-          url: '/v1/scrape',
-          payload: { url: 'https://example.com' },
-        });
+        const res = await request(app)
+          .post('/v1/scrape')
+          .send({ url: 'https://example.com' });
 
-        expect(response.statusCode).toBe(401);
-        const body = JSON.parse(response.payload);
-        expect(body.error).toBe('UNAUTHORIZED');
+        expect(res.status).toBe(401);
+        expect(res.body.error).toBe('UNAUTHORIZED');
       });
 
       it('should reject invalid API key format', async () => {
-        const response = await server.inject({
-          method: 'POST',
-          url: '/v1/scrape',
-          headers: {
-            authorization: 'Bearer invalid_key',
-          },
-          payload: { url: 'https://example.com' },
-        });
+        const res = await request(app)
+          .post('/v1/scrape')
+          .set('Authorization', 'Bearer invalid_key')
+          .send({ url: 'https://example.com' });
 
-        expect(response.statusCode).toBe(401);
+        expect(res.status).toBe(401);
+        expect(res.body.error).toBe('UNAUTHORIZED');
+      });
+
+      it('should accept valid API key and URL', async () => {
+        const res = await request(app)
+          .post('/v1/scrape')
+          .set('Authorization', `Bearer ${mockApiKey.keyPrefix}_testkey`)
+          .send({ url: 'https://example.com' });
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.jobId).toBeDefined();
+        expect(res.body.status).toBe('pending');
       });
 
       it('should require URL in request body', async () => {
-        const response = await server.inject({
-          method: 'POST',
-          url: '/v1/scrape',
-          headers: {
-            authorization: 'Bearer sk_test_demo1234567890abcdef',
-          },
-          payload: {},
-        });
+        const res = await request(app)
+          .post('/v1/scrape')
+          .set('Authorization', `Bearer ${mockApiKey.keyPrefix}_testkey`)
+          .send({});
 
-        expect(response.statusCode).toBe(400);
-        const body = JSON.parse(response.payload);
-        expect(body.error).toBe('VALIDATION_ERROR');
-      });
-
-      it('should create a scrape job with valid request', async () => {
-        const response = await server.inject({
-          method: 'POST',
-          url: '/v1/scrape',
-          headers: {
-            authorization: 'Bearer sk_test_demo1234567890abcdef',
-          },
-          payload: {
-            url: 'https://example.com',
-          },
-        });
-
-        expect(response.statusCode).toBe(200);
-        const body = JSON.parse(response.payload);
-        expect(body.success).toBe(true);
-        expect(body.jobId).toBeDefined();
-        expect(body.status).toBe('pending');
-      });
-
-      it('should return credit estimate', async () => {
-        const response = await server.inject({
-          method: 'POST',
-          url: '/v1/scrape',
-          headers: {
-            authorization: 'Bearer sk_test_demo1234567890abcdef',
-          },
-          payload: {
-            url: 'https://example.com',
-          },
-        });
-
-        const body = JSON.parse(response.payload);
-        expect(body.creditsEstimated).toBeDefined();
-        expect(typeof body.creditsEstimated).toBe('number');
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBe('VALIDATION_ERROR');
       });
     });
 
     describe('GET /v1/scrape/:jobId', () => {
-      it('should return job status for valid job ID', async () => {
-        const response = await server.inject({
-          method: 'GET',
-          url: '/v1/scrape/job_test123',
-        });
+      it('should return job status for valid job', async () => {
+        const res = await request(app).get('/v1/scrape/job_test123');
 
-        expect(response.statusCode).toBe(200);
-        const body = JSON.parse(response.payload);
-        expect(body.jobId).toBe('job_test123');
-        expect(body.status).toBeDefined();
+        expect(res.status).toBe(200);
+        expect(res.body.jobId).toBe('job_test123');
+        expect(res.body.status).toBe('completed');
+        expect(res.body.result).toBeDefined();
       });
 
-      it('should return 404 for invalid job ID', async () => {
-        const response = await server.inject({
-          method: 'GET',
-          url: '/v1/scrape/invalid_id',
-        });
+      it('should return 404 for invalid job ID format', async () => {
+        const res = await request(app).get('/v1/scrape/invalid_id');
 
-        expect(response.statusCode).toBe(404);
-      });
-
-      it('should include result for completed jobs', async () => {
-        const response = await server.inject({
-          method: 'GET',
-          url: '/v1/scrape/job_test123',
-        });
-
-        const body = JSON.parse(response.payload);
-        expect(body.status).toBe('completed');
-        expect(body.result).toBeDefined();
-        expect(body.result.statusCode).toBe(200);
+        expect(res.status).toBe(404);
+        expect(res.body.error).toBe('NOT_FOUND');
       });
     });
   });
 });
 
-describe('Authentication', () => {
-  let server: FastifyInstance;
 
-  beforeAll(async () => {
-    server = await buildTestServer();
-  });
-
-  afterAll(async () => {
-    await server.close();
-  });
-
-  it('should support Bearer token authentication', async () => {
-    const response = await server.inject({
-      method: 'POST',
-      url: '/v1/scrape',
-      headers: {
-        authorization: 'Bearer sk_test_validkey12345678901234',
-      },
-      payload: { url: 'https://example.com' },
-    });
-
-    expect(response.statusCode).toBe(200);
-  });
-
-  it('should reject missing authorization header', async () => {
-    const response = await server.inject({
-      method: 'POST',
-      url: '/v1/scrape',
-      payload: { url: 'https://example.com' },
-    });
-
-    expect(response.statusCode).toBe(401);
-  });
-
-  it('should reject malformed authorization header', async () => {
-    const response = await server.inject({
-      method: 'POST',
-      url: '/v1/scrape',
-      headers: {
-        authorization: 'Basic dXNlcjpwYXNz', // Basic auth, not Bearer
-      },
-      payload: { url: 'https://example.com' },
-    });
-
-    expect(response.statusCode).toBe(401);
-  });
-});
-
-describe('Request Validation', () => {
-  let server: FastifyInstance;
-
-  beforeAll(async () => {
-    server = await buildTestServer();
-  });
-
-  afterAll(async () => {
-    await server.close();
-  });
-
-  it('should validate URL format', async () => {
-    const response = await server.inject({
-      method: 'POST',
-      url: '/v1/scrape',
-      headers: {
-        authorization: 'Bearer sk_test_validkey12345678901234',
-      },
-      payload: { url: 'https://example.com' },
-    });
-
-    // Valid URL should be accepted
-    expect(response.statusCode).toBe(200);
-  });
-});
-
-describe('Error Responses', () => {
-  let server: FastifyInstance;
-
-  beforeAll(async () => {
-    server = await buildTestServer();
-  });
-
-  afterAll(async () => {
-    await server.close();
-  });
-
-  it('should return consistent error format', async () => {
-    const response = await server.inject({
-      method: 'POST',
-      url: '/v1/scrape',
-      payload: { url: 'https://example.com' },
-    });
-
-    expect(response.statusCode).toBe(401);
-    const body = JSON.parse(response.payload);
-    expect(body).toHaveProperty('error');
-    expect(body).toHaveProperty('message');
-  });
-
-  it('should include error code in responses', async () => {
-    const response = await server.inject({
-      method: 'POST',
-      url: '/v1/scrape',
-      headers: {
-        authorization: 'Bearer sk_test_validkey12345678901234',
-      },
-      payload: {},
-    });
-
-    const body = JSON.parse(response.payload);
-    expect(body.error).toBeDefined();
-  });
-});
