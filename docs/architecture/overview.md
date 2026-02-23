@@ -12,9 +12,9 @@ Scrapifie is designed as a distributed, scalable web scraping platform. This doc
         │                       │                       │
         ▼                       ▼                       ▼
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   Fastify API   │     │     Redis       │     │  Scrape Engines │
+│  Express.js API │     │     Redis       │     │  Scrape Engines │
 │    Server       │     │                 │     │  HTTP/Browser/  │
-│                 │     │                 │     │  Stealth        │
+│  (port 3002)    │     │                 │     │  Stealth        │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
         │                                               │
         ▼                                               ▼
@@ -24,17 +24,20 @@ Scrapifie is designed as a distributed, scalable web scraping platform. This doc
 └─────────────────┘                             └─────────────────┘
 ```
 
+The React frontend (Vite dev server) runs on port 5173. The Express backend defaults to port 3000 and is configured to 3002 via the `PORT` environment variable in development.
+
 ## Components
 
 ### API Server
 
-The Fastify-based API server handles:
+The Express.js API server handles:
 
-- **Authentication** - Validates API keys and manages sessions
-- **Request Validation** - Validates incoming scrape requests using Zod schemas
+- **Session Authentication** - Cookie-based sessions for dashboard users (via `authExpress` middleware)
+- **API Key Authentication** - API key validation for programmatic scraping consumers (via `apiKeyAuth` middleware)
+- **Request Validation** - Validates all inputs using Zod schemas
 - **Job Submission** - Creates scrape jobs and adds them to the queue
 - **Status Queries** - Returns job status and results
-- **Rate Limiting** - Enforces per-organization request limits
+- **Rate Limiting** - Enforces per-account request limits
 
 ### Job Queue
 
@@ -127,8 +130,9 @@ Scrapifie supports multiple organizations:
 
 ## Security Layers
 
-1. **API Key Authentication** - All requests require valid API key
-2. **Rate Limiting** - Prevents abuse and ensures fair usage
-3. **Credit System** - Controls resource consumption
-4. **Encryption** - Sensitive data encrypted at rest
-5. **Input Validation** - All inputs validated with Zod schemas
+1. **Session Authentication** - Cookie-based sessions with CSRF protection for dashboard users
+2. **API Key Authentication** - HMAC-hashed keys required for all programmatic API requests
+3. **Rate Limiting** - Per-account limits enforced via Redis
+4. **Credit System** - Controls resource consumption; insufficient credits block job submission
+5. **Input Validation** - All inputs validated with Zod schemas before processing
+6. **HTTPS / Security Headers** - Helmet middleware enforces security headers in production
