@@ -3,585 +3,370 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { keysRoutes } from '@api/routes/keys.routes.js';
-import { apiKeyRepository, sessionRepository, userRepository } from '../../../src/db/index.js';
-import { generateApiKey } from '../../../src/utils/crypto.js';
+import express from 'express';
+import request from 'supertest';
+import { createKeysRoutes } from '../../../../src/api/routes/keys.routes.js';
+import { apiKeyRepository } from '../../../../src/db/repositories/apiKey.repository.js';
+import { requireAuth } from '../../../../src/api/middleware/authExpress.js';
 
-// Mock the repositories and crypto
-vi.mock('../../../src/db/index', () => ({
+vi.mock('../../../../src/api/middleware/authExpress.js', () => ({
+  requireAuth: vi.fn(),
+}));
+
+vi.mock('../../../../src/db/repositories/apiKey.repository.js', () => ({
   apiKeyRepository: {
-    findByAccountId: vi.fn(),
+    findByAccount: vi.fn(),
     findById: vi.fn(),
     create: vi.fn(),
-    update: vi.fn(),
     revoke: vi.fn(),
   },
-  sessionRepository: {
-    get: vi.fn(),
-  },
-  userRepository: {
-    findById: vi.fn(),
+}));
+
+vi.mock('../../../../src/utils/logger.js', () => ({
+  logger: {
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
   },
 }));
 
-vi.mock('../../../src/utils/crypto', () => ({
-  generateApiKey: vi.fn(),
-}));
+const mockUser = {
+  id: 'user-123',
+  accountId: 'account-123',
+  email: 'test@example.com',
+  role: 'user',
+};
+
+const mockApiKey = {
+  id: 'key-1',
+  accountId: 'account-123',
+  createdByUserId: 'user-123',
+  keyPrefix: 'sk_live_',
+  keyHash: 'hashed-key',
+  name: 'Test Key',
+  scopes: ['scrape:read', 'scrape:write'],
+  environment: 'production' as const,
+  isActive: true,
+  lastUsedAt: undefined,
+  createdAt: new Date('2024-01-01T00:00:00Z'),
+  updatedAt: new Date('2024-01-01T00:00:00Z'),
+  expiresAt: undefined,
+  usageCount: 0,
+  metadata: {},
+};
+
+function buildApp() {
+  const app = express();
+  app.use(express.json());
+  app.use('/api/keys', createKeysRoutes());
+  return app;
+}
 
 describe('Keys Routes', () => {
-  let mockServer: any;
-  let routeHandlers: Record<string, Function>;
-  let routeSchemas: Record<string, any>;
-
   beforeEach(() => {
-    vi.clearAllMocks();
-    routeHandlers = {};
-    routeSchemas = {};
-    mockServer = {
-      get: vi.fn((path: string, schemaOrHandler: any, handler?: Function) => {
-        if (handler) {
-          routeHandlers[path] = handler;
-          routeSchemas[path] = schemaOrHandler;
-        } else {
-          routeHandlers[path] = schemaOrHandler;
-        }
-      }),
-      post: vi.fn((path: string, schemaOrHandler: any, handler?: Function) => {
-        if (handler) {
-          routeHandlers[path] = handler;
-          routeSchemas[path] = schemaOrHandler;
-        } else {
-          routeHandlers[path] = schemaOrHandler;
-        }
-      }),
-      patch: vi.fn((path: string, schemaOrHandler: any, handler?: Function) => {
-        if (handler) {
-          routeHandlers[path] = handler;
-          routeSchemas[path] = schemaOrHandler;
-        } else {
-          routeHandlers[path] = schemaOrHandler;
-        }
-      }),
-      delete: vi.fn((path: string, handler: Function) => {
-        routeHandlers[path] = handler;
-      }),
-    };
+    vi.mocked(requireAuth).mockImplementation((req: any, _res, next) => {
+      req.user = mockUser;
+      next();
+    });
   });
-
-  const createMockRequest = (
-    cookies: Record<string, string> = {},
-    body: Record<string, any> = {},
-    params: Record<string, string> = {},
-    query: Record<string, string> = {}
-  ) => ({
-    cookies,
-    body,
-    params,
-    query,
-  });
-
-  const mockReply = () => ({
-    code: vi.fn().mockReturnThis(),
-  });
-
-  const mockUser = {
-    id: 'user-123',
-    accountId: 'account-123',
-    email: 'test@example.com',
-  };
 
   describe('GET /api/keys', () => {
-    beforeEach(async () => {
-      await keysRoutes(mockServer as any);
-    });
+    it('should return list of API keys for the authenticated user', async () => {
+      vi.mocked(apiKeyRepository.findByAccount).mockResolvedValue([mockApiKey]);
 
-    it('should return paginated list of API keys', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(apiKeyRepository.findByAccountId).mockResolvedValue([
-        {
-          id: 'key-1',
-          name: 'Production Key',
-          keyPreview: 'sk_live_...abcd',
-          type: 'standard',
-          status: 'active',
-          lastUsedAt: '2024-03-15T10:00:00Z',
-          createdAt: '2024-01-01T00:00:00Z',
-          expiresAt: null,
-        },
-        {
-          id: 'key-2',
-          name: 'Test Key',
-          keyPreview: 'sk_live_...efgh',
-          type: 'restricted',
-          status: 'active',
-          lastUsedAt: null,
-          createdAt: '2024-02-01T00:00:00Z',
-          expiresAt: '2024-12-31T00:00:00Z',
-        },
-      ]);
+      const res = await request(buildApp()).get('/api/keys');
 
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      const result = await routeHandlers['/api/keys'](request);
-
-      expect(result.data).toHaveLength(2);
-      expect(result.pagination).toEqual({
-        page: 1,
-        limit: 50,
-        total: 2,
-        totalPages: 1,
-      });
-      expect(result.data[0]).toHaveProperty('id');
-      expect(result.data[0]).toHaveProperty('name');
-      expect(result.data[0]).toHaveProperty('keyPreview');
-      expect(result.data[0]).not.toHaveProperty('keyHash');
-    });
-
-    it('should paginate results correctly', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(apiKeyRepository.findByAccountId).mockResolvedValue(
-        Array(100).fill(null).map((_, i) => ({
-          id: `key-${i}`,
-          name: `Key ${i}`,
-          keyPreview: `sk_live_...${i}`,
-          type: 'standard',
-          status: 'active',
-          lastUsedAt: null,
-          createdAt: '2024-01-01T00:00:00Z',
-          expiresAt: null,
-        }))
-      );
-
-      const request = createMockRequest({ sessionId: 'valid-session' }, {}, {}, { page: '2', limit: '10' });
-      const result = await routeHandlers['/api/keys'](request);
-
-      expect(result.data).toHaveLength(10);
-      expect(result.pagination.page).toBe(2);
-      expect(result.pagination.limit).toBe(10);
-      expect(result.pagination.total).toBe(100);
-      expect(result.pagination.totalPages).toBe(10);
+      expect(res.status).toBe(200);
+      expect(res.body.keys).toHaveLength(1);
+      expect(res.body.keys[0].id).toBe('key-1');
+      expect(res.body.keys[0].name).toBe('Test Key');
+      expect(res.body.keys[0].keyPrefix).toBe('sk_live_');
+      expect(res.body.keys[0]).not.toHaveProperty('keyHash');
+      expect(apiKeyRepository.findByAccount).toHaveBeenCalledWith('account-123');
     });
 
     it('should return empty array when no keys exist', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(apiKeyRepository.findByAccountId).mockResolvedValue([]);
+      vi.mocked(apiKeyRepository.findByAccount).mockResolvedValue([]);
 
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      const result = await routeHandlers['/api/keys'](request);
+      const res = await request(buildApp()).get('/api/keys');
 
-      expect(result.data).toEqual([]);
-      expect(result.pagination.total).toBe(0);
-      expect(result.pagination.totalPages).toBe(0);
+      expect(res.status).toBe(200);
+      expect(res.body.keys).toEqual([]);
     });
 
-    it('should use default pagination values', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(apiKeyRepository.findByAccountId).mockResolvedValue([]);
+    it('should return 401 when not authenticated', async () => {
+      vi.mocked(requireAuth).mockImplementation((_req, res) => {
+        res.status(401).json({ error: 'Authentication required' });
+      });
 
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      await routeHandlers['/api/keys'](request);
+      const res = await request(buildApp()).get('/api/keys');
 
-      expect(apiKeyRepository.findByAccountId).toHaveBeenCalledWith('account-123');
+      expect(res.status).toBe(401);
     });
 
-    it('should throw UnauthorizedError when not authenticated', async () => {
-      const request = createMockRequest({});
+    it('should return 500 when repository throws', async () => {
+      vi.mocked(apiKeyRepository.findByAccount).mockRejectedValue(new Error('DB error'));
 
-      await expect(routeHandlers['/api/keys'](request)).rejects.toThrow('Not authenticated');
+      const res = await request(buildApp()).get('/api/keys');
+
+      expect(res.status).toBe(500);
+      expect(res.body.error).toBe('Failed to fetch API keys');
     });
   });
 
   describe('POST /api/keys', () => {
-    beforeEach(async () => {
-      await keysRoutes(mockServer as any);
-    });
-
-    it('should create a new API key', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(generateApiKey).mockReturnValue({
-        key: 'sk_live_1234567890abcdef',
-        hash: 'hashed_key_value',
-      });
+    it('should create a new API key and return 201', async () => {
       vi.mocked(apiKeyRepository.create).mockResolvedValue({
-        id: 'key-new',
+        rawKey: 'sk_live_secret_key_full',
+        apiKey: {
+          ...mockApiKey,
+          id: 'key-new',
+          name: 'My New Key',
+        },
+      });
+
+      const res = await request(buildApp())
+        .post('/api/keys')
+        .send({ name: 'My New Key' });
+
+      expect(res.status).toBe(201);
+      expect(res.body.key).toBe('sk_live_secret_key_full');
+      expect(res.body.apiKey.id).toBe('key-new');
+      expect(res.body.apiKey.name).toBe('My New Key');
+      expect(res.body.apiKey).not.toHaveProperty('keyHash');
+      expect(apiKeyRepository.create).toHaveBeenCalledWith(expect.objectContaining({
         accountId: 'account-123',
+        createdByUserId: 'user-123',
         name: 'My New Key',
-        keyHash: 'hashed_key_value',
-        keyPreview: 'sk_live_...cdef',
-        type: 'standard',
-        status: 'active',
-        expiresAt: null,
-        lastUsedAt: null,
-        createdAt: '2024-03-15T10:00:00Z',
-      });
-
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        { name: 'My New Key' }
-      );
-      const result = await routeHandlers['/api/keys'](request);
-
-      expect(result.key).toBe('sk_live_1234567890abcdef');
-      expect(result.apiKey).toBeDefined();
-      expect(result.apiKey.name).toBe('My New Key');
-      expect(apiKeyRepository.create).toHaveBeenCalledWith(expect.objectContaining({
-        accountId: 'account-123',
-        name: 'My New Key',
-        keyHash: 'hashed_key_value',
-        type: 'standard',
-        status: 'active',
       }));
     });
 
-    it('should create key with custom type', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(generateApiKey).mockReturnValue({
-        key: 'sk_live_test',
-        hash: 'hashed',
-      });
+    it('should create key with custom environment and scopes', async () => {
       vi.mocked(apiKeyRepository.create).mockResolvedValue({
-        id: 'key-1',
-        accountId: 'account-123',
-        name: 'Restricted Key',
-        keyHash: 'hashed',
-        keyPreview: 'sk_live_test',
-        type: 'restricted',
-        status: 'active',
-        expiresAt: null,
-        lastUsedAt: null,
-        createdAt: '2024-03-15T10:00:00Z',
+        rawKey: 'sk_dev_key',
+        apiKey: { ...mockApiKey, environment: 'development' as const },
       });
 
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        { name: 'Restricted Key', type: 'restricted' }
-      );
-      await routeHandlers['/api/keys'](request);
+      const res = await request(buildApp())
+        .post('/api/keys')
+        .send({ name: 'Dev Key', environment: 'development', scopes: ['scrape:read'] });
 
+      expect(res.status).toBe(201);
       expect(apiKeyRepository.create).toHaveBeenCalledWith(expect.objectContaining({
-        type: 'restricted',
+        environment: 'development',
+        scopes: ['scrape:read'],
       }));
     });
 
-    it('should create key with expiration date', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(generateApiKey).mockReturnValue({
-        key: 'sk_live_test',
-        hash: 'hashed',
-      });
+    it('should create key with expiration when expiresInDays is provided', async () => {
       vi.mocked(apiKeyRepository.create).mockResolvedValue({
-        id: 'key-1',
-        accountId: 'account-123',
-        name: 'Temporary Key',
-        keyHash: 'hashed',
-        keyPreview: 'sk_live_test',
-        type: 'standard',
-        status: 'active',
-        expiresAt: '2024-12-31T00:00:00Z',
-        lastUsedAt: null,
-        createdAt: '2024-03-15T10:00:00Z',
+        rawKey: 'sk_live_temp',
+        apiKey: mockApiKey,
       });
 
-      const expiresAt = '2024-12-31T00:00:00Z';
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        { name: 'Temporary Key', expiresAt }
-      );
-      await routeHandlers['/api/keys'](request);
+      const before = Date.now();
+      const res = await request(buildApp())
+        .post('/api/keys')
+        .send({ name: 'Temp Key', expiresInDays: 30 });
+      const after = Date.now();
 
-      expect(apiKeyRepository.create).toHaveBeenCalledWith(expect.objectContaining({
-        expiresAt,
-      }));
+      expect(res.status).toBe(201);
+      const callArg = vi.mocked(apiKeyRepository.create).mock.calls[0][0];
+      expect(callArg.expiresAt).toBeInstanceOf(Date);
+      const expiresMs = callArg.expiresAt!.getTime();
+      expect(expiresMs).toBeGreaterThanOrEqual(before + 30 * 24 * 60 * 60 * 1000);
+      expect(expiresMs).toBeLessThanOrEqual(after + 30 * 24 * 60 * 60 * 1000);
     });
 
-    it('should validate required name field', async () => {
-      expect(routeSchemas['/api/keys']).toBeDefined();
-      expect(routeSchemas['/api/keys'].schema.body.required).toContain('name');
-      expect(routeSchemas['/api/keys'].schema.body.properties.name.minLength).toBe(1);
+    it('should return 400 when name is missing', async () => {
+      const res = await request(buildApp())
+        .post('/api/keys')
+        .send({});
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('Invalid API key name');
     });
 
-    it('should validate type enum', async () => {
-      expect(routeSchemas['/api/keys'].schema.body.properties.type.enum).toEqual(['standard', 'restricted']);
+    it('should return 400 when name is empty string', async () => {
+      const res = await request(buildApp())
+        .post('/api/keys')
+        .send({ name: '   ' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('Invalid API key name');
     });
 
-    it('should generate key preview correctly', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(generateApiKey).mockReturnValue({
-        key: 'sk_live_1234567890abcdefghij',
-        hash: 'hashed',
-      });
-      vi.mocked(apiKeyRepository.create).mockResolvedValue({
-        id: 'key-1',
-        accountId: 'account-123',
-        name: 'Test',
-        keyHash: 'hashed',
-        keyPreview: 'sk_live_...hij',
-        type: 'standard',
-        status: 'active',
-        expiresAt: null,
-        lastUsedAt: null,
-        createdAt: '2024-03-15T10:00:00Z',
-      });
+    it('should return 400 when name exceeds 100 characters', async () => {
+      const res = await request(buildApp())
+        .post('/api/keys')
+        .send({ name: 'a'.repeat(101) });
 
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        { name: 'Test' }
-      );
-      const result = await routeHandlers['/api/keys'](request);
-
-      expect(result.apiKey.keyPreview).toBe('sk_live_...hij');
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('Invalid API key name');
     });
 
-    it('should only return full key once on creation', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(generateApiKey).mockReturnValue({
-        key: 'sk_live_secret_key',
-        hash: 'hashed',
-      });
-      vi.mocked(apiKeyRepository.create).mockResolvedValue({
-        id: 'key-1',
-        accountId: 'account-123',
-        name: 'Test',
-        keyHash: 'hashed',
-        keyPreview: 'sk_live_...key',
-        type: 'standard',
-        status: 'active',
-        expiresAt: null,
-        lastUsedAt: null,
-        createdAt: '2024-03-15T10:00:00Z',
+    it('should return 401 when not authenticated', async () => {
+      vi.mocked(requireAuth).mockImplementation((_req, res) => {
+        res.status(401).json({ error: 'Authentication required' });
       });
 
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        { name: 'Test' }
-      );
-      const result = await routeHandlers['/api/keys'](request);
+      const res = await request(buildApp())
+        .post('/api/keys')
+        .send({ name: 'My Key' });
 
-      expect(result.key).toBe('sk_live_secret_key');
-      expect(result.apiKey.keyPreview).not.toContain('secret_key');
-    });
-  });
-
-  describe('GET /api/keys/:id', () => {
-    beforeEach(async () => {
-      await keysRoutes(mockServer as any);
+      expect(res.status).toBe(401);
     });
 
-    it('should return API key details', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(apiKeyRepository.findById).mockResolvedValue({
-        id: 'key-1',
-        accountId: 'account-123',
-        name: 'Production Key',
-        keyHash: 'hashed',
-        keyPreview: 'sk_live_...abcd',
-        type: 'standard',
-        status: 'active',
-        lastUsedAt: '2024-03-15T10:00:00Z',
-        createdAt: '2024-01-01T00:00:00Z',
-        expiresAt: null,
-      });
+    it('should return 500 when repository throws', async () => {
+      vi.mocked(apiKeyRepository.create).mockRejectedValue(new Error('DB error'));
 
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        {},
-        { id: 'key-1' }
-      );
-      const result = await routeHandlers['/api/keys/:id'](request);
+      const res = await request(buildApp())
+        .post('/api/keys')
+        .send({ name: 'My Key' });
 
-      expect(result.id).toBe('key-1');
-      expect(result.name).toBe('Production Key');
-      expect(result).not.toHaveProperty('keyHash');
-    });
-
-    it('should throw NotFoundError when key does not exist', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(apiKeyRepository.findById).mockResolvedValue(null);
-
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        {},
-        { id: 'nonexistent' }
-      );
-
-      await expect(routeHandlers['/api/keys/:id'](request)).rejects.toThrow('API key not found');
-    });
-
-    it('should throw NotFoundError when key belongs to different account', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(apiKeyRepository.findById).mockResolvedValue({
-        id: 'key-1',
-        accountId: 'different-account',
-        name: 'Other Key',
-        keyHash: 'hashed',
-        keyPreview: 'sk_live_...abcd',
-        type: 'standard',
-        status: 'active',
-        lastUsedAt: null,
-        createdAt: '2024-01-01T00:00:00Z',
-        expiresAt: null,
-      });
-
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        {},
-        { id: 'key-1' }
-      );
-
-      await expect(routeHandlers['/api/keys/:id'](request)).rejects.toThrow('API key not found');
-    });
-  });
-
-  describe('PATCH /api/keys/:id', () => {
-    beforeEach(async () => {
-      await keysRoutes(mockServer as any);
-    });
-
-    it('should update API key name', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(apiKeyRepository.findById)
-        .mockResolvedValueOnce({
-          id: 'key-1',
-          accountId: 'account-123',
-          name: 'Old Name',
-          keyHash: 'hashed',
-          keyPreview: 'sk_live_...abcd',
-          type: 'standard',
-          status: 'active',
-          lastUsedAt: null,
-          createdAt: '2024-01-01T00:00:00Z',
-          expiresAt: null,
-        })
-        .mockResolvedValueOnce({
-          id: 'key-1',
-          accountId: 'account-123',
-          name: 'New Name',
-          keyHash: 'hashed',
-          keyPreview: 'sk_live_...abcd',
-          type: 'standard',
-          status: 'active',
-          lastUsedAt: null,
-          createdAt: '2024-01-01T00:00:00Z',
-          expiresAt: null,
-        });
-      vi.mocked(apiKeyRepository.update).mockResolvedValue(undefined);
-
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        { name: 'New Name' },
-        { id: 'key-1' }
-      );
-      const result = await routeHandlers['/api/keys/:id (PATCH)'](request);
-
-      expect(apiKeyRepository.update).toHaveBeenCalledWith('key-1', { name: 'New Name' });
-      expect(result.name).toBe('New Name');
-    });
-
-    it('should throw NotFoundError when updating non-existent key', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(apiKeyRepository.findById).mockResolvedValue(null);
-
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        { name: 'New Name' },
-        { id: 'nonexistent' }
-      );
-
-      await expect(routeHandlers['/api/keys/:id (PATCH)'](request)).rejects.toThrow('API key not found');
-    });
-
-    it('should validate name has minimum length', async () => {
-      expect(routeSchemas['/api/keys/:id (PATCH)']).toBeDefined();
-      expect(routeSchemas['/api/keys/:id (PATCH)'].schema.body.properties.name.minLength).toBe(1);
+      expect(res.status).toBe(500);
+      expect(res.body.error).toBe('Failed to create API key');
     });
   });
 
   describe('DELETE /api/keys/:id', () => {
-    beforeEach(async () => {
-      await keysRoutes(mockServer as any);
-    });
+    it('should revoke API key and return success', async () => {
+      vi.mocked(apiKeyRepository.findById).mockResolvedValue(mockApiKey);
+      vi.mocked(apiKeyRepository.revoke).mockResolvedValue(true);
 
-    it('should revoke API key and return 204', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(apiKeyRepository.findById).mockResolvedValue({
-        id: 'key-1',
-        accountId: 'account-123',
-        name: 'To Revoke',
-        keyHash: 'hashed',
-        keyPreview: 'sk_live_...abcd',
-        type: 'standard',
-        status: 'active',
-        lastUsedAt: null,
-        createdAt: '2024-01-01T00:00:00Z',
-        expiresAt: null,
-      });
-      vi.mocked(apiKeyRepository.revoke).mockResolvedValue(undefined);
+      const res = await request(buildApp()).delete('/api/keys/key-1');
 
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        {},
-        { id: 'key-1' }
-      );
-      const reply = mockReply();
-      await routeHandlers['/api/keys/:id (DELETE)'](request, reply);
-
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
       expect(apiKeyRepository.revoke).toHaveBeenCalledWith('key-1');
-      expect(reply.code).toHaveBeenCalledWith(204);
     });
 
-    it('should throw NotFoundError when revoking non-existent key', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
+    it('should return 404 when key does not exist', async () => {
       vi.mocked(apiKeyRepository.findById).mockResolvedValue(null);
 
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        {},
-        { id: 'nonexistent' }
-      );
-      const reply = mockReply();
+      const res = await request(buildApp()).delete('/api/keys/nonexistent');
 
-      await expect(routeHandlers['/api/keys/:id (DELETE)'](request, reply)).rejects.toThrow('API key not found');
+      expect(res.status).toBe(404);
+      expect(res.body.error).toBe('API key not found');
     });
 
-    it('should throw NotFoundError when revoking key from different account', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
+    it('should return 404 when key belongs to a different account', async () => {
       vi.mocked(apiKeyRepository.findById).mockResolvedValue({
-        id: 'key-1',
-        accountId: 'different-account',
-        name: 'Other Key',
-        keyHash: 'hashed',
-        keyPreview: 'sk_live_...abcd',
-        type: 'standard',
-        status: 'active',
-        lastUsedAt: null,
-        createdAt: '2024-01-01T00:00:00Z',
-        expiresAt: null,
+        ...mockApiKey,
+        accountId: 'other-account',
       });
 
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        {},
-        { id: 'key-1' }
-      );
-      const reply = mockReply();
+      const res = await request(buildApp()).delete('/api/keys/key-1');
 
-      await expect(routeHandlers['/api/keys/:id (DELETE)'](request, reply)).rejects.toThrow('API key not found');
+      expect(res.status).toBe(404);
+      expect(res.body.error).toBe('API key not found');
+    });
+
+    it('should return 401 when not authenticated', async () => {
+      vi.mocked(requireAuth).mockImplementation((_req, res) => {
+        res.status(401).json({ error: 'Authentication required' });
+      });
+
+      const res = await request(buildApp()).delete('/api/keys/key-1');
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 500 when repository throws', async () => {
+      vi.mocked(apiKeyRepository.findById).mockRejectedValue(new Error('DB error'));
+
+      const res = await request(buildApp()).delete('/api/keys/key-1');
+
+      expect(res.status).toBe(500);
+      expect(res.body.error).toBe('Failed to revoke API key');
+    });
+  });
+
+  describe('PATCH /api/keys/:id', () => {
+    it('should update API key name and return success', async () => {
+      vi.mocked(apiKeyRepository.findById).mockResolvedValue(mockApiKey);
+
+      const res = await request(buildApp())
+        .patch('/api/keys/key-1')
+        .send({ name: 'Updated Key Name' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+    });
+
+    it('should return 400 when name is missing', async () => {
+      const res = await request(buildApp())
+        .patch('/api/keys/key-1')
+        .send({});
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('Invalid API key name');
+    });
+
+    it('should return 400 when name is empty string', async () => {
+      const res = await request(buildApp())
+        .patch('/api/keys/key-1')
+        .send({ name: '' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('Invalid API key name');
+    });
+
+    it('should return 400 when name exceeds 100 characters', async () => {
+      const res = await request(buildApp())
+        .patch('/api/keys/key-1')
+        .send({ name: 'a'.repeat(101) });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('Invalid API key name');
+    });
+
+    it('should return 404 when key does not exist', async () => {
+      vi.mocked(apiKeyRepository.findById).mockResolvedValue(null);
+
+      const res = await request(buildApp())
+        .patch('/api/keys/key-1')
+        .send({ name: 'New Name' });
+
+      expect(res.status).toBe(404);
+      expect(res.body.error).toBe('API key not found');
+    });
+
+    it('should return 404 when key belongs to a different account', async () => {
+      vi.mocked(apiKeyRepository.findById).mockResolvedValue({
+        ...mockApiKey,
+        accountId: 'other-account',
+      });
+
+      const res = await request(buildApp())
+        .patch('/api/keys/key-1')
+        .send({ name: 'New Name' });
+
+      expect(res.status).toBe(404);
+      expect(res.body.error).toBe('API key not found');
+    });
+
+    it('should return 401 when not authenticated', async () => {
+      vi.mocked(requireAuth).mockImplementation((_req, res) => {
+        res.status(401).json({ error: 'Authentication required' });
+      });
+
+      const res = await request(buildApp())
+        .patch('/api/keys/key-1')
+        .send({ name: 'New Name' });
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 500 when repository throws', async () => {
+      vi.mocked(apiKeyRepository.findById).mockRejectedValue(new Error('DB error'));
+
+      const res = await request(buildApp())
+        .patch('/api/keys/key-1')
+        .send({ name: 'New Name' });
+
+      expect(res.status).toBe(500);
+      expect(res.body.error).toBe('Failed to update API key');
     });
   });
 });

@@ -3,536 +3,183 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { usageRoutes } from '@api/routes/usage.routes.js';
-import { 
-  scrapeJobRepository, 
-  apiKeyRepository,
-  sessionRepository, 
-  userRepository,
-  accountRepository,
-} from '../../../src/db/index.js';
+import express from 'express';
+import request from 'supertest';
+import { createUsageRoutes } from '../../../../src/api/routes/usage.routes.js';
+import { scrapeJobRepository } from '../../../../src/db/repositories/scrapeJob.repository.js';
 
-// Mock the dependencies
-vi.mock('../../../src/db/index', () => ({
-  scrapeJobRepository: {
-    findByAccountId: vi.fn(),
-  },
-  apiKeyRepository: {
-    findByAccountId: vi.fn(),
-  },
-  sessionRepository: {
-    get: vi.fn(),
-  },
-  userRepository: {
-    findById: vi.fn(),
-  },
-  accountRepository: {
-    findById: vi.fn(),
-  },
+vi.mock('../../../../src/api/middleware/authExpress.js', () => ({
+  requireAuth: vi.fn((req: any, _res: any, next: any) => {
+    req.user = { id: 'user-123', accountId: 'account-123', email: 'test@example.com', role: 'user' };
+    next();
+  }),
 }));
 
+vi.mock('../../../../src/db/repositories/scrapeJob.repository.js', () => ({
+  scrapeJobRepository: { findByAccount: vi.fn() },
+}));
+
+vi.mock('../../../../src/utils/logger.js', () => ({
+  logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
+}));
+
+function buildApp() {
+  const app = express();
+  app.use(express.json());
+  app.use('/', createUsageRoutes());
+  return app;
+}
+
+const now = new Date();
+const dayAgo = new Date(now.getTime() - 86400000);
+const weekAgo = new Date(now.getTime() - 7 * 86400000);
+
+const mockJobs = [
+  { id: 'job-1', accountId: 'account-123', url: 'https://example.com/page1', engine: 'http', status: 'completed', creditsCharged: 10, createdAt: dayAgo.toISOString() },
+  { id: 'job-2', accountId: 'account-123', url: 'https://example.com/page2', engine: 'http', status: 'completed', creditsCharged: 10, createdAt: dayAgo.toISOString() },
+  { id: 'job-3', accountId: 'account-123', url: 'https://test.com/page', engine: 'browser', status: 'failed', creditsCharged: 5, createdAt: dayAgo.toISOString() },
+];
+
 describe('Usage Routes', () => {
-  let mockServer: any;
-  let routeHandlers: Record<string, Function>;
+  let app: express.Application;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    routeHandlers = {};
-    mockServer = {
-      get: vi.fn((path: string, handler: Function) => {
-        routeHandlers[path] = handler;
-      }),
-      post: vi.fn((path: string, handler: Function) => {
-        routeHandlers[path] = handler;
-      }),
-    };
+    app = buildApp();
   });
 
-  const createMockRequest = (
-    cookies: Record<string, string> = {},
-    body: Record<string, any> = {},
-    params: Record<string, string> = {},
-    query: Record<string, string> = {}
-  ) => ({
-    cookies,
-    body,
-    params,
-    query,
-  });
+  describe('GET / - usage stats', () => {
+    it('should return usage summary for default 30d period', async () => {
+      vi.mocked(scrapeJobRepository.findByAccount).mockResolvedValue(mockJobs as any);
 
-  const mockReply = () => ({
-    code: vi.fn().mockReturnThis(),
-    type: vi.fn().mockReturnThis(),
-    header: vi.fn().mockReturnThis(),
-  });
+      const res = await request(app).get('/');
 
-  const mockUser = {
-    id: 'user-123',
-    accountId: 'account-123',
-    email: 'test@example.com',
-  };
-
-  const mockJobs = [
-    { id: 'job-1', accountId: 'account-123', apiKeyId: 'key-1', url: 'https://example.com/page1', engine: 'http', status: 'completed', creditsUsed: 10, duration: 1000, createdAt: '2024-03-15T10:00:00Z', completedAt: '2024-03-15T10:00:01Z' },
-    { id: 'job-2', accountId: 'account-123', apiKeyId: 'key-1', url: 'https://example.com/page2', engine: 'http', status: 'completed', creditsUsed: 10, duration: 1500, createdAt: '2024-03-14T10:00:00Z', completedAt: '2024-03-14T10:00:02Z' },
-    { id: 'job-3', accountId: 'account-123', apiKeyId: 'key-2', url: 'https://test.com/page', engine: 'browser', status: 'failed', creditsUsed: 5, duration: null, createdAt: '2024-03-13T10:00:00Z', completedAt: '2024-03-13T10:00:05Z' },
-  ];
-
-  describe('GET /api/usage/summary', () => {
-    beforeEach(async () => {
-      await usageRoutes(mockServer as any);
-    });
-
-    it('should return usage summary for 30 days by default', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue(mockJobs);
-
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      const result = await routeHandlers['/api/usage/summary'](request);
-
-      expect(result).toHaveProperty('totalRequests');
-      expect(result).toHaveProperty('successfulRequests');
-      expect(result).toHaveProperty('failedRequests');
-      expect(result).toHaveProperty('totalCreditsUsed');
-      expect(result).toHaveProperty('avgResponseTime');
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty('period');
+      expect(res.body).toHaveProperty('stats');
+      expect(res.body).toHaveProperty('byEngine');
+      expect(res.body).toHaveProperty('byDay');
+      expect(res.body.period).toBe('30d');
     });
 
     it('should calculate statistics correctly', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue(mockJobs);
+      vi.mocked(scrapeJobRepository.findByAccount).mockResolvedValue(mockJobs as any);
 
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      const result = await routeHandlers['/api/usage/summary'](request);
+      const res = await request(app).get('/');
 
-      expect(result.totalRequests).toBe(3);
-      expect(result.successfulRequests).toBe(2);
-      expect(result.failedRequests).toBe(1);
-      expect(result.totalCreditsUsed).toBe(25);
-      expect(result.avgResponseTime).toBe(1250); // (1000 + 1500) / 2
+      expect(res.body.stats.totalJobs).toBe(3);
+      expect(res.body.stats.completedJobs).toBe(2);
+      expect(res.body.stats.failedJobs).toBe(1);
+      expect(res.body.stats.totalCredits).toBe(25);
     });
 
-    it('should handle 7 day range', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue(mockJobs);
+    it('should handle 7d period', async () => {
+      vi.mocked(scrapeJobRepository.findByAccount).mockResolvedValue(mockJobs as any);
 
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        {},
-        {},
-        { range: '7d' }
-      );
-      await routeHandlers['/api/usage/summary'](request);
+      const res = await request(app).get('/?period=7d');
 
-      expect(scrapeJobRepository.findByAccountId).toHaveBeenCalled();
+      expect(res.status).toBe(200);
+      expect(res.body.period).toBe('7d');
     });
 
-    it('should handle 90 day range', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue(mockJobs);
+    it('should handle 24h period', async () => {
+      vi.mocked(scrapeJobRepository.findByAccount).mockResolvedValue(mockJobs as any);
 
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        {},
-        {},
-        { range: '90d' }
-      );
-      await routeHandlers['/api/usage/summary'](request);
+      const res = await request(app).get('/?period=24h');
 
-      expect(scrapeJobRepository.findByAccountId).toHaveBeenCalled();
+      expect(res.status).toBe(200);
+      expect(res.body.period).toBe('24h');
+    });
+
+    it('should handle 90d period', async () => {
+      vi.mocked(scrapeJobRepository.findByAccount).mockResolvedValue(mockJobs as any);
+
+      const res = await request(app).get('/?period=90d');
+
+      expect(res.status).toBe(200);
+      expect(res.body.period).toBe('90d');
     });
 
     it('should return zero values when no jobs', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue([]);
+      vi.mocked(scrapeJobRepository.findByAccount).mockResolvedValue([]);
 
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      const result = await routeHandlers['/api/usage/summary'](request);
+      const res = await request(app).get('/');
 
-      expect(result.totalRequests).toBe(0);
-      expect(result.successfulRequests).toBe(0);
-      expect(result.failedRequests).toBe(0);
-      expect(result.totalCreditsUsed).toBe(0);
-      expect(result.avgResponseTime).toBe(0);
+      expect(res.status).toBe(200);
+      expect(res.body.stats.totalJobs).toBe(0);
+      expect(res.body.stats.completedJobs).toBe(0);
+      expect(res.body.stats.failedJobs).toBe(0);
+      expect(res.body.stats.totalCredits).toBe(0);
+      expect(res.body.stats.successRate).toBe('0');
     });
 
-    it('should handle jobs without duration', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue([
-        { ...mockJobs[0], duration: null },
-      ]);
+    it('should group jobs by engine', async () => {
+      vi.mocked(scrapeJobRepository.findByAccount).mockResolvedValue(mockJobs as any);
 
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      const result = await routeHandlers['/api/usage/summary'](request);
+      const res = await request(app).get('/');
 
-      expect(result.avgResponseTime).toBe(0);
+      expect(res.body.byEngine).toBeDefined();
+      expect(res.body.byEngine['http']).toBe(2);
+      expect(res.body.byEngine['browser']).toBe(1);
     });
 
-    it('should filter jobs by date range', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      
-      const oldJob = { ...mockJobs[0], createdAt: '2023-01-01T00:00:00Z' };
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue([
+    it('should group jobs by day', async () => {
+      vi.mocked(scrapeJobRepository.findByAccount).mockResolvedValue(mockJobs as any);
+
+      const res = await request(app).get('/');
+
+      expect(res.body.byDay).toBeDefined();
+      expect(typeof res.body.byDay).toBe('object');
+    });
+
+    it('should filter out jobs outside the period', async () => {
+      const oldJob = { ...mockJobs[0], id: 'old-job', createdAt: new Date('2020-01-01').toISOString() };
+      vi.mocked(scrapeJobRepository.findByAccount).mockResolvedValue([
         ...mockJobs,
         oldJob,
-      ]);
+      ] as any);
 
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        {},
-        {},
-        { range: '7d' }
-      );
-      const result = await routeHandlers['/api/usage/summary'](request);
+      const res = await request(app).get('/?period=7d');
 
-      // Should not include the old job
-      expect(result.totalRequests).toBeLessThan(4);
-    });
-  });
-
-  describe('GET /api/usage/credits', () => {
-    beforeEach(async () => {
-      await usageRoutes(mockServer as any);
+      expect(res.body.stats.totalJobs).toBeLessThan(4);
     });
 
-    it('should return daily credit usage', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue(mockJobs);
+    it('should calculate success rate correctly', async () => {
+      vi.mocked(scrapeJobRepository.findByAccount).mockResolvedValue(mockJobs as any);
 
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        {},
-        {},
-        { range: '7d' }
-      );
-      const result = await routeHandlers['/api/usage/credits'](request);
+      const res = await request(app).get('/');
 
-      expect(Array.isArray(result)).toBe(true);
-      expect(result.length).toBe(7);
-      expect(result[0]).toHaveProperty('date');
-      expect(result[0]).toHaveProperty('credits');
+      // 2 completed out of 3 total = 66.67%
+      expect(res.body.stats.successRate).toBe('66.67');
     });
 
-    it('should aggregate credits by date', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      
-      const today = new Date().toISOString().split('T')[0];
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue([
-        { ...mockJobs[0], createdAt: `${today}T10:00:00Z`, creditsUsed: 50 },
-        { ...mockJobs[1], createdAt: `${today}T14:00:00Z`, creditsUsed: 30 },
-      ]);
+    it('should include startDate and endDate in response', async () => {
+      vi.mocked(scrapeJobRepository.findByAccount).mockResolvedValue([]);
 
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        {},
-        {},
-        { range: '7d' }
-      );
-      const result = await routeHandlers['/api/usage/credits'](request);
+      const res = await request(app).get('/');
 
-      const todayEntry = result.find((r: any) => r.date === today);
-      expect(todayEntry.credits).toBe(80);
+      expect(res.body).toHaveProperty('startDate');
+      expect(res.body).toHaveProperty('endDate');
     });
 
-    it('should return all days even with no usage', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue([]);
+    it('should return 401 when requireAuth blocks the request', async () => {
+      const { requireAuth } = await import('../../../../src/api/middleware/authExpress.js');
+      vi.mocked(requireAuth).mockImplementationOnce((_req: any, res: any, _next: any) => {
+        res.status(401).json({ error: 'Authentication required' });
+      });
 
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        {},
-        {},
-        { range: '30d' }
-      );
-      const result = await routeHandlers['/api/usage/credits'](request);
+      const res = await request(app).get('/');
 
-      expect(result.length).toBe(30);
-      expect(result.every((r: any) => r.credits === 0)).toBe(true);
-    });
-  });
-
-  describe('GET /api/usage/engines', () => {
-    beforeEach(async () => {
-      await usageRoutes(mockServer as any);
+      expect(res.status).toBe(401);
     });
 
-    it('should return engine breakdown', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue(mockJobs);
+    it('should return 500 on repository error', async () => {
+      vi.mocked(scrapeJobRepository.findByAccount).mockRejectedValue(new Error('DB error'));
 
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      const result = await routeHandlers['/api/usage/engines'](request);
+      const res = await request(app).get('/');
 
-      expect(Array.isArray(result)).toBe(true);
-      expect(result.length).toBeGreaterThan(0);
-      expect(result[0]).toHaveProperty('engine');
-      expect(result[0]).toHaveProperty('requests');
-      expect(result[0]).toHaveProperty('percentage');
-    });
-
-    it('should calculate percentages correctly', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue([
-        ...mockJobs,
-        { ...mockJobs[0], id: 'job-4', engine: 'stealth' },
-      ]);
-
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      const result = await routeHandlers['/api/usage/engines'](request);
-
-      const httpEntry = result.find((r: any) => r.engine === 'http');
-      expect(httpEntry.requests).toBe(2);
-      expect(httpEntry.percentage).toBe(50); // 2 out of 4
-    });
-
-    it('should return zero percentage when no jobs', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue([]);
-
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      const result = await routeHandlers['/api/usage/engines'](request);
-
-      expect(result).toEqual([]);
-    });
-  });
-
-  describe('GET /api/usage/top-domains', () => {
-    beforeEach(async () => {
-      await usageRoutes(mockServer as any);
-    });
-
-    it('should return top domains by request count', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue([
-        ...mockJobs,
-        { ...mockJobs[0], id: 'job-4', url: 'https://example.com/another', creditsUsed: 15 },
-        { ...mockJobs[0], id: 'job-5', url: 'https://test.com/page2' },
-      ]);
-
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      const result = await routeHandlers['/api/usage/top-domains'](request);
-
-      expect(Array.isArray(result)).toBe(true);
-      expect(result[0]).toHaveProperty('domain');
-      expect(result[0]).toHaveProperty('requests');
-      expect(result[0]).toHaveProperty('credits');
-    });
-
-    it('should sort by request count descending', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue([
-        { ...mockJobs[0], url: 'https://popular.com/1' },
-        { ...mockJobs[0], url: 'https://popular.com/2' },
-        { ...mockJobs[0], url: 'https://popular.com/3' },
-        { ...mockJobs[0], url: 'https://rare.com/1' },
-      ]);
-
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      const result = await routeHandlers['/api/usage/top-domains'](request);
-
-      expect(result[0].domain).toBe('popular.com');
-      expect(result[0].requests).toBe(3);
-      expect(result[1].domain).toBe('rare.com');
-      expect(result[1].requests).toBe(1);
-    });
-
-    it('should aggregate credits per domain', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue([
-        { ...mockJobs[0], url: 'https://example.com/1', creditsUsed: 10 },
-        { ...mockJobs[0], url: 'https://example.com/2', creditsUsed: 20 },
-      ]);
-
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      const result = await routeHandlers['/api/usage/top-domains'](request);
-
-      expect(result[0].credits).toBe(30);
-    });
-
-    it('should respect limit parameter', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue([
-        { ...mockJobs[0], url: 'https://site1.com' },
-        { ...mockJobs[0], url: 'https://site2.com' },
-        { ...mockJobs[0], url: 'https://site3.com' },
-      ]);
-
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        {},
-        {},
-        { limit: '2' }
-      );
-      const result = await routeHandlers['/api/usage/top-domains'](request);
-
-      expect(result.length).toBeLessThanOrEqual(2);
-    });
-
-    it('should handle invalid URLs gracefully', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue([
-        ...mockJobs,
-        { ...mockJobs[0], id: 'job-bad', url: 'not-a-valid-url' },
-      ]);
-
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      const result = await routeHandlers['/api/usage/top-domains'](request);
-
-      // Should not include invalid URL
-      expect(result.every((r: any) => r.domain !== 'not-a-valid-url')).toBe(true);
-    });
-  });
-
-  describe('GET /api/usage/api-keys', () => {
-    beforeEach(async () => {
-      await usageRoutes(mockServer as any);
-    });
-
-    it('should return usage per API key', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue(mockJobs);
-      vi.mocked(apiKeyRepository.findByAccountId).mockResolvedValue([
-        { id: 'key-1', name: 'Production Key', accountId: 'account-123' },
-        { id: 'key-2', name: 'Test Key', accountId: 'account-123' },
-      ]);
-
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      const result = await routeHandlers['/api/usage/api-keys'](request);
-
-      expect(Array.isArray(result)).toBe(true);
-      expect(result[0]).toHaveProperty('keyId');
-      expect(result[0]).toHaveProperty('keyName');
-      expect(result[0]).toHaveProperty('requests');
-      expect(result[0]).toHaveProperty('credits');
-    });
-
-    it('should map key IDs to names', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue(mockJobs);
-      vi.mocked(apiKeyRepository.findByAccountId).mockResolvedValue([
-        { id: 'key-1', name: 'Production Key', accountId: 'account-123' },
-        { id: 'key-2', name: 'Test Key', accountId: 'account-123' },
-      ]);
-
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      const result = await routeHandlers['/api/usage/api-keys'](request);
-
-      const key1Entry = result.find((r: any) => r.keyId === 'key-1');
-      expect(key1Entry.keyName).toBe('Production Key');
-    });
-
-    it('should show Unknown for deleted keys', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue([
-        { ...mockJobs[0], apiKeyId: 'deleted-key' },
-      ]);
-      vi.mocked(apiKeyRepository.findByAccountId).mockResolvedValue([]);
-
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      const result = await routeHandlers['/api/usage/api-keys'](request);
-
-      expect(result[0].keyName).toBe('Unknown');
-    });
-
-    it('should aggregate requests and credits per key', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue([
-        { ...mockJobs[0], apiKeyId: 'key-1', creditsUsed: 10 },
-        { ...mockJobs[1], apiKeyId: 'key-1', creditsUsed: 20 },
-        { ...mockJobs[2], apiKeyId: 'key-2', creditsUsed: 5 },
-      ]);
-      vi.mocked(apiKeyRepository.findByAccountId).mockResolvedValue([
-        { id: 'key-1', name: 'Key 1', accountId: 'account-123' },
-        { id: 'key-2', name: 'Key 2', accountId: 'account-123' },
-      ]);
-
-      const request = createMockRequest({ sessionId: 'valid-session' });
-      const result = await routeHandlers['/api/usage/api-keys'](request);
-
-      const key1Entry = result.find((r: any) => r.keyId === 'key-1');
-      expect(key1Entry.requests).toBe(2);
-      expect(key1Entry.credits).toBe(30);
-    });
-  });
-
-  describe('POST /api/usage/export', () => {
-    beforeEach(async () => {
-      await usageRoutes(mockServer as any);
-    });
-
-    it('should export usage data as CSV', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue(mockJobs);
-
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        { range: '30d' }
-      );
-      const reply = mockReply();
-      const result = await routeHandlers['/api/usage/export'](request, reply);
-
-      expect(reply.type).toHaveBeenCalledWith('text/csv');
-      expect(reply.header).toHaveBeenCalledWith(
-        'Content-Disposition',
-        expect.stringContaining('usage-')
-      );
-      expect(typeof result).toBe('string');
-      expect(result).toContain('Date,URL,Engine,Status');
-    });
-
-    it('should filter by range', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue(mockJobs);
-
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        { range: '7d' }
-      );
-      const reply = mockReply();
-      await routeHandlers['/api/usage/export'](request, reply);
-
-      expect(scrapeJobRepository.findByAccountId).toHaveBeenCalled();
-    });
-
-    it('should include all job fields in CSV', async () => {
-      vi.mocked(sessionRepository.get).mockResolvedValue('user-123');
-      vi.mocked(userRepository.findById).mockResolvedValue(mockUser);
-      vi.mocked(scrapeJobRepository.findByAccountId).mockResolvedValue([mockJobs[0]]);
-
-      const request = createMockRequest(
-        { sessionId: 'valid-session' },
-        { range: '30d' }
-      );
-      const reply = mockReply();
-      const result = await routeHandlers['/api/usage/export'](request, reply);
-
-      expect(result).toContain(mockJobs[0].url);
-      expect(result).toContain(mockJobs[0].engine);
-      expect(result).toContain(mockJobs[0].status);
-      expect(result).toContain(mockJobs[0].creditsUsed.toString());
+      expect(res.status).toBe(500);
+      expect(res.body.error).toBe('Failed to fetch usage statistics');
     });
   });
 });
