@@ -293,9 +293,15 @@ export function requireScope(scope: string) {
   };
 }
 
+// Features available by plan tier
+const PLAN_FEATURES: Record<string, string[]> = {
+  free: [],
+  pro: ['residentialProxies', 'premiumSupport'],
+  enterprise: ['residentialProxies', 'premiumSupport', 'dedicatedIps', 'customConcurrency'],
+};
+
 /**
  * Feature flag checking middleware factory
- * Note: Features are part of Phase 10+ and not yet implemented in Account model
  */
 export function requireFeature(feature: string) {
   return async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
@@ -310,8 +316,19 @@ export function requireFeature(feature: string) {
       });
     }
 
-    // TODO: Implement feature flags in Account model (Phase 10+)
-    // For now, all features are available
+    const plan = request.account.plan ?? 'free';
+    const features = PLAN_FEATURES[plan] ?? [];
+    if (!features.includes(feature)) {
+      return reply.status(403).send({
+        success: false,
+        error: {
+          code: 'FEATURE_NOT_AVAILABLE',
+          message: `Feature '${feature}' is not available on your current plan`,
+          retryable: false,
+        },
+      });
+    }
+
     return;
   };
 }

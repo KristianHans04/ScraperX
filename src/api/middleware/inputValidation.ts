@@ -18,8 +18,8 @@ import { logger } from '../../utils/logger.js';
 
 // Dangerous patterns that should be blocked
 const DANGEROUS_PATTERNS = {
-  // SQL Injection patterns
-  SQL_INJECTION: /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE|UNION|DECLARE|CAST)\b)|(-{2})|\/\*|\*\/|;/gi,
+  // SQL Injection patterns (keywords, classic boolean logic, and special chars)
+  SQL_INJECTION: /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE|UNION|DECLARE|CAST|OR|AND)\b\s*\d)|(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE|UNION|DECLARE|CAST)\b)|(-{2})|\/\*|\*\/|;/gi,
   
   // XSS patterns
   XSS: /<script[^>]*>.*?<\/script>|<iframe[^>]*>.*?<\/iframe>|javascript:|on\w+\s*=|<object[^>]*>|<embed[^>]*>/gi,
@@ -45,8 +45,8 @@ const WHITELIST_PATTERNS = {
   // Email: RFC 5322 simplified
   EMAIL: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
   
-  // UUID v4
-  UUID: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+  // UUID (any version)
+  UUID: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
   
   // Alphanumeric with some special characters
   ALPHANUMERIC: /^[a-zA-Z0-9_-]+$/,
@@ -172,6 +172,7 @@ export function isValidUuid(uuid: string): boolean {
  * Check for SQL injection patterns
  */
 export function checkForSqlInjection(input: string): boolean {
+  DANGEROUS_PATTERNS.SQL_INJECTION.lastIndex = 0;
   return DANGEROUS_PATTERNS.SQL_INJECTION.test(input);
 }
 
@@ -179,6 +180,7 @@ export function checkForSqlInjection(input: string): boolean {
  * Check for XSS patterns
  */
 export function checkForXss(input: string): boolean {
+  DANGEROUS_PATTERNS.XSS.lastIndex = 0;
   return DANGEROUS_PATTERNS.XSS.test(input);
 }
 
@@ -186,6 +188,7 @@ export function checkForXss(input: string): boolean {
  * Check for path traversal
  */
 export function checkForPathTraversal(input: string): boolean {
+  DANGEROUS_PATTERNS.PATH_TRAVERSAL.lastIndex = 0;
   return DANGEROUS_PATTERNS.PATH_TRAVERSAL.test(input);
 }
 

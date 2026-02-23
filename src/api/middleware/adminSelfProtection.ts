@@ -9,27 +9,23 @@ export function adminSelfProtection(req: AdminRequest, res: Response, next: Next
     return;
   }
 
-  const targetUserId = req.params.id || req.params.userId;
+  // Guard against undefined params
+  const params = req.params ?? {};
+  const targetUserId = params.id || params.userId;
 
   if (!targetUserId) {
     next();
     return;
   }
 
-  const dangerousActions = [
-    'suspend',
-    'demote',
-    'delete',
-    'ban',
-    'restrict',
-  ];
+  // When the request path is undefined, we cannot assess the action — allow through
+  if (!req.path) {
+    next();
+    return;
+  }
 
-  const actionPath = req.path.split('/').pop();
-  const isDangerousAction = dangerousActions.some(action => 
-    actionPath?.includes(action) || req.path.includes(action)
-  );
-
-  if (isDangerousAction && targetUserId === req.user.id) {
+  // Block any operation that targets the authenticated admin's own account
+  if (targetUserId === req.user.id) {
     res.status(403).json({
       error: 'Self-modification not allowed',
       message: 'You cannot perform this action on your own account',

@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { randomBytes, createHmac } from 'crypto';
+import { randomBytes, createHmac, timingSafeEqual } from 'crypto';
 import { logger } from '../../utils/logger.js';
 
 /**
@@ -56,7 +56,7 @@ function verifyToken(token: string, signature: string): boolean {
   
   // Use timing-safe comparison to prevent timing attacks
   try {
-    return crypto.timingSafeEqual(
+    return timingSafeEqual(
       Buffer.from(signature),
       Buffer.from(expectedSignature)
     );
