@@ -864,6 +864,8 @@ describe('InvoiceService', () => {
       });
       vi.mocked(paymentMethodRepository.findDefaultByAccountId).mockResolvedValue(null);
       vi.mocked(invoiceRepository.create).mockResolvedValue(mockInvoice);
+      // addLineItem calls findById to check invoice status; must be 'draft' for writes to proceed
+      vi.mocked(invoiceRepository.findById).mockResolvedValue({ ...mockInvoice, status: 'draft' });
       vi.mocked(invoiceRepository.addLineItem).mockResolvedValue(undefined);
       vi.mocked(invoiceRepository.getLineItems).mockResolvedValue([]);
       vi.mocked(invoiceRepository.update).mockResolvedValue(mockInvoice);
@@ -919,6 +921,8 @@ describe('InvoiceService', () => {
       });
       vi.mocked(paymentMethodRepository.findDefaultByAccountId).mockResolvedValue(null);
       vi.mocked(invoiceRepository.create).mockResolvedValue(mockInvoice);
+      // addLineItem calls findById to check invoice status; must be 'draft' for writes to proceed
+      vi.mocked(invoiceRepository.findById).mockResolvedValue({ ...mockInvoice, status: 'draft' });
       vi.mocked(invoiceRepository.addLineItem).mockResolvedValue(undefined);
       vi.mocked(invoiceRepository.getLineItems).mockResolvedValue([]);
       vi.mocked(invoiceRepository.update).mockResolvedValue(mockInvoice);
@@ -970,6 +974,8 @@ describe('InvoiceService', () => {
       });
       vi.mocked(paymentMethodRepository.findDefaultByAccountId).mockResolvedValue(null);
       vi.mocked(invoiceRepository.create).mockResolvedValue(mockInvoice);
+      // addLineItem calls findById to check invoice status; must be 'draft' for writes to proceed
+      vi.mocked(invoiceRepository.findById).mockResolvedValue({ ...mockInvoice, status: 'draft' });
       vi.mocked(invoiceRepository.addLineItem).mockResolvedValue(undefined);
       vi.mocked(invoiceRepository.getLineItems).mockResolvedValue([]);
       vi.mocked(invoiceRepository.update).mockResolvedValue(mockInvoice);

@@ -175,6 +175,24 @@ describe('CreditPackService', () => {
       };
 
       vi.mocked(accountRepository.findById).mockResolvedValue(mockAccount);
+      vi.mocked(creditPackPurchaseRepository.create).mockResolvedValue({
+        id: 'purchase_123',
+        accountId: mockAccountId,
+        packSize: 100000,
+        amountPaid: 2900,
+        status: 'pending',
+        description: '100,000 credits',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
+      vi.mocked(invoiceService.createCreditPackInvoice).mockResolvedValue({
+        id: 'inv_123',
+        accountId: mockAccountId,
+        status: 'draft',
+        total: 2900,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as any);
 
       await expect(
         creditPackService.purchaseCreditPack({

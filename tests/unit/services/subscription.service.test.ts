@@ -231,6 +231,7 @@ describe('SubscriptionService', () => {
     });
 
     it('should throw error if plan price ID not configured', async () => {
+      const original = process.env.PAYSTACK_PRO_PLAN_CODE;
       delete process.env.PAYSTACK_PRO_PLAN_CODE;
 
       const mockAccount: Account = {
@@ -250,6 +251,8 @@ describe('SubscriptionService', () => {
       await expect(
         subscriptionService.createSubscription(mockAccountId, 'pro')
       ).rejects.toThrow('No price ID configured for plan: pro');
+
+      process.env.PAYSTACK_PRO_PLAN_CODE = original;
     });
 
     it('should allocate initial credits for the plan', async () => {
