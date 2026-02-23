@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('../../../src/db/connection', () => ({
+vi.mock('../../../../src/db/connection', () => ({
   getPool: vi.fn(() => mockPool),
 }));
 
@@ -13,8 +13,8 @@ const mockPool = {
   query: vi.fn(),
 };
 
-import { AuditLogRepository } from '../../../src/db/repositories/auditLog.repository.js';
-import { mockAuditLog, mockAuditLogFinancial, mockAuditLogSupport, createMockAuditLog } from '../../fixtures/admin.fixtures.js';
+import { AuditLogRepository } from '../../../../src/db/repositories/auditLog.repository.js';
+import { mockAuditLog, mockAuditLogFinancial, mockAuditLogSupport, createMockAuditLog } from '../../../fixtures/admin.fixtures.js';
 
 describe('AuditLogRepository', () => {
   let repository: AuditLogRepository;

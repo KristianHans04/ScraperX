@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('../../../src/db/connection', () => ({
+vi.mock('../../../../src/db/connection', () => ({
   getPool: vi.fn(() => mockPool),
 }));
 
@@ -13,8 +13,8 @@ const mockPool = {
   query: vi.fn(),
 };
 
-import { AbuseFlagRepository } from '../../../src/db/repositories/abuseFlag.repository.js';
-import { mockAbuseFlag, mockCriticalAbuseFlag, mockResolvedAbuseFlag, createMockAbuseFlag } from '../../fixtures/admin.fixtures.js';
+import { AbuseFlagRepository } from '../../../../src/db/repositories/abuseFlag.repository.js';
+import { mockAbuseFlag, mockCriticalAbuseFlag, mockResolvedAbuseFlag, createMockAbuseFlag } from '../../../fixtures/admin.fixtures.js';
 
 describe('AbuseFlagRepository', () => {
   let repository: AbuseFlagRepository;
@@ -374,8 +374,7 @@ describe('AbuseFlagRepository', () => {
       await repository.getStats();
 
       expect(mockPool.query).toHaveBeenCalledWith(
-        expect.stringContaining('detected_at > NOW() - INTERVAL \'30 days\''),
-        expect.any(Array)
+        expect.stringContaining('detected_at > NOW() - INTERVAL \'30 days\'')
       );
     });
   });
