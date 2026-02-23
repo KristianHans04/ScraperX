@@ -9,11 +9,13 @@ import { creditService } from './credit.service.js';
 import { PaymentProvider } from './payment/PaymentProvider.interface.js';
 import { PlanType, Subscription } from '../types/index.js';
 
-const PLAN_PRICES = {
-  free: { monthlyPrice: 0, priceId: null, credits: 1000 },
-  pro: { monthlyPrice: 4900, priceId: process.env.PAYSTACK_PRO_PLAN_CODE, credits: 50000 },
-  enterprise: { monthlyPrice: 19900, priceId: process.env.PAYSTACK_ENTERPRISE_PLAN_CODE, credits: 250000 },
-};
+function getPlanPrices() {
+  return {
+    free: { monthlyPrice: 0, priceId: null as string | null, credits: 1000 },
+    pro: { monthlyPrice: 4900, priceId: process.env.PAYSTACK_PRO_PLAN_CODE ?? null, credits: 50000 },
+    enterprise: { monthlyPrice: 19900, priceId: process.env.PAYSTACK_ENTERPRISE_PLAN_CODE ?? null, credits: 250000 },
+  };
+}
 
 export class SubscriptionService {
   constructor(private paymentProvider: PaymentProvider) {}
@@ -60,7 +62,7 @@ export class SubscriptionService {
       await this.paymentProvider.setDefaultPaymentMethod(stripeCustomerId, paymentMethodId);
     }
 
-    const planConfig = PLAN_PRICES[plan];
+    const planConfig = getPlanPrices()[plan];
     if (!planConfig.priceId) {
       throw new Error(`No price ID configured for plan: ${plan}`);
     }
@@ -130,7 +132,7 @@ export class SubscriptionService {
       throw new Error('No active subscription found');
     }
 
-    const newPlanConfig = PLAN_PRICES[newPlan];
+    const newPlanConfig = getPlanPrices()[newPlan];
     if (!newPlanConfig.priceId) {
       throw new Error(`No price ID configured for plan: ${newPlan}`);
     }
@@ -155,7 +157,7 @@ export class SubscriptionService {
       billingCycleEnd: updatedStripeSubscription.currentPeriodEnd,
     });
 
-    const currentPlanConfig = PLAN_PRICES[currentPlan];
+    const currentPlanConfig = getPlanPrices()[currentPlan];
     const creditDifference = newPlanConfig.credits - currentPlanConfig.credits;
 
     if (creditDifference > 0) {
@@ -262,7 +264,7 @@ export class SubscriptionService {
         stripeSubscriptionId: null,
       });
 
-      await creditService.resetCycleCredits(accountId, PLAN_PRICES.free.credits);
+      await creditService.resetCycleCredits(accountId, getPlanPrices().free.credits);
     }
 
     return updatedSubscription;
@@ -302,7 +304,7 @@ export class SubscriptionService {
       return;
     }
 
-    const newPlanConfig = PLAN_PRICES[subscription.scheduledPlan];
+    const newPlanConfig = getPlanPrices()[subscription.scheduledPlan];
     if (!newPlanConfig.priceId) {
       throw new Error(`No price ID configured for plan: ${subscription.scheduledPlan}`);
     }
@@ -335,7 +337,7 @@ export class SubscriptionService {
       return;
     }
 
-    const planConfig = PLAN_PRICES[subscription.plan];
+    const planConfig = getPlanPrices()[subscription.plan];
 
     await creditService.resetCycleCredits(subscription.accountId, planConfig.credits);
 

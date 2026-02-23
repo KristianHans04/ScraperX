@@ -17,7 +17,10 @@ export class WebhookService {
   private paymentProvider: PaystackPaymentProvider;
 
   constructor() {
-    const secretKey = process.env.PAYSTACK_SECRET_KEY || 'sk_test_dummy';
+    const secretKey = process.env.PAYSTACK_SECRET_KEY;
+    if (!secretKey) {
+      throw new Error('PAYSTACK_SECRET_KEY is not configured');
+    }
     this.paymentProvider = new PaystackPaymentProvider(secretKey);
   }
 
