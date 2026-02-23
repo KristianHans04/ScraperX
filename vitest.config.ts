@@ -1,7 +1,23 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import path from 'path';
+import fs from 'fs';
+
+// Resolve TypeScript ESM imports: '.js' → '.ts'
+const jsToTsPlugin = {
+  name: 'vitest-js-to-ts',
+  enforce: 'pre' as const,
+  resolveId(id: string, importer?: string) {
+    if (!id.endsWith('.js') || !importer) return;
+    const base = id.slice(0, -3);
+    for (const ext of ['.ts', '.tsx'] as const) {
+      const absolute = path.resolve(path.dirname(importer), base + ext);
+      if (fs.existsSync(absolute)) return absolute;
+    }
+  },
+};
 
 export default defineConfig({
+  plugins: [jsToTsPlugin],
   test: {
     globals: true,
     environment: 'node',
@@ -17,6 +33,7 @@ export default defineConfig({
     setupFiles: ['tests/setup.ts'],
   },
   resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@config': path.resolve(__dirname, './src/config'),
