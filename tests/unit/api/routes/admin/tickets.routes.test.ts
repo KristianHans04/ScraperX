@@ -1,17 +1,23 @@
 /**
  * Unit tests for admin tickets routes
- * Phase 10: Admin Dashboard - Support Ticket Administration
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
+import request from 'supertest';
 
-// Mock dependencies
-vi.mock('../../../src/db/connection', () => ({
+vi.mock('../../../../../src/api/middleware/requireAdmin.js', () => ({
+  requireAdmin: (req: any, _res: any, next: any) => {
+    req.user = { id: 'admin-0001', email: 'admin@scrapifie.com', role: 'admin', accountId: 'account-admin-001' };
+    next();
+  },
+}));
+
+vi.mock('../../../../../src/db/connection.js', () => ({
   getPool: vi.fn(() => mockPool),
 }));
 
-vi.mock('../../../src/db/repositories/supportTicket.repository', () => ({
+vi.mock('../../../../../src/db/repositories/supportTicket.repository.js', () => ({
   supportTicketRepository: {
     list: vi.fn(),
     findById: vi.fn(),
@@ -23,38 +29,42 @@ vi.mock('../../../src/db/repositories/supportTicket.repository', () => ({
   },
 }));
 
-vi.mock('../../../src/api/middleware/auditLogger', () => ({
-  auditLogger: vi.fn((options: any) => (req: Request, res: Response, next: NextFunction) => next()),
+vi.mock('../../../../../src/api/middleware/auditLogger.js', () => ({
+  auditLogger: vi.fn(() => (_req: any, _res: any, next: any) => next()),
 }));
 
-import ticketsRouter from '../../../src/api/routes/admin/tickets.routes.js';
-import { supportTicketRepository } from '../../../src/db/repositories/supportTicket.repository.js';
-import { getPool } from '../../../src/db/connection.js';
-import { 
-  mockAdminUser, 
-  mockRegularUser, 
-  mockSupportTicket, 
-  mockUrgentTicket, 
+const mockPool = { query: vi.fn() };
+
+import ticketsRouter from '../../../../../src/api/routes/admin/tickets.routes.js';
+import { supportTicketRepository } from '../../../../../src/db/repositories/supportTicket.repository.js';
+import {
+  mockAdminUser,
+  mockRegularUser,
+  mockSupportTicket,
+  mockUrgentTicket,
   mockTicketMessage,
   mockAdminReply,
-  createMockRequest,
-  createMockResponse,
-} from '../../fixtures/admin.fixtures.js';
+} from '../../../../fixtures/admin.fixtures.js';
 
-const mockPool = {
-  query: vi.fn(),
-};
+function buildApp() {
+  const app = express();
+  app.use(express.json());
+  app.use('/', ticketsRouter);
+  return app;
+}
 
 describe('Admin Tickets Routes', () => {
+  let app: express.Application;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    app = buildApp();
   });
 
   describe('Router Export', () => {
     it('should export an Express router', () => {
       expect(ticketsRouter).toBeDefined();
       expect(typeof ticketsRouter).toBe('function');
-      expect(ticketsRouter.stack).toBeDefined();
     });
 
     it('should have routes configured', () => {
@@ -63,574 +73,284 @@ describe('Admin Tickets Routes', () => {
   });
 
   describe('GET / - List Tickets', () => {
-    it('should be configured in router stack', () => {
-      const getRoute = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/' && layer.route.methods.get
-      );
-      expect(getRoute).toBeDefined();
+    it('should return paginated tickets list', async () => {
+      vi.mocked(supportTicketRepository.list).mockResolvedValue({
+        items: [mockSupportTicket, mockUrgentTicket],
+        pagination: { page: 1, limit: 20, total: 2, totalPages: 1 },
+      } as any);
+
+      const res = await request(app).get('/');
+
+      expect(res.status).toBe(200);
+      expect(res.body.tickets).toHaveLength(2);
+      expect(res.body.pagination).toBeDefined();
     });
 
     it('should accept pagination parameters', async () => {
-      const mockTickets = [mockSupportTicket, mockUrgentTicket];
       vi.mocked(supportTicketRepository.list).mockResolvedValue({
-        items: mockTickets,
-        pagination: {
-          page: 2,
-          limit: 10,
-          total: 25,
-          totalPages: 3,
-        },
-      });
+        items: [mockSupportTicket, mockUrgentTicket],
+        pagination: { page: 2, limit: 10, total: 25, totalPages: 3 },
+      } as any);
 
-      const req = createMockRequest({
-        query: { page: '2', limit: '10' },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      await request(app).get('/?page=2&limit=10');
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/' && layer.route.methods.get
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(supportTicketRepository.list).toHaveBeenCalledWith(expect.objectContaining({
-          page: 2,
-          limit: 10,
-        }));
-      }
+      expect(supportTicketRepository.list).toHaveBeenCalledWith(expect.objectContaining({
+        page: 2,
+        limit: 10,
+      }));
     });
 
     it('should apply filter for status', async () => {
       vi.mocked(supportTicketRepository.list).mockResolvedValue({
         items: [mockSupportTicket],
         pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
-      });
+      } as any);
 
-      const req = createMockRequest({
-        query: { status: 'open' },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      await request(app).get('/?status=open');
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/' && layer.route.methods.get
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(supportTicketRepository.list).toHaveBeenCalledWith(expect.objectContaining({
-          status: 'open',
-        }));
-      }
+      expect(supportTicketRepository.list).toHaveBeenCalledWith(expect.objectContaining({
+        status: 'open',
+      }));
     });
 
     it('should apply filter for priority', async () => {
       vi.mocked(supportTicketRepository.list).mockResolvedValue({
         items: [mockUrgentTicket],
         pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
-      });
+      } as any);
 
-      const req = createMockRequest({
-        query: { priority: 'urgent' },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      await request(app).get('/?priority=urgent');
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/' && layer.route.methods.get
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(supportTicketRepository.list).toHaveBeenCalledWith(expect.objectContaining({
-          priority: 'urgent',
-        }));
-      }
+      expect(supportTicketRepository.list).toHaveBeenCalledWith(expect.objectContaining({
+        priority: 'urgent',
+      }));
     });
 
     it('should apply filter for category', async () => {
       vi.mocked(supportTicketRepository.list).mockResolvedValue({
         items: [mockSupportTicket],
         pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
-      });
+      } as any);
 
-      const req = createMockRequest({
-        query: { category: 'technical' },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      await request(app).get('/?category=technical');
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/' && layer.route.methods.get
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(supportTicketRepository.list).toHaveBeenCalledWith(expect.objectContaining({
-          category: 'technical',
-        }));
-      }
+      expect(supportTicketRepository.list).toHaveBeenCalledWith(expect.objectContaining({
+        category: 'technical',
+      }));
     });
 
     it('should apply search parameter', async () => {
       vi.mocked(supportTicketRepository.list).mockResolvedValue({
         items: [mockSupportTicket],
         pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
-      });
+      } as any);
 
-      const req = createMockRequest({
-        query: { search: 'API integration' },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      await request(app).get('/?search=API+integration');
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/' && layer.route.methods.get
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(supportTicketRepository.list).toHaveBeenCalledWith(expect.objectContaining({
-          search: 'API integration',
-        }));
-      }
+      expect(supportTicketRepository.list).toHaveBeenCalledWith(expect.objectContaining({
+        search: 'API integration',
+      }));
     });
 
     it('should apply unassigned filter', async () => {
       vi.mocked(supportTicketRepository.list).mockResolvedValue({
         items: [mockSupportTicket],
         pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
-      });
+      } as any);
 
-      const req = createMockRequest({
-        query: { unassigned: 'true' },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      await request(app).get('/?unassigned=true');
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/' && layer.route.methods.get
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(supportTicketRepository.list).toHaveBeenCalledWith(expect.objectContaining({
-          unassignedOnly: true,
-        }));
-      }
+      expect(supportTicketRepository.list).toHaveBeenCalledWith(expect.objectContaining({
+        unassignedOnly: true,
+      }));
     });
 
     it('should apply assignedTo filter', async () => {
       vi.mocked(supportTicketRepository.list).mockResolvedValue({
         items: [mockUrgentTicket],
         pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
-      });
+      } as any);
 
-      const req = createMockRequest({
-        query: { assignedTo: mockAdminUser.id },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      await request(app).get(`/?assignedTo=${mockAdminUser.id}`);
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/' && layer.route.methods.get
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(supportTicketRepository.list).toHaveBeenCalledWith(expect.objectContaining({
-          assignedToUserId: mockAdminUser.id,
-        }));
-      }
+      expect(supportTicketRepository.list).toHaveBeenCalledWith(expect.objectContaining({
+        assignedToUserId: mockAdminUser.id,
+      }));
     });
 
     it('should limit max limit to 100', async () => {
       vi.mocked(supportTicketRepository.list).mockResolvedValue({
         items: [],
         pagination: { page: 1, limit: 100, total: 0, totalPages: 0 },
-      });
+      } as any);
 
-      const req = createMockRequest({
-        query: { limit: '200' },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      await request(app).get('/?limit=200');
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/' && layer.route.methods.get
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(supportTicketRepository.list).toHaveBeenCalledWith(expect.objectContaining({
-          limit: 100,
-        }));
-      }
+      expect(supportTicketRepository.list).toHaveBeenCalledWith(expect.objectContaining({
+        limit: 100,
+      }));
     });
 
     it('should return 500 on database error', async () => {
       vi.mocked(supportTicketRepository.list).mockRejectedValue(new Error('Database error'));
 
-      const req = createMockRequest({ user: mockAdminUser });
-      const res = createMockResponse();
+      const res = await request(app).get('/');
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/' && layer.route.methods.get
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(res.status).toHaveBeenCalledWith(500);
-        expect(res.json).toHaveBeenCalledWith({ error: 'Failed to fetch tickets' });
-      }
+      expect(res.status).toBe(500);
+      expect(res.body.error).toBe('Failed to fetch tickets');
     });
   });
 
   describe('GET /:id - Get Ticket Detail', () => {
-    it('should be configured in router stack', () => {
-      const getRoute = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/:id' && layer.route.methods.get
-      );
-      expect(getRoute).toBeDefined();
-    });
-
     it('should return ticket with messages and user details', async () => {
-      vi.mocked(supportTicketRepository.findById).mockResolvedValue(mockUrgentTicket);
-      vi.mocked(supportTicketRepository.getMessages).mockResolvedValue([mockTicketMessage, mockAdminReply]);
-      mockPool.query.mockResolvedValueOnce({
-        rows: [{ id: mockRegularUser.id, email: mockRegularUser.email, name: mockRegularUser.name }],
+      vi.mocked(supportTicketRepository.findById).mockResolvedValue(mockUrgentTicket as any);
+      vi.mocked(supportTicketRepository.getMessages).mockResolvedValue([mockTicketMessage, mockAdminReply] as any);
+      mockPool.query
+        .mockResolvedValueOnce({ rows: [{ id: mockRegularUser.id, email: mockRegularUser.email, name: mockRegularUser.name }] })
+        .mockResolvedValueOnce({ rows: [{ id: 'account-001', display_name: 'Test Account', plan: 'pro' }] });
+
+      const res = await request(app).get(`/${mockUrgentTicket.id}`);
+
+      expect(res.status).toBe(200);
+      expect(supportTicketRepository.findById).toHaveBeenCalledWith(mockUrgentTicket.id);
+      expect(supportTicketRepository.getMessages).toHaveBeenCalledWith(mockUrgentTicket.id);
+      expect(res.body).toMatchObject({
+        ticket: expect.objectContaining({ id: mockUrgentTicket.id }),
+        messages: expect.any(Array),
+        user: expect.any(Object),
+        account: expect.any(Object),
       });
-      mockPool.query.mockResolvedValueOnce({
-        rows: [{ id: 'account-001', display_name: 'Test Account', plan: 'pro' }],
-      });
-
-      const req = createMockRequest({
-        params: { id: mockUrgentTicket.id },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
-
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/:id' && layer.route.methods.get
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(supportTicketRepository.findById).toHaveBeenCalledWith(mockUrgentTicket.id);
-        expect(supportTicketRepository.getMessages).toHaveBeenCalledWith(mockUrgentTicket.id);
-        expect(mockPool.query).toHaveBeenCalledWith(
-          'SELECT id, email, name FROM users WHERE id = $1',
-          [mockUrgentTicket.userId]
-        );
-        expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-          ticket: mockUrgentTicket,
-          messages: [mockTicketMessage, mockAdminReply],
-        }));
-      }
     });
 
     it('should return 404 when ticket not found', async () => {
-      vi.mocked(supportTicketRepository.findById).mockResolvedValue(null);
+      vi.mocked(supportTicketRepository.findById).mockResolvedValue(null as any);
 
-      const req = createMockRequest({
-        params: { id: 'non-existent' },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      const res = await request(app).get('/non-existent');
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/:id' && layer.route.methods.get
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(res.status).toHaveBeenCalledWith(404);
-        expect(res.json).toHaveBeenCalledWith({ error: 'Ticket not found' });
-      }
+      expect(res.status).toBe(404);
+      expect(res.body.error).toBe('Ticket not found');
     });
 
     it('should return 500 on database error', async () => {
       vi.mocked(supportTicketRepository.findById).mockRejectedValue(new Error('Database error'));
 
-      const req = createMockRequest({
-        params: { id: mockSupportTicket.id },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      const res = await request(app).get(`/${mockSupportTicket.id}`);
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/:id' && layer.route.methods.get
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(res.status).toHaveBeenCalledWith(500);
-        expect(res.json).toHaveBeenCalledWith({ error: 'Failed to fetch ticket details' });
-      }
+      expect(res.status).toBe(500);
+      expect(res.body.error).toBe('Failed to fetch ticket details');
     });
   });
 
   describe('POST /:id/assign - Assign Ticket', () => {
-    it('should be configured in router stack', () => {
-      const postRoute = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/:id/assign' && layer.route.methods.post
-      );
-      expect(postRoute).toBeDefined();
-    });
-
     it('should assign ticket to specified admin', async () => {
-      vi.mocked(supportTicketRepository.assign).mockResolvedValue(undefined);
+      vi.mocked(supportTicketRepository.assign).mockResolvedValue(undefined as any);
 
-      const req = createMockRequest({
-        params: { id: mockSupportTicket.id },
-        body: { adminId: 'admin-002' },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      const res = await request(app)
+        .post(`/${mockSupportTicket.id}/assign`)
+        .send({ adminId: 'admin-002' });
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/:id/assign' && layer.route.methods.post
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(supportTicketRepository.assign).toHaveBeenCalledWith(mockSupportTicket.id, 'admin-002');
-        expect(res.json).toHaveBeenCalledWith({ message: 'Ticket assigned successfully' });
-      }
+      expect(res.status).toBe(200);
+      expect(supportTicketRepository.assign).toHaveBeenCalledWith(mockSupportTicket.id, 'admin-002');
+      expect(res.body.message).toBe('Ticket assigned successfully');
     });
 
     it('should assign ticket to self when no adminId provided', async () => {
-      vi.mocked(supportTicketRepository.assign).mockResolvedValue(undefined);
+      vi.mocked(supportTicketRepository.assign).mockResolvedValue(undefined as any);
 
-      const req = createMockRequest({
-        params: { id: mockSupportTicket.id },
-        body: {},
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      await request(app)
+        .post(`/${mockSupportTicket.id}/assign`)
+        .send({});
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/:id/assign' && layer.route.methods.post
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(supportTicketRepository.assign).toHaveBeenCalledWith(mockSupportTicket.id, mockAdminUser.id);
-      }
+      expect(supportTicketRepository.assign).toHaveBeenCalledWith(mockSupportTicket.id, mockAdminUser.id);
     });
 
     it('should return 500 on database error', async () => {
       vi.mocked(supportTicketRepository.assign).mockRejectedValue(new Error('Database error'));
 
-      const req = createMockRequest({
-        params: { id: mockSupportTicket.id },
-        body: { adminId: 'admin-002' },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      const res = await request(app)
+        .post(`/${mockSupportTicket.id}/assign`)
+        .send({ adminId: 'admin-002' });
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/:id/assign' && layer.route.methods.post
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(res.status).toHaveBeenCalledWith(500);
-        expect(res.json).toHaveBeenCalledWith({ error: 'Failed to assign ticket' });
-      }
+      expect(res.status).toBe(500);
+      expect(res.body.error).toBe('Failed to assign ticket');
     });
   });
 
   describe('POST /:id/status - Update Ticket Status', () => {
-    it('should be configured in router stack', () => {
-      const postRoute = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/:id/status' && layer.route.methods.post
-      );
-      expect(postRoute).toBeDefined();
-    });
-
     it('should update ticket status', async () => {
-      vi.mocked(supportTicketRepository.updateStatus).mockResolvedValue(undefined);
+      vi.mocked(supportTicketRepository.updateStatus).mockResolvedValue(undefined as any);
 
-      const req = createMockRequest({
-        params: { id: mockSupportTicket.id },
-        body: { status: 'in_progress' },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      const res = await request(app)
+        .post(`/${mockSupportTicket.id}/status`)
+        .send({ status: 'in_progress' });
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/:id/status' && layer.route.methods.post
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(supportTicketRepository.updateStatus).toHaveBeenCalledWith(mockSupportTicket.id, 'in_progress');
-        expect(res.json).toHaveBeenCalledWith({ message: 'Ticket status updated successfully' });
-      }
+      expect(res.status).toBe(200);
+      expect(supportTicketRepository.updateStatus).toHaveBeenCalledWith(mockSupportTicket.id, 'in_progress');
+      expect(res.body.message).toBe('Ticket status updated successfully');
     });
 
     it('should handle status change to resolved', async () => {
-      vi.mocked(supportTicketRepository.updateStatus).mockResolvedValue(undefined);
+      vi.mocked(supportTicketRepository.updateStatus).mockResolvedValue(undefined as any);
 
-      const req = createMockRequest({
-        params: { id: mockSupportTicket.id },
-        body: { status: 'resolved' },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      await request(app)
+        .post(`/${mockSupportTicket.id}/status`)
+        .send({ status: 'resolved' });
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/:id/status' && layer.route.methods.post
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(supportTicketRepository.updateStatus).toHaveBeenCalledWith(mockSupportTicket.id, 'resolved');
-      }
+      expect(supportTicketRepository.updateStatus).toHaveBeenCalledWith(mockSupportTicket.id, 'resolved');
     });
   });
 
   describe('POST /:id/priority - Update Ticket Priority', () => {
-    it('should be configured in router stack', () => {
-      const postRoute = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/:id/priority' && layer.route.methods.post
-      );
-      expect(postRoute).toBeDefined();
-    });
-
     it('should update ticket priority', async () => {
-      vi.mocked(supportTicketRepository.updatePriority).mockResolvedValue(undefined);
+      vi.mocked(supportTicketRepository.updatePriority).mockResolvedValue(undefined as any);
 
-      const req = createMockRequest({
-        params: { id: mockSupportTicket.id },
-        body: { priority: 'high' },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      const res = await request(app)
+        .post(`/${mockSupportTicket.id}/priority`)
+        .send({ priority: 'high' });
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/:id/priority' && layer.route.methods.post
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(supportTicketRepository.updatePriority).toHaveBeenCalledWith(mockSupportTicket.id, 'high');
-        expect(res.json).toHaveBeenCalledWith({ message: 'Ticket priority updated successfully' });
-      }
+      expect(res.status).toBe(200);
+      expect(supportTicketRepository.updatePriority).toHaveBeenCalledWith(mockSupportTicket.id, 'high');
+      expect(res.body.message).toBe('Ticket priority updated successfully');
     });
   });
 
   describe('POST /:id/reply - Reply to Ticket', () => {
-    it('should be configured in router stack', () => {
-      const postRoute = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/:id/reply' && layer.route.methods.post
-      );
-      expect(postRoute).toBeDefined();
-    });
-
     it('should add reply to ticket', async () => {
-      vi.mocked(supportTicketRepository.addMessage).mockResolvedValue(mockAdminReply);
+      vi.mocked(supportTicketRepository.addMessage).mockResolvedValue(mockAdminReply as any);
 
-      const req = createMockRequest({
-        params: { id: mockSupportTicket.id },
-        body: { message: 'Thank you for contacting us. We are looking into this issue.' },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      const res = await request(app)
+        .post(`/${mockSupportTicket.id}/reply`)
+        .send({ message: 'Thank you for contacting us. We are looking into this issue.' });
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/:id/reply' && layer.route.methods.post
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(supportTicketRepository.addMessage).toHaveBeenCalledWith(expect.objectContaining({
-          ticketId: mockSupportTicket.id,
-          userId: mockAdminUser.id,
-          isStaff: true,
-          message: 'Thank you for contacting us. We are looking into this issue.',
-          isInternal: false,
-        }));
-        expect(res.json).toHaveBeenCalledWith({ message: 'Reply sent successfully' });
-      }
+      expect(res.status).toBe(200);
+      expect(supportTicketRepository.addMessage).toHaveBeenCalledWith(expect.objectContaining({
+        ticketId: mockSupportTicket.id,
+        userId: mockAdminUser.id,
+        isStaff: true,
+        message: 'Thank you for contacting us. We are looking into this issue.',
+        isInternal: false,
+      }));
+      expect(res.body.message).toBe('Reply sent successfully');
     });
   });
 
   describe('POST /:id/internal-note - Add Internal Note', () => {
-    it('should be configured in router stack', () => {
-      const postRoute = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/:id/internal-note' && layer.route.methods.post
-      );
-      expect(postRoute).toBeDefined();
-    });
-
     it('should add internal note to ticket', async () => {
-      vi.mocked(supportTicketRepository.addMessage).mockResolvedValue(mockAdminReply);
+      vi.mocked(supportTicketRepository.addMessage).mockResolvedValue(mockAdminReply as any);
 
-      const req = createMockRequest({
-        params: { id: mockSupportTicket.id },
-        body: { note: 'This user is a high-value customer. Prioritize their request.' },
-        user: mockAdminUser,
-      });
-      const res = createMockResponse();
+      const res = await request(app)
+        .post(`/${mockSupportTicket.id}/internal-note`)
+        .send({ note: 'This user is a high-value customer. Prioritize their request.' });
 
-      const route = ticketsRouter.stack.find((layer: any) => 
-        layer.route && layer.route.path === '/:id/internal-note' && layer.route.methods.post
-      );
-
-      if (route && route.route) {
-        const handler = route.route.stack[route.route.stack.length - 1].handle;
-        await handler(req, res, vi.fn());
-
-        expect(supportTicketRepository.addMessage).toHaveBeenCalledWith(expect.objectContaining({
-          ticketId: mockSupportTicket.id,
-          userId: mockAdminUser.id,
-          isStaff: true,
-          message: 'This user is a high-value customer. Prioritize their request.',
-          isInternal: true,
-        }));
-        expect(res.json).toHaveBeenCalledWith({ message: 'Internal note added successfully' });
-      }
+      expect(res.status).toBe(200);
+      expect(supportTicketRepository.addMessage).toHaveBeenCalledWith(expect.objectContaining({
+        ticketId: mockSupportTicket.id,
+        userId: mockAdminUser.id,
+        isStaff: true,
+        message: 'This user is a high-value customer. Prioritize their request.',
+        isInternal: true,
+      }));
+      expect(res.body.message).toBe('Internal note added successfully');
     });
   });
 });

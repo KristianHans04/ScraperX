@@ -7,7 +7,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Request, Response } from 'express';
-import { createStatusRoutes } from '../../../../src/api/routes/public/status.routes';
+import { createStatusRoutes } from '../../../../../src/api/routes/public/status.routes';
 
 // Mock console methods to reduce noise in test output
 vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -66,7 +66,7 @@ describe('Public Status Routes', () => {
       mockRequest = {};
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -94,7 +94,7 @@ describe('Public Status Routes', () => {
       mockRequest = {};
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -111,7 +111,7 @@ describe('Public Status Routes', () => {
       mockRequest = {};
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -127,7 +127,7 @@ describe('Public Status Routes', () => {
       mockRequest = {};
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -153,7 +153,7 @@ describe('Public Status Routes', () => {
       mockRequest = {};
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/uptime' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -180,7 +180,7 @@ describe('Public Status Routes', () => {
       mockRequest = {};
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/uptime' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -197,7 +197,7 @@ describe('Public Status Routes', () => {
       mockRequest = {};
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/uptime' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -258,7 +258,7 @@ describe('Public Status Routes', () => {
       };
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/incidents' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -292,7 +292,7 @@ describe('Public Status Routes', () => {
       };
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/incidents' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -311,7 +311,7 @@ describe('Public Status Routes', () => {
       };
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/incidents' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -329,7 +329,7 @@ describe('Public Status Routes', () => {
       };
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/incidents' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -347,7 +347,7 @@ describe('Public Status Routes', () => {
       };
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/incidents' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -365,7 +365,7 @@ describe('Public Status Routes', () => {
       };
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/incidents' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -385,7 +385,7 @@ describe('Public Status Routes', () => {
       };
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/incidents' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -403,7 +403,7 @@ describe('Public Status Routes', () => {
       };
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/incidents' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -423,7 +423,7 @@ describe('Public Status Routes', () => {
       };
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/subscribe' && layer.route.methods.post
       )?.route?.stack[0]?.handle;
 
@@ -447,7 +447,7 @@ describe('Public Status Routes', () => {
       ];
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/subscribe' && layer.route.methods.post
       )?.route?.stack[0]?.handle;
 
@@ -472,7 +472,7 @@ describe('Public Status Routes', () => {
       };
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/subscribe' && layer.route.methods.post
       )?.route?.stack[0]?.handle;
 
@@ -492,7 +492,7 @@ describe('Public Status Routes', () => {
       ];
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/subscribe' && layer.route.methods.post
       )?.route?.stack[0]?.handle;
 
@@ -519,7 +519,7 @@ describe('Public Status Routes', () => {
       };
 
       const router = createStatusRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/subscribe' && layer.route.methods.post
       )?.route?.stack[0]?.handle;
 

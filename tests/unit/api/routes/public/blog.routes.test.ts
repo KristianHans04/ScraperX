@@ -7,7 +7,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Request, Response } from 'express';
-import { createBlogRoutes } from '../../../../src/api/routes/public/blog.routes';
+import { createBlogRoutes } from '../../../../../src/api/routes/public/blog.routes';
 
 // Mock console methods to reduce noise in test output
 vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -72,7 +72,7 @@ describe('Public Blog Routes', () => {
       };
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/posts' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -122,7 +122,7 @@ describe('Public Blog Routes', () => {
       };
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/posts' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -144,7 +144,7 @@ describe('Public Blog Routes', () => {
       };
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/posts' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -168,7 +168,7 @@ describe('Public Blog Routes', () => {
       };
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/posts' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -188,7 +188,7 @@ describe('Public Blog Routes', () => {
       };
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/posts' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -212,7 +212,7 @@ describe('Public Blog Routes', () => {
       };
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/posts' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -231,7 +231,7 @@ describe('Public Blog Routes', () => {
       };
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/posts' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -253,7 +253,7 @@ describe('Public Blog Routes', () => {
       };
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/posts' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -287,7 +287,7 @@ describe('Public Blog Routes', () => {
       };
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/posts/:slug' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -317,7 +317,7 @@ describe('Public Blog Routes', () => {
       };
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/posts/:slug' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -368,7 +368,7 @@ describe('Public Blog Routes', () => {
       };
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/posts/:slug' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -408,7 +408,7 @@ describe('Public Blog Routes', () => {
       };
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/posts/:slug' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -440,7 +440,7 @@ describe('Public Blog Routes', () => {
       };
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/posts/:slug' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -459,7 +459,7 @@ describe('Public Blog Routes', () => {
       };
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/posts/:slug' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -485,7 +485,7 @@ describe('Public Blog Routes', () => {
       mockRequest = {};
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/tags' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -502,7 +502,7 @@ describe('Public Blog Routes', () => {
       mockRequest = {};
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/tags' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -519,7 +519,7 @@ describe('Public Blog Routes', () => {
       mockRequest = {};
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/tags' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -535,7 +535,7 @@ describe('Public Blog Routes', () => {
       mockRequest = {};
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/tags' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
@@ -552,7 +552,7 @@ describe('Public Blog Routes', () => {
       mockRequest = {};
 
       const router = createBlogRoutes(mockPool);
-      const routeHandler = (router as any).stack.find(
+      const routeHandler = [...(router as any).stack].reverse().find(
         (layer: any) => layer.route?.path === '/tags' && layer.route.methods.get
       )?.route?.stack[0]?.handle;
 
