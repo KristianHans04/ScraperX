@@ -2,47 +2,92 @@
 
 Guidelines for contributing to Scrapifie development.
 
+## Technology Stack
+
+Understanding the actual stack before writing code avoids surprises.
+
+| Layer | Technology | Notes |
+|---|---|---|
+| Runtime | Node.js 20+ with TypeScript | Strict mode, ESM modules |
+| API Framework | Express | Dashboard and admin routes |
+| Scraping API | Fastify | High-throughput scraping endpoints |
+| Database | PostgreSQL | Repositories in `src/db/repositories/` |
+| Cache and Queue | Redis + BullMQ | Three named queues: http, browser, stealth |
+| Object Storage | MinIO (S3-compatible) | Stores scraped content and screenshots |
+| Frontend | React + Vite | Source in `src/frontend/` |
+| Test Runner | Vitest | 53 test files, 1,448 tests as of current baseline |
+
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20 or higher
 - Docker and Docker Compose
 - Git
+- A running PostgreSQL instance (or use the Docker Compose setup)
+- A running Redis instance (or use the Docker Compose setup)
+- MailDev for local email development (optional but recommended)
 
 ### Setup Development Environment
 
-1. **Clone the repository**
+1. Clone the repository and install dependencies:
    ```bash
    git clone https://github.com/your-org/scrapifie.git
    cd scrapifie
-   ```
-
-2. **Install dependencies**
-   ```bash
    npm install
    ```
 
-3. **Start infrastructure**
+2. Start the infrastructure services. The Docker Compose file brings up PostgreSQL, Redis, MinIO, and MailDev:
    ```bash
-   docker-compose up -d postgres redis
+   docker-compose up -d postgres redis minio maildev
    ```
 
-4. **Set up environment**
+3. Configure the environment. Copy the example file and fill in the values for your local setup. The minimum required variables for local development are `DATABASE_URL`, `REDIS_URL`, `SMTP_HOST`, and `SMTP_PORT`:
    ```bash
    cp .env.example .env
-   # Edit .env with your settings
    ```
 
-5. **Run migrations**
+4. Run the database migrations to create all tables:
    ```bash
    npm run migrate
    ```
 
-6. **Start development server**
+5. Start the development server:
    ```bash
    npm run dev
    ```
+
+MailDev's web UI is available at `http://localhost:1080` and captures all outgoing emails so you can verify transactional email templates during development without sending real messages.
+
+## Source Directory Layout
+
+```
+src/
+├── api/
+│   ├── middleware/     # Auth, CSRF, rate limiting, input validation, security headers
+│   ├── routes/         # Express route handlers (dashboard, admin)
+│   └── schemas/        # Zod validation schemas
+├── config/
+│   └── index.ts        # Centralised configuration parsed from environment variables
+├── db/
+│   ├── migrations/     # Sequential SQL migration files
+│   └── repositories/   # One repository class per database table
+├── engines/
+│   ├── http/           # impit-based static HTTP engine
+│   ├── browser/        # Playwright Chromium engine
+│   ├── stealth/        # Camoufox stealth engine
+│   └── selector.ts     # Engine selection and auto-escalation logic
+├── fingerprint/        # Browser fingerprint generation for evasion
+├── frontend/           # React + Vite frontend application
+├── proxy/              # Proxy manager and rotation logic
+├── queue/              # BullMQ queue definitions and Redis client
+├── services/           # Business logic layer (email, billing, subscriptions, etc.)
+├── types/              # Shared TypeScript type definitions
+├── utils/              # Shared utilities (crypto, logger, errors)
+└── workers/            # BullMQ job processors (http, browser, stealth workers)
+```
+
+The `tests/` directory mirrors `src/` and contains unit tests, with integration tests under `tests/integration/`.
 
 ## Development Workflow
 
@@ -67,13 +112,7 @@ type(scope): description
 [optional footer]
 ```
 
-Types:
-- `feat` - New feature
-- `fix` - Bug fix
-- `docs` - Documentation
-- `refactor` - Code refactoring
-- `test` - Adding tests
-- `chore` - Maintenance
+Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`
 
 Examples:
 ```
@@ -84,155 +123,95 @@ docs(api): update rate limiting documentation
 
 ### Pull Request Process
 
-1. Create a feature branch from `main`
-2. Make your changes
-3. Write/update tests
-4. Ensure all tests pass
-5. Update documentation if needed
-6. Submit pull request
-7. Address review feedback
-8. Merge after approval
+1. Create a feature branch from `main`.
+2. Make your changes.
+3. Write or update tests — all new features require tests; bug fixes require regression tests.
+4. Ensure all tests pass locally before pushing.
+5. Update the relevant documentation if the change affects behaviour or configuration.
+6. Submit the pull request and address review feedback.
 
 ## Code Standards
 
 ### TypeScript
 
-- Use strict TypeScript configuration
-- Define explicit types (avoid `any`)
-- Use interfaces for object shapes
-- Export types from modules
-
-### Code Style
-
-- Use ESLint configuration provided
-- Run `npm run lint` before committing
-- Use Prettier for formatting
-- Keep functions small and focused
-
-### File Organization
-
-```
-src/
-├── api/           # API layer
-│   ├── middleware/
-│   ├── routes/
-│   └── schemas/
-├── config/        # Configuration
-├── db/            # Database layer
-│   └── repositories/
-├── engines/       # Scraping engines
-├── queue/         # Job queue
-├── types/         # Type definitions
-├── utils/         # Shared utilities
-└── workers/       # Job processors
-```
+Use strict TypeScript throughout. Avoid `any` — use `unknown` and narrow with type guards. Define explicit interfaces for object shapes rather than relying on inference for public APIs. Export types from the module where they are defined.
 
 ### Naming Conventions
 
-| Type | Convention | Example |
+| Entity | Convention | Example |
 |------|------------|---------|
-| Files | camelCase | `scrapeJob.ts` |
-| Classes | PascalCase | `ScrapeEngine` |
-| Functions | camelCase | `processJob` |
-| Constants | UPPER_SNAKE | `MAX_RETRIES` |
-| Interfaces | PascalCase | `ScrapeOptions` |
-| Types | PascalCase | `EngineType` |
+| Source files | camelCase | `scrapeJob.ts`, `email.service.ts` |
+| Classes | PascalCase | `BrowserWorker`, `InvoiceService` |
+| Functions and methods | camelCase | `processJob`, `allocateCredits` |
+| Constants | UPPER_SNAKE_CASE | `MAX_RETRIES`, `CSRF_TOKEN_LENGTH` |
+| Interfaces and types | PascalCase | `ScrapeOptions`, `EngineType` |
 
-## Testing Requirements
+No file should exceed 1,000 lines. If a file is growing beyond that, split it into focused modules.
 
-### Test Coverage
+### Input Validation
 
-- All new features must include tests
-- Bug fixes should include regression tests
-- Maintain >80% code coverage
+All user-supplied input must be validated with a Zod schema at the route level. Database operations use parameterised queries exclusively — never interpolate user data into SQL strings. The `inputValidation` middleware provides a second-pass pattern scan; do not rely on it as the primary defence.
+
+### Error Handling
+
+Use the typed error classes in `src/utils/errors.ts` for all application errors. These carry HTTP status codes, machine-readable error codes, and a retryable flag that the client can use to decide whether to retry. Do not throw plain `Error` objects from business logic.
+
+## Testing
 
 ### Running Tests
 
 ```bash
-# Run all tests
+# Run all unit tests
 npm test
 
-# Run with coverage
+# Run with coverage report
 npm run test:coverage
 
-# Run specific test
-npm test -- tests/unit/specific.test.ts
+# Run a specific test file
+npm test -- tests/unit/services/email.service.test.ts
+
+# Run frontend tests
+npm run test:frontend
 ```
+
+The test suite uses Vitest. The current baseline is 53 test files and 1,448 tests. All tests must pass before a pull request can be merged.
 
 ### Test Guidelines
 
-- Use descriptive test names
-- Follow Arrange-Act-Assert pattern
-- Mock external dependencies
-- Test edge cases and errors
+- Follow the Arrange-Act-Assert pattern.
+- Use descriptive test names that describe the behaviour, not the implementation.
+- Mock all external dependencies (database, Redis, payment provider, email transport) using Vitest's mocking utilities.
+- Test both the success path and all relevant error paths, especially for security-sensitive code.
+- Use `tests/fixtures/` for shared test data to keep test files concise.
 
-## Documentation
+### Test Environment
 
-### Code Documentation
+The test setup in `tests/setup.ts` configures the test environment. Tests run with `NODE_ENV=test`. Database calls are mocked at the repository layer to avoid requiring a live database for unit tests. Integration tests in `tests/integration/` require the full Docker Compose stack to be running.
 
-- Add JSDoc comments to public functions
-- Document complex logic inline
-- Keep README files updated
+## Security Guidelines
 
-### API Documentation
-
-- Update endpoint docs for API changes
-- Include request/response examples
-- Document error responses
-
-## Security
-
-### Sensitive Data
-
-- Never commit secrets or credentials
-- Use environment variables
-- Don't log sensitive information
-
-### Input Validation
-
-- Validate all user input with Zod
-- Sanitize data before database operations
-- Use parameterized queries
-
-### Dependencies
-
-- Review security advisories
-- Keep dependencies updated
-- Audit with `npm audit`
-
-## Performance
-
-### Guidelines
-
-- Use async/await properly
-- Avoid blocking operations
-- Pool database connections
-- Cache when appropriate
-
-### Profiling
-
-- Test with realistic data volumes
-- Profile memory usage
-- Monitor query performance
+- Never commit secrets, API keys, or credentials to version control.
+- Do not log sensitive values such as API keys, session tokens, or payment information. Log only identifiers.
+- When adding a new route that handles user data, apply the `requireAuth` or `requireApiKey` middleware and register the route under the appropriate path prefix.
+- New admin routes must also apply `requireAdmin` and `adminSelfProtection`.
+- All state-changing dashboard routes are automatically covered by the CSRF middleware; do not exempt them unless there is a specific and documented reason.
 
 ## Review Checklist
 
-Before submitting a PR:
+Before submitting a pull request:
 
-- [ ] Code follows style guidelines
-- [ ] Tests pass locally
-- [ ] New tests added for changes
-- [ ] Documentation updated
-- [ ] No console.log or debug code
-- [ ] No sensitive data exposed
-- [ ] Error handling is appropriate
+- [ ] All tests pass locally with `npm test`
+- [ ] New tests cover the changed behaviour
 - [ ] TypeScript compiles without errors
+- [ ] No `console.log` or debug output left in code
+- [ ] No sensitive data is logged or exposed
+- [ ] Input validation is applied at the route level
+- [ ] Error handling uses typed error classes
+- [ ] Documentation is updated if behaviour changed
 
 ## Getting Help
 
-- Check existing issues and discussions
-- Ask questions in pull request comments
-- Reach out to maintainers
+Check existing issues and pull request discussions before opening a new issue. For questions during active development, add a comment to the relevant pull request.
 
 ## License
 
